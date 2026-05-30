@@ -2,6 +2,7 @@ import { error, fail, redirect } from '@sveltejs/kit';
 import { createServiceClient } from '$lib/server/supabase';
 import { writeAuditLog } from '$lib/server/audit';
 import { PUBLIC_SUPABASE_URL } from '$env/static/public';
+import { SUPABASE_SERVICE_ROLE_KEY } from '$env/static/private';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
@@ -34,7 +35,8 @@ export const actions: Actions = {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
-				Authorization: `Bearer ${locals.session?.access_token ?? ''}`
+				Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+				'x-koloti-actor-id': locals.profile.id
 			},
 			body: JSON.stringify({ assembly_id: params.id })
 		});

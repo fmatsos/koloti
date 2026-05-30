@@ -2,9 +2,9 @@ import { redirect } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async ({ locals }) => {
-	const { session, profile } = locals;
+	const { user, profile } = locals;
 
-	if (!session || !profile) {
+	if (!user || !profile) {
 		throw redirect(303, '/login');
 	}
 
@@ -12,5 +12,5 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 		throw redirect(303, '/login?error=account_inactive');
 	}
 
-	return { session, profile };
+	return { user, profile };
 };

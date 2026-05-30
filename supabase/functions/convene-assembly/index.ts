@@ -7,7 +7,8 @@ import { PDFDocument, rgb, StandardFonts } from 'npm:pdf-lib@1';
 
 const CORS_HEADERS = {
 	'Access-Control-Allow-Origin': '*',
-	'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type'
+	'Access-Control-Allow-Headers':
+		'authorization, x-client-info, apikey, content-type, x-koloti-actor-id'
 };
 
 async function sendEmail(opts: {
@@ -196,13 +197,21 @@ Deno.serve(async (req: Request) => {
 				headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' }
 			});
 
-		const anonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
-		const callerClient = createClient(supabaseUrl, anonKey, {
-			global: { headers: { Authorization: authHeader } }
-		});
-		const {
-			data: { user: caller }
-		} = await callerClient.auth.getUser();
+		let caller: { id: string } | null = null;
+		if (authHeader === `Bearer ${serviceRoleKey}`) {
+			const actorId = req.headers.get('x-koloti-actor-id');
+			caller = actorId ? { id: actorId } : null;
+		} else {
+			const anonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+			const callerClient = createClient(supabaseUrl, anonKey, {
+				global: { headers: { Authorization: authHeader } }
+			});
+			const {
+				data: { user }
+			} = await callerClient.auth.getUser();
+			caller = user;
+		}
+
 		if (!caller)
 			return new Response(JSON.stringify({ error: 'Unauthorized' }), {
 				status: 401,

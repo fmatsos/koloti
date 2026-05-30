@@ -1,7 +1,6 @@
 import { error, fail, redirect } from '@sveltejs/kit';
 import { createServiceClient } from '$lib/server/supabase';
 import { writeAuditLog } from '$lib/server/audit';
-import { PUBLIC_SUPABASE_URL } from '$env/static/public';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
@@ -45,17 +44,14 @@ export const actions: Actions = {
 			.from('profile')
 			.select('id, full_name, email')
 			.eq('status', 'pending');
-		const fnUrl = `${PUBLIC_SUPABASE_URL}/functions/v1/issue-activation-link`;
-
 		let sent = 0;
 		const errors: string[] = [];
 
 		for (const profile of pending ?? []) {
-			const res = await fetch(fnUrl, {
+			const res = await fetch('/api/issue-activation-link', {
 				method: 'POST',
 				headers: {
-					'Content-Type': 'application/json',
-					Authorization: `Bearer ${locals.session?.access_token ?? ''}`
+					'Content-Type': 'application/json'
 				},
 				body: JSON.stringify({ profile_id: profile.id })
 			});

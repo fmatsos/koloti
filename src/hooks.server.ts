@@ -27,22 +27,15 @@ const supabaseHandle: Handle = async ({ event, resolve }) => {
 		}
 	);
 
-	// Helper sécurisé pour récupérer la session (valide le JWT côté serveur)
-	event.locals.safeGetSession = async () => {
-		const {
-			data: { session }
-		} = await event.locals.supabase.auth.getSession();
-
-		if (!session) return { session: null, user: null };
-
+	event.locals.safeGetUser = async () => {
 		const {
 			data: { user },
 			error
 		} = await event.locals.supabase.auth.getUser();
 
-		if (error || !user) return { session: null, user: null };
+		if (error || !user) return null;
 
-		return { session, user };
+		return user;
 	};
 
 	return resolve(event, {
@@ -53,8 +46,8 @@ const supabaseHandle: Handle = async ({ event, resolve }) => {
 };
 
 const sessionHandle: Handle = async ({ event, resolve }) => {
-	const { session, user } = await event.locals.safeGetSession();
-	event.locals.session = session;
+	const user = await event.locals.safeGetUser();
+	event.locals.session = null;
 	event.locals.user = user;
 	event.locals.profile = null;
 
@@ -86,10 +79,10 @@ const authGuardHandle: Handle = async ({ event, resolve }) => {
 		return resolve(event);
 	}
 
-	const { session, user } = await event.locals.safeGetSession();
+	const user = event.locals.user;
 
-	// Pas de session → redirection vers login
-	if (!session || !user) {
+	// Pas d'utilisateur authentifié → redirection vers login
+	if (!user) {
 		throw redirect(303, `/login?redirect=${encodeURIComponent(pathname)}`);
 	}
 
