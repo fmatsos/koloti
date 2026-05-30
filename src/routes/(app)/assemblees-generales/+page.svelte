@@ -3,12 +3,14 @@
 	let { data }: { data: PageData } = $props();
 
 	const statusLabels: Record<string, string> = {
+		draft: 'Brouillon',
 		convened: 'Convoquée',
 		open: 'En cours',
 		closed: 'Clôturée',
 		archived: 'Archivée'
 	};
 	const statusColors: Record<string, string> = {
+		draft: 'badge-draft',
 		convened: 'badge-convened',
 		open: 'badge-open',
 		closed: 'badge-closed',
@@ -19,7 +21,12 @@
 <svelte:head><title>Assemblées générales — Koloti</title></svelte:head>
 
 <div class="page-header">
-	<h1>Assemblées générales</h1>
+	<div class="header-row">
+		<h1>Assemblées générales</h1>
+		{#if data.isAdminOrEditor}
+			<a href="/assemblees-generales/new" class="btn-sm">+ Nouvelle AG</a>
+		{/if}
+	</div>
 </div>
 
 {#if data.assemblees.length === 0}
@@ -67,6 +74,11 @@
 		margin: 0;
 		font-size: 1.5rem;
 	}
+	.header-row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
 	.empty {
 		color: var(--color-text-muted, #6b7280);
 	}
@@ -102,6 +114,22 @@
 	.link {
 		font-size: 0.875rem;
 		color: var(--color-primary, #1a73e8);
+	}
+	.btn-sm {
+		padding: 0.375rem 0.875rem;
+		background: var(--color-primary, #1a73e8);
+		color: white;
+		border-radius: 0.25rem;
+		font-size: 0.8125rem;
+		text-decoration: none;
+	}
+	.badge-draft {
+		display: inline-block;
+		background: #fef9c3;
+		color: #854d0e;
+		font-size: 0.75rem;
+		padding: 0.1rem 0.5rem;
+		border-radius: 9999px;
 	}
 	.badge-convened {
 		display: inline-block;
