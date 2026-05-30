@@ -10,7 +10,9 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	const supabase = createServiceClient();
 	const { data: doc } = await supabase
 		.from('document')
-		.select('id, title, type, visibility, description, year, storage_path, mime_type, size_bytes, created_at')
+		.select(
+			'id, title, type, visibility, description, year, storage_path, mime_type, size_bytes, created_at'
+		)
 		.eq('id', params.id)
 		.single();
 
@@ -28,7 +30,8 @@ export const actions: Actions = {
 			return fail(403, { error: 'Non autorisé.' });
 
 		const parsed = visibilitySchema.safeParse(Object.fromEntries(await request.formData()));
-		if (!parsed.success) return fail(400, { error: parsed.error.issues[0]?.message ?? 'Invalide.' });
+		if (!parsed.success)
+			return fail(400, { error: parsed.error.issues[0]?.message ?? 'Invalide.' });
 
 		const supabase = createServiceClient();
 		const { error: err } = await supabase

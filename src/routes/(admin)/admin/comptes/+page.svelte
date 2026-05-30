@@ -72,7 +72,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			{#each data.comptes as compte}
+			{#each data.comptes as compte (compte.id)}
 				{@const cred = Array.isArray(compte.credential) ? compte.credential[0] : compte.credential}
 				<tr class="status-{compte.status}">
 					<td>

@@ -2,7 +2,16 @@ import { createServiceClient } from '$lib/server/supabase';
 import type { Enums } from '$lib/types/database';
 import type { PageServerLoad } from './$types';
 
-const DOC_TYPES: Enums<'document_type'>[] = ['statuts', 'pv_ag', 'budget', 'facture', 'cahier_charges', 'convocation', 'courrier', 'autre'];
+const DOC_TYPES: Enums<'document_type'>[] = [
+	'statuts',
+	'pv_ag',
+	'budget',
+	'facture',
+	'cahier_charges',
+	'convocation',
+	'courrier',
+	'autre'
+];
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 	const supabase = createServiceClient();
@@ -10,12 +19,16 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	const role = locals.profile?.role ?? 'member';
 	const typeParam = url.searchParams.get('type') ?? '';
 	const yearFilter = url.searchParams.get('year') ?? '';
-	const typeFilter = DOC_TYPES.includes(typeParam as Enums<'document_type'>) ? (typeParam as Enums<'document_type'>) : null;
+	const typeFilter = DOC_TYPES.includes(typeParam as Enums<'document_type'>)
+		? (typeParam as Enums<'document_type'>)
+		: null;
 
 	const visibilities: Enums<'visibility_level'>[] =
-		role === 'admin' ? ['members', 'editors', 'admin'] :
-		role === 'editor' ? ['members', 'editors'] :
-		['members'];
+		role === 'admin'
+			? ['members', 'editors', 'admin']
+			: role === 'editor'
+				? ['members', 'editors']
+				: ['members'];
 
 	let query = supabase
 		.from('document')
@@ -28,5 +41,11 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 
 	const { data: docs } = await query;
 
-	return { session: locals.session, profile: locals.profile, docs: docs ?? [], typeFilter: typeParam, yearFilter };
+	return {
+		session: locals.session,
+		profile: locals.profile,
+		docs: docs ?? [],
+		typeFilter: typeParam,
+		yearFilter
+	};
 };

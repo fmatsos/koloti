@@ -11,9 +11,17 @@ const CORS_HEADERS = {
 };
 
 async function sendEmail(opts: {
-	smtpHost: string; smtpPort: number; smtpUser: string; smtpPass: string;
-	from: string; fromName: string; to: string; subject: string;
-	html: string; attachmentBase64: string; attachmentName: string;
+	smtpHost: string;
+	smtpPort: number;
+	smtpUser: string;
+	smtpPass: string;
+	from: string;
+	fromName: string;
+	to: string;
+	subject: string;
+	html: string;
+	attachmentBase64: string;
+	attachmentName: string;
 }): Promise<void> {
 	// Envoi via Supabase Auth admin.generateLink n'est pas adapté pour les emails transactionnels custom.
 	// On utilise fetch vers l'API Brevo/Resend (SMTP relay HTTP) si disponible.
@@ -53,9 +61,18 @@ async function sendEmail(opts: {
 }
 
 async function generateConvocationPdf(ag: {
-	title: string; type: string; mode: string; scheduled_at: string;
-	location: string | null; quorum_pct: number;
-	agenda_item: { position: number; title: string; description: string | null; requires_vote: boolean }[];
+	title: string;
+	type: string;
+	mode: string;
+	scheduled_at: string;
+	location: string | null;
+	quorum_pct: number;
+	agenda_item: {
+		position: number;
+		title: string;
+		description: string | null;
+		requires_vote: boolean;
+	}[];
 }): Promise<Uint8Array> {
 	const pdfDoc = await PDFDocument.create();
 	const page = pdfDoc.addPage([595.28, 841.89]);
@@ -69,13 +86,34 @@ async function generateConvocationPdf(ag: {
 
 	// En-tête
 	page.drawRectangle({ x: 0, y: height - 70, width, height: 70, color: primary });
-	page.drawText('CONVOCATION', { x: 40, y: height - 30, size: 18, font: fontBold, color: rgb(1, 1, 1) });
-	page.drawText('Assemblée Générale', { x: 40, y: height - 52, size: 12, font: fontReg, color: rgb(0.9, 0.95, 1) });
+	page.drawText('CONVOCATION', {
+		x: 40,
+		y: height - 30,
+		size: 18,
+		font: fontBold,
+		color: rgb(1, 1, 1)
+	});
+	page.drawText('Assemblée Générale', {
+		x: 40,
+		y: height - 52,
+		size: 12,
+		font: fontReg,
+		color: rgb(0.9, 0.95, 1)
+	});
 
-	const typeLabel = ag.type === 'ordinaire' ? 'Assemblée Générale Ordinaire' : 'Assemblée Générale Extraordinaire';
-	const modeLabel = ag.mode === 'presentiel' ? 'Présentiel' : ag.mode === 'en_ligne' ? 'En ligne' : 'Hybride';
+	const typeLabel =
+		ag.type === 'ordinaire' ? 'Assemblée Générale Ordinaire' : 'Assemblée Générale Extraordinaire';
+	const modeLabel =
+		ag.mode === 'presentiel' ? 'Présentiel' : ag.mode === 'en_ligne' ? 'En ligne' : 'Hybride';
 	const date = new Date(ag.scheduled_at);
-	const dateStr = date.toLocaleString('fr-FR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+	const dateStr = date.toLocaleString('fr-FR', {
+		weekday: 'long',
+		day: '2-digit',
+		month: 'long',
+		year: 'numeric',
+		hour: '2-digit',
+		minute: '2-digit'
+	});
 
 	let y = height - 110;
 	page.drawText(ag.title, { x: 40, y, size: 14, font: fontBold, color: dark });
@@ -98,13 +136,19 @@ async function generateConvocationPdf(ag: {
 	y -= 16;
 	page.drawLine({ start: { x: 40, y }, end: { x: width - 40, y }, thickness: 0.5, color: muted });
 	y -= 20;
-	page.drawText("ORDRE DU JOUR", { x: 40, y, size: 12, font: fontBold, color: primary });
+	page.drawText('ORDRE DU JOUR', { x: 40, y, size: 12, font: fontBold, color: primary });
 	y -= 20;
 
 	const sortedItems = [...ag.agenda_item].sort((a, b) => a.position - b.position);
 	for (const item of sortedItems) {
 		if (y < 80) break; // simple débordement prévenu
-		page.drawText(`${item.position}. ${item.title}`, { x: 40, y, size: 10, font: fontBold, color: dark });
+		page.drawText(`${item.position}. ${item.title}`, {
+			x: 40,
+			y,
+			size: 10,
+			font: fontBold,
+			color: dark
+		});
 		if (item.requires_vote) {
 			page.drawText('(vote)', { x: width - 80, y, size: 9, font: fontReg, color: muted });
 		}
@@ -121,7 +165,11 @@ async function generateConvocationPdf(ag: {
 
 	// Pied de page
 	page.drawText('Document généré par Koloti — ' + new Date().toLocaleDateString('fr-FR'), {
-		x: 40, y: 28, size: 8, font: fontReg, color: muted
+		x: 40,
+		y: 28,
+		size: 8,
+		font: fontReg,
+		color: muted
 	});
 
 	return await pdfDoc.save();
@@ -142,21 +190,48 @@ Deno.serve(async (req: Request) => {
 		});
 
 		const authHeader = req.headers.get('Authorization');
-		if (!authHeader) return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } });
+		if (!authHeader)
+			return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+				status: 401,
+				headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' }
+			});
 
 		const anonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
-		const callerClient = createClient(supabaseUrl, anonKey, { global: { headers: { Authorization: authHeader } } });
-		const { data: { user: caller } } = await callerClient.auth.getUser();
-		if (!caller) return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } });
+		const callerClient = createClient(supabaseUrl, anonKey, {
+			global: { headers: { Authorization: authHeader } }
+		});
+		const {
+			data: { user: caller }
+		} = await callerClient.auth.getUser();
+		if (!caller)
+			return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+				status: 401,
+				headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' }
+			});
 
-		const { data: callerProfile } = await adminClient.from('profile').select('role, status').eq('id', caller.id).single();
-		if (!callerProfile || !['admin', 'editor'].includes(callerProfile.role) || callerProfile.status !== 'active') {
-			return new Response(JSON.stringify({ error: 'Forbidden' }), { status: 403, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } });
+		const { data: callerProfile } = await adminClient
+			.from('profile')
+			.select('role, status')
+			.eq('id', caller.id)
+			.single();
+		if (
+			!callerProfile ||
+			!['admin', 'editor'].includes(callerProfile.role) ||
+			callerProfile.status !== 'active'
+		) {
+			return new Response(JSON.stringify({ error: 'Forbidden' }), {
+				status: 403,
+				headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' }
+			});
 		}
 
 		const body = await req.json();
 		const assemblyId = body?.assembly_id;
-		if (!assemblyId) return new Response(JSON.stringify({ error: 'assembly_id requis' }), { status: 400, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } });
+		if (!assemblyId)
+			return new Response(JSON.stringify({ error: 'assembly_id requis' }), {
+				status: 400,
+				headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' }
+			});
 
 		// Charger l'AG avec son ordre du jour
 		const { data: ag } = await adminClient
@@ -165,8 +240,16 @@ Deno.serve(async (req: Request) => {
 			.eq('id', assemblyId)
 			.single();
 
-		if (!ag) return new Response(JSON.stringify({ error: 'AG introuvable' }), { status: 404, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } });
-		if (ag.status !== 'draft') return new Response(JSON.stringify({ error: "L'AG doit être en statut draft pour être convoquée." }), { status: 400, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } });
+		if (!ag)
+			return new Response(JSON.stringify({ error: 'AG introuvable' }), {
+				status: 404,
+				headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' }
+			});
+		if (ag.status !== 'draft')
+			return new Response(
+				JSON.stringify({ error: "L'AG doit être en statut draft pour être convoquée." }),
+				{ status: 400, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } }
+			);
 
 		// Générer le PDF
 		const pdfBytes = await generateConvocationPdf({
@@ -177,13 +260,25 @@ Deno.serve(async (req: Request) => {
 		const pdfFilename = `convocation-${ag.title.replace(/\s+/g, '-').toLowerCase()}.pdf`;
 
 		// Mettre à jour le statut
-		await adminClient.from('assembly').update({ status: 'convened', convened_at: new Date().toISOString() }).eq('id', assemblyId);
+		await adminClient
+			.from('assembly')
+			.update({ status: 'convened', convened_at: new Date().toISOString() })
+			.eq('id', assemblyId);
 
 		// Récupérer tous les profils actifs
-		const { data: profiles } = await adminClient.from('profile').select('id, email, full_name').eq('status', 'active');
+		const { data: profiles } = await adminClient
+			.from('profile')
+			.select('id, email, full_name')
+			.eq('status', 'active');
 
 		const date = new Date(ag.scheduled_at);
-		const dateStr = date.toLocaleString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+		const dateStr = date.toLocaleString('fr-FR', {
+			day: '2-digit',
+			month: 'long',
+			year: 'numeric',
+			hour: '2-digit',
+			minute: '2-digit'
+		});
 
 		let sent = 0;
 		for (const profile of profiles ?? []) {
@@ -200,9 +295,13 @@ Deno.serve(async (req: Request) => {
 					smtpPort: parseInt(Deno.env.get('SMTP_PORT') ?? '587'),
 					smtpUser: Deno.env.get('SMTP_USER') ?? '',
 					smtpPass: Deno.env.get('SMTP_PASS') ?? '',
-					from: smtpFrom, fromName: smtpFromName, to: profile.email,
+					from: smtpFrom,
+					fromName: smtpFromName,
+					to: profile.email,
 					subject: `Convocation — ${ag.title} — ${dateStr}`,
-					html, attachmentBase64: pdfBase64, attachmentName: pdfFilename
+					html,
+					attachmentBase64: pdfBase64,
+					attachmentName: pdfFilename
 				});
 				sent++;
 			} catch (e) {
@@ -211,15 +310,25 @@ Deno.serve(async (req: Request) => {
 		}
 
 		await adminClient.from('audit_log').insert({
-			actor_id: caller.id, action: 'assembly.convene', entity: 'assembly', entity_id: assemblyId,
+			actor_id: caller.id,
+			action: 'assembly.convene',
+			entity: 'assembly',
+			entity_id: assemblyId,
 			payload: { recipients: sent, title: ag.title }
 		});
 
-		return new Response(JSON.stringify({ success: true, convened_at: new Date().toISOString(), recipients: sent }), {
-			status: 200, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' }
-		});
+		return new Response(
+			JSON.stringify({ success: true, convened_at: new Date().toISOString(), recipients: sent }),
+			{
+				status: 200,
+				headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' }
+			}
+		);
 	} catch (err) {
 		console.error('Erreur inattendue:', err);
-		return new Response(JSON.stringify({ error: 'Erreur interne' }), { status: 500, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } });
+		return new Response(JSON.stringify({ error: 'Erreur interne' }), {
+			status: 500,
+			headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' }
+		});
 	}
 });

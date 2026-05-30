@@ -21,7 +21,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			{#each data.proprietes as p}
+			{#each data.proprietes as p (p.id)}
 				<tr>
 					<td><strong>{p.reference}</strong></td>
 					<td>{p.address ?? '—'}</td>
@@ -36,13 +36,54 @@
 </div>
 
 <style>
-	.page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
-	h1 { margin: 0; font-size: 1.5rem; }
-	.table-wrapper { overflow-x: auto; background: white; border-radius: var(--radius, 0.375rem); border: 1px solid var(--color-border, #e5e7eb); }
-	.data-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
-	.data-table th { text-align: left; padding: 0.75rem 1rem; border-bottom: 2px solid var(--color-border, #e5e7eb); font-weight: 600; color: var(--color-text-muted, #6b7280); }
-	.data-table td { padding: 0.75rem 1rem; border-bottom: 1px solid #f3f4f6; }
-	.data-table tr:last-child td { border-bottom: none; }
-	.empty { text-align: center; color: var(--color-text-muted, #6b7280); padding: 2rem !important; }
-	.btn-primary { display: inline-block; padding: 0.5rem 1rem; background: var(--color-primary, #1a73e8); color: white; text-decoration: none; border-radius: var(--radius, 0.375rem); font-size: 0.875rem; font-weight: 500; }
+	.page-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 1.5rem;
+	}
+	h1 {
+		margin: 0;
+		font-size: 1.5rem;
+	}
+	.table-wrapper {
+		overflow-x: auto;
+		background: white;
+		border-radius: var(--radius, 0.375rem);
+		border: 1px solid var(--color-border, #e5e7eb);
+	}
+	.data-table {
+		width: 100%;
+		border-collapse: collapse;
+		font-size: 0.875rem;
+	}
+	.data-table th {
+		text-align: left;
+		padding: 0.75rem 1rem;
+		border-bottom: 2px solid var(--color-border, #e5e7eb);
+		font-weight: 600;
+		color: var(--color-text-muted, #6b7280);
+	}
+	.data-table td {
+		padding: 0.75rem 1rem;
+		border-bottom: 1px solid #f3f4f6;
+	}
+	.data-table tr:last-child td {
+		border-bottom: none;
+	}
+	.empty {
+		text-align: center;
+		color: var(--color-text-muted, #6b7280);
+		padding: 2rem !important;
+	}
+	.btn-primary {
+		display: inline-block;
+		padding: 0.5rem 1rem;
+		background: var(--color-primary, #1a73e8);
+		color: white;
+		text-decoration: none;
+		border-radius: var(--radius, 0.375rem);
+		font-size: 0.875rem;
+		font-weight: 500;
+	}
 </style>

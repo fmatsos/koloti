@@ -3,7 +3,6 @@
 
 	let { profile }: { profile: Database['public']['Tables']['profile']['Row'] | null } = $props();
 
-	const isAdmin = $derived(profile?.role === 'admin');
 	const isAdminOrEditor = $derived(profile?.role === 'admin' || profile?.role === 'editor');
 </script>
 

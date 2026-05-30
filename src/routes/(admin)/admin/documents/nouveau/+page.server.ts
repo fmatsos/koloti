@@ -13,7 +13,16 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 const metaSchema = z.object({
 	title: z.string().min(1).max(255).trim(),
-	type: z.enum(['statuts', 'pv_ag', 'budget', 'facture', 'cahier_charges', 'convocation', 'courrier', 'autre']),
+	type: z.enum([
+		'statuts',
+		'pv_ag',
+		'budget',
+		'facture',
+		'cahier_charges',
+		'convocation',
+		'courrier',
+		'autre'
+	]),
 	visibility: z.enum(['members', 'editors', 'admin']).default('members'),
 	description: z.string().max(1000).trim().optional(),
 	year: z.coerce.number().int().min(2000).max(2100).optional()
@@ -28,10 +37,12 @@ export const actions: Actions = {
 		const file = formData.get('file') as File | null;
 
 		if (!file || file.size === 0) return fail(400, { error: 'Fichier requis.' });
-		if (file.size > MAX_SIZE_BYTES) return fail(400, { error: 'Fichier trop volumineux (max 20 Mo).' });
+		if (file.size > MAX_SIZE_BYTES)
+			return fail(400, { error: 'Fichier trop volumineux (max 20 Mo).' });
 
 		const parsed = metaSchema.safeParse(Object.fromEntries(formData));
-		if (!parsed.success) return fail(400, { error: parsed.error.issues[0]?.message ?? 'Invalide.' });
+		if (!parsed.success)
+			return fail(400, { error: parsed.error.issues[0]?.message ?? 'Invalide.' });
 
 		const supabase = createServiceClient();
 

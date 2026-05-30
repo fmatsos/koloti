@@ -1,7 +1,7 @@
 <script lang="ts">
-	import type { PageData, ActionData } from './$types';
+	import type { ActionData } from './$types';
 
-	let { data, form }: { data: PageData; form: ActionData } = $props();
+	let { form }: { form: ActionData } = $props();
 
 	let fullName = $state('');
 	let email = $state('');

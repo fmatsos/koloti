@@ -37,7 +37,9 @@ export const actions: Actions = {
 
 		if (!res.ok) {
 			const body = await res.json().catch(() => ({}));
-			return fail(res.status, { error: (body as { error?: string }).error ?? 'Erreur lors de la convocation.' });
+			return fail(res.status, {
+				error: (body as { error?: string }).error ?? 'Erreur lors de la convocation.'
+			});
 		}
 
 		const result = await res.json();

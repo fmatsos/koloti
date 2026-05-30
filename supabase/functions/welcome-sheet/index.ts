@@ -4,7 +4,7 @@
 
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 import { PDFDocument, rgb, StandardFonts } from 'npm:pdf-lib@1';
-// @ts-ignore — qrcode-generator est une lib CJS sans types Deno
+// @ts-expect-error — qrcode-generator est une lib CJS sans types Deno
 import qrcode from 'npm:qrcode-generator@1';
 
 const CORS_HEADERS = {
@@ -97,7 +97,7 @@ Deno.serve(async (req: Request) => {
 			.single();
 
 		if (!link) {
-			return new Response(JSON.stringify({ error: 'Aucun lien d\'activation actif' }), {
+			return new Response(JSON.stringify({ error: "Aucun lien d'activation actif" }), {
 				status: 404,
 				headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' }
 			});
@@ -162,23 +162,43 @@ Deno.serve(async (req: Request) => {
 		const boxY = height - 200;
 		page.drawRectangle({ x: 40, y: boxY, width: width - 80, height: 100, color: lightBg });
 		page.drawText('Bienvenue dans votre espace copropriétaire', {
-			x: 56, y: boxY + 72, size: 13, font: fontBold, color: dark
+			x: 56,
+			y: boxY + 72,
+			size: 13,
+			font: fontBold,
+			color: dark
 		});
 		page.drawText(`Nom : ${targetProfile.full_name}`, {
-			x: 56, y: boxY + 50, size: 11, font: fontReg, color: dark
+			x: 56,
+			y: boxY + 50,
+			size: 11,
+			font: fontReg,
+			color: dark
 		});
 		if (credential?.login) {
 			page.drawText(`Identifiant : ${credential.login}`, {
-				x: 56, y: boxY + 32, size: 11, font: fontReg, color: dark
+				x: 56,
+				y: boxY + 32,
+				size: 11,
+				font: fontReg,
+				color: dark
 			});
 		}
 		page.drawText(`Lien valable jusqu'au : ${expiresStr}`, {
-			x: 56, y: boxY + 14, size: 11, font: fontReg, color: muted
+			x: 56,
+			y: boxY + 14,
+			size: 11,
+			font: fontReg,
+			color: muted
 		});
 
 		// Titre section QR
 		page.drawText('Scannez ce QR code pour activer votre compte :', {
-			x: 40, y: boxY - 32, size: 12, font: fontBold, color: dark
+			x: 40,
+			y: boxY - 32,
+			size: 12,
+			font: fontBold,
+			color: dark
 		});
 
 		// Dessin du QR code (grille de modules)
@@ -188,7 +208,13 @@ Deno.serve(async (req: Request) => {
 		const qrY = boxY - 32 - qrSize - 16;
 
 		// Fond blanc du QR
-		page.drawRectangle({ x: qrX - 4, y: qrY - 4, width: qrSize + 8, height: qrSize + 8, color: rgb(1, 1, 1) });
+		page.drawRectangle({
+			x: qrX - 4,
+			y: qrY - 4,
+			width: qrSize + 8,
+			height: qrSize + 8,
+			color: rgb(1, 1, 1)
+		});
 
 		for (let row = 0; row < moduleCount; row++) {
 			for (let col = 0; col < moduleCount; col++) {
@@ -206,11 +232,14 @@ Deno.serve(async (req: Request) => {
 
 		// URL textuelle sous le QR (si token disponible)
 		if (tokenClear) {
-			const urlDisplay = activationUrl.length > 70
-				? activationUrl.substring(0, 70) + '…'
-				: activationUrl;
+			const urlDisplay =
+				activationUrl.length > 70 ? activationUrl.substring(0, 70) + '…' : activationUrl;
 			page.drawText(urlDisplay, {
-				x: qrX, y: qrY - 20, size: 7.5, font: fontReg, color: muted
+				x: qrX,
+				y: qrY - 20,
+				size: 7.5,
+				font: fontReg,
+				color: muted
 			});
 		}
 
@@ -218,20 +247,33 @@ Deno.serve(async (req: Request) => {
 		const noticeY = qrY - 60;
 		page.drawText('Instructions :', { x: 40, y: noticeY, size: 11, font: fontBold, color: dark });
 		const instructions = [
-			'1. Scannez le QR code ou saisissez l\'URL ci-dessus dans votre navigateur.',
+			"1. Scannez le QR code ou saisissez l'URL ci-dessus dans votre navigateur.",
 			'2. Choisissez votre mot de passe lors de la première connexion.',
 			'3. Ce document est confidentiel — ne le partagez pas.',
-			'4. Le lien ne peut être utilisé qu\'une seule fois.',
-			'5. Après activation, connectez-vous via l\'application avec votre identifiant.'
+			"4. Le lien ne peut être utilisé qu'une seule fois.",
+			"5. Après activation, connectez-vous via l'application avec votre identifiant."
 		];
 		instructions.forEach((line, i) => {
-			page.drawText(line, { x: 56, y: noticeY - 18 - i * 17, size: 10, font: fontReg, color: dark });
+			page.drawText(line, {
+				x: 56,
+				y: noticeY - 18 - i * 17,
+				size: 10,
+				font: fontReg,
+				color: dark
+			});
 		});
 
 		// Pied de page
-		page.drawText('Généré le ' + new Date().toLocaleDateString('fr-FR') + ' · Koloti — Gestion de copropriété', {
-			x: 40, y: 28, size: 8, font: fontReg, color: muted
-		});
+		page.drawText(
+			'Généré le ' + new Date().toLocaleDateString('fr-FR') + ' · Koloti — Gestion de copropriété',
+			{
+				x: 40,
+				y: 28,
+				size: 8,
+				font: fontReg,
+				color: muted
+			}
+		);
 
 		const pdfBytes = await pdfDoc.save();
 

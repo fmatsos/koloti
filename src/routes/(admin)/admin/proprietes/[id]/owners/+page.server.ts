@@ -16,7 +16,9 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 	const { data: ownerships } = await supabase
 		.from('ownership')
-		.select('id, profile_id, start_date, end_date, is_primary, profile:profile_id(full_name, email)')
+		.select(
+			'id, profile_id, start_date, end_date, is_primary, profile:profile_id(full_name, email)'
+		)
 		.eq('property_id', params.id)
 		.order('start_date', { ascending: false });
 
@@ -26,7 +28,13 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.eq('status', 'active')
 		.order('full_name');
 
-	return { session: locals.session, profile: locals.profile, prop, ownerships: ownerships ?? [], profiles: profiles ?? [] };
+	return {
+		session: locals.session,
+		profile: locals.profile,
+		prop,
+		ownerships: ownerships ?? [],
+		profiles: profiles ?? []
+	};
 };
 
 const addSchema = z.object({
@@ -42,9 +50,11 @@ const endSchema = z.object({
 
 export const actions: Actions = {
 	add: async ({ request, locals, params }) => {
-		if (!locals.profile || !['admin', 'editor'].includes(locals.profile.role)) return fail(403, { error: 'Non autorisé.' });
+		if (!locals.profile || !['admin', 'editor'].includes(locals.profile.role))
+			return fail(403, { error: 'Non autorisé.' });
 		const parsed = addSchema.safeParse(Object.fromEntries(await request.formData()));
-		if (!parsed.success) return fail(400, { error: parsed.error.issues[0]?.message ?? 'Invalide.' });
+		if (!parsed.success)
+			return fail(400, { error: parsed.error.issues[0]?.message ?? 'Invalide.' });
 
 		const supabase = createServiceClient();
 		const { error: err } = await supabase.from('ownership').insert({
@@ -55,18 +65,34 @@ export const actions: Actions = {
 		});
 
 		if (err) return fail(400, { error: err.message });
-		await writeAuditLog({ actorId: locals.profile.id, action: 'ownership.add', entity: 'ownership', payload: { property_id: params.id, ...parsed.data } });
+		await writeAuditLog({
+			actorId: locals.profile.id,
+			action: 'ownership.add',
+			entity: 'ownership',
+			payload: { property_id: params.id, ...parsed.data }
+		});
 		return { success: true };
 	},
 
 	end: async ({ request, locals }) => {
-		if (!locals.profile || !['admin', 'editor'].includes(locals.profile.role)) return fail(403, { error: 'Non autorisé.' });
+		if (!locals.profile || !['admin', 'editor'].includes(locals.profile.role))
+			return fail(403, { error: 'Non autorisé.' });
 		const parsed = endSchema.safeParse(Object.fromEntries(await request.formData()));
-		if (!parsed.success) return fail(400, { error: parsed.error.issues[0]?.message ?? 'Invalide.' });
+		if (!parsed.success)
+			return fail(400, { error: parsed.error.issues[0]?.message ?? 'Invalide.' });
 
 		const supabase = createServiceClient();
-		await supabase.from('ownership').update({ end_date: parsed.data.end_date }).eq('id', parsed.data.ownership_id);
-		await writeAuditLog({ actorId: locals.profile.id, action: 'ownership.end', entity: 'ownership', entityId: parsed.data.ownership_id, payload: { end_date: parsed.data.end_date } });
+		await supabase
+			.from('ownership')
+			.update({ end_date: parsed.data.end_date })
+			.eq('id', parsed.data.ownership_id);
+		await writeAuditLog({
+			actorId: locals.profile.id,
+			action: 'ownership.end',
+			entity: 'ownership',
+			entityId: parsed.data.ownership_id,
+			payload: { end_date: parsed.data.end_date }
+		});
 		return { success: true };
 	}
 };

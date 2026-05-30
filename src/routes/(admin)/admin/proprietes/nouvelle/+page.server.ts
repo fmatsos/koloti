@@ -21,7 +21,8 @@ export const actions: Actions = {
 		}
 		const formData = Object.fromEntries(await request.formData());
 		const parsed = schema.safeParse(formData);
-		if (!parsed.success) return fail(400, { error: parsed.error.issues[0]?.message ?? 'Invalide.' });
+		if (!parsed.success)
+			return fail(400, { error: parsed.error.issues[0]?.message ?? 'Invalide.' });
 
 		const supabase = createServiceClient();
 		const { data: prop, error: err } = await supabase
@@ -32,7 +33,13 @@ export const actions: Actions = {
 
 		if (err || !prop) return fail(500, { error: 'Erreur création propriété.' });
 
-		await writeAuditLog({ actorId: locals.profile.id, action: 'property.create', entity: 'property', entityId: prop.id, payload: parsed.data });
+		await writeAuditLog({
+			actorId: locals.profile.id,
+			action: 'property.create',
+			entity: 'property',
+			entityId: prop.id,
+			payload: parsed.data
+		});
 		throw redirect(303, `/admin/proprietes/${prop.id}`);
 	}
 };
