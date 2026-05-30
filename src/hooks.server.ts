@@ -103,7 +103,7 @@ const authGuardHandle: Handle = async ({ event, resolve }) => {
 	// Zone admin — uniquement admin et éditeur
 	if (pathname.startsWith('/admin')) {
 		if (!profile || !['admin', 'editor'].includes(profile.role)) {
-			throw redirect(303, '/app?error=forbidden');
+			throw redirect(303, '/app/?error=forbidden');
 		}
 	}
 
