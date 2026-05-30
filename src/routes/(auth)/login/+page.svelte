@@ -10,6 +10,7 @@
 
 	const errorMessages: Record<string, string> = {
 		account_inactive: "Votre compte est désactivé. Contactez l'administrateur.",
+		account_pending: "Votre compte est en attente d'activation. Consultez votre email.",
 		forbidden: 'Accès non autorisé.'
 	};
 
