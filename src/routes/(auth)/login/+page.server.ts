@@ -56,7 +56,7 @@ export const actions: Actions = {
 
 		const profile = Array.isArray(credential.profile) ? credential.profile[0] : credential.profile;
 
-		if (!profile || profile.status === 'inactive') {
+		if (!profile || profile.status === 'inactive' || profile.status === 'pending') {
 			return fail(400, { error: 'Identifiants incorrects.' });
 		}
 
@@ -102,7 +102,7 @@ export const actions: Actions = {
 
 		const profile = Array.isArray(credential.profile) ? credential.profile[0] : credential.profile;
 
-		if (!profile || profile.status === 'inactive') {
+		if (!profile || profile.status === 'inactive' || profile.status === 'pending') {
 			return { success: true };
 		}
 
