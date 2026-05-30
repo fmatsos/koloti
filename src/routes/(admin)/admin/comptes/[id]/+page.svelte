@@ -38,6 +38,7 @@
 		{:else if form.action === 'role'}Rôle mis à jour.
 		{:else if form.action === 'status'}Statut mis à jour.
 		{:else if form.action === 'reissue'}Nouveau lien d'activation envoyé.
+		{:else if form.action === 'login'}Login mis à jour.{compte.status === 'active' ? " L'utilisateur a été notifié par email." : ''}
 		{/if}
 	</div>
 {/if}
@@ -72,6 +73,36 @@
 
 	<!-- Actions -->
 	<div class="actions-col">
+		<!-- Modifier le login -->
+		<div class="card">
+			<h3>Modifier le login</h3>
+			<form method="POST" action="?/updateLogin">
+				<div class="field">
+					<label for="login">Identifiant</label>
+					<input
+						id="login"
+						name="login"
+						type="text"
+						value={cred?.login ?? ''}
+						pattern="[a-z0-9]+"
+						minlength="3"
+						maxlength="20"
+						required
+					/>
+					<span class="hint">3–20 caractères alphanumériques minuscules (a-z, 0-9).</span>
+				</div>
+				<div class="login-actions">
+					<button type="submit" class="btn-sm">Enregistrer</button>
+					<button
+						type="submit"
+						form="regenerate-form"
+						class="btn-sm btn-secondary-outline"
+					>Régénérer (6 car.)</button>
+				</div>
+			</form>
+			<form id="regenerate-form" method="POST" action="?/regenerateLogin" style="display:none"></form>
+		</div>
+
 		<!-- Modifier email -->
 		<div class="card">
 			<h3>Modifier l'email</h3>
@@ -255,6 +286,16 @@
 	}
 	.btn-danger {
 		background: #dc2626;
+	}
+	.btn-secondary-outline {
+		background: white;
+		color: #374151;
+		border: 1px solid #d1d5db;
+	}
+	.login-actions {
+		display: flex;
+		gap: 0.5rem;
+		flex-wrap: wrap;
 	}
 
 	.alert {

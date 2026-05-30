@@ -31,7 +31,7 @@
 <div class="page-header">
 	<div class="header-row">
 		<h1>Documents</h1>
-		<a href="/admin/documents/nouveau" class="btn-sm">+ Téléverser</a>
+		<a href="/admin/documents/new" class="btn-sm">+ Téléverser</a>
 	</div>
 </div>
 

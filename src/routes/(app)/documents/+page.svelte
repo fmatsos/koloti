@@ -63,7 +63,7 @@
 							· {new Date(doc.created_at).toLocaleDateString('fr-FR')}
 						</div>
 					</div>
-					<a href="/app/documents/{doc.id}/download" class="btn-dl" target="_blank" rel="noopener">
+					<a href="/documents/{doc.id}/download" class="btn-dl" target="_blank" rel="noopener">
 						Télécharger
 					</a>
 				</li>

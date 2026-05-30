@@ -10,9 +10,9 @@
 	<a href="/app/" class="nav-brand">Koloti</a>
 
 	<ul class="nav-links" role="list">
-		<li><a href="/app/info">Informations</a></li>
-		<li><a href="/app/documents">Documents</a></li>
-		<li><a href="/app/ag">Assemblées</a></li>
+		<li><a href="/informations">Informations</a></li>
+		<li><a href="/documents">Documents</a></li>
+		<li><a href="/assemblees-generales">Assemblées</a></li>
 
 		{#if isAdminOrEditor}
 			<li class="nav-separator" aria-hidden="true"></li>
@@ -23,10 +23,10 @@
 				<a href="/admin/proprietes" class="nav-admin">Propriétés</a>
 			</li>
 			<li>
-				<a href="/admin/documents/nouveau" class="nav-admin">+ Document</a>
+				<a href="/admin/documents/new" class="nav-admin">+ Document</a>
 			</li>
 			<li>
-				<a href="/admin/ag/nouvelle" class="nav-admin">+ AG</a>
+				<a href="/admin/assemblees-generales/new" class="nav-admin">+ AG</a>
 			</li>
 		{/if}
 	</ul>

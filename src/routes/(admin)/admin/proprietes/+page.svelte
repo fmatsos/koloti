@@ -7,7 +7,7 @@
 
 <div class="page-header">
 	<h1>Propriétés / Lots</h1>
-	<a href="/admin/proprietes/nouvelle" class="btn-primary">+ Nouvelle propriété</a>
+	<a href="/admin/proprietes/new" class="btn-primary">+ Nouvelle propriété</a>
 </div>
 
 <div class="table-wrapper">

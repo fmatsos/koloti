@@ -31,7 +31,7 @@
 
 <div class="page-header">
 	<h1>Gestion des comptes</h1>
-	<a href="/admin/comptes/nouveau" class="btn-primary">+ Nouveau compte</a>
+	<a href="/admin/comptes/new" class="btn-primary">+ Nouveau compte</a>
 </div>
 
 <div class="filters">

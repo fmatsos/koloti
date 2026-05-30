@@ -2,6 +2,8 @@ import { error, fail, redirect } from '@sveltejs/kit';
 import { z } from 'zod/v4';
 import { createServiceClient } from '$lib/server/supabase';
 import { writeAuditLog } from '$lib/server/audit';
+import { generateUniqueLogin } from '$lib/server/generate-login';
+import { sendMail } from '$lib/server/email';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals, params }) => {
@@ -31,6 +33,14 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 
 const updateEmailSchema = z.object({
 	email: z.string().email().max(200).toLowerCase().trim()
+});
+
+const updateLoginSchema = z.object({
+	login: z
+		.string()
+		.min(3, 'Le login doit faire au moins 3 caractères.')
+		.max(20, 'Le login ne peut pas dépasser 20 caractères.')
+		.regex(/^[a-z0-9]+$/, 'Le login ne peut contenir que des lettres minuscules et des chiffres.')
 });
 
 const updateRoleSchema = z.object({
@@ -130,5 +140,96 @@ export const actions: Actions = {
 		}
 
 		return { success: true, action: 'reissue' };
+	},
+
+	updateLogin: async ({ request, locals, params }) => {
+		if (!locals.profile || locals.profile.role !== 'admin')
+			return fail(403, { error: 'Non autorisé.' });
+
+		const formData = Object.fromEntries(await request.formData());
+		const parsed = updateLoginSchema.safeParse(formData);
+		if (!parsed.success) return fail(400, { error: parsed.error.issues[0]?.message ?? 'Login invalide.' });
+
+		const { login } = parsed.data;
+		const supabase = createServiceClient();
+
+		// Vérifier l'unicité (hors l'utilisateur courant)
+		const { data: conflict } = await supabase
+			.from('credential')
+			.select('profile_id')
+			.eq('login', login)
+			.neq('profile_id', params.id)
+			.maybeSingle();
+
+		if (conflict) return fail(400, { error: 'Ce login est déjà utilisé par un autre compte.' });
+
+		await supabase.from('credential').update({ login }).eq('profile_id', params.id);
+
+		// Notifier l'utilisateur si son compte est actif
+		const { data: profile } = await supabase
+			.from('profile')
+			.select('email, full_name, status')
+			.eq('id', params.id)
+			.single();
+
+		if (profile?.status === 'active') {
+			try {
+				await sendMail({
+					to: profile.email,
+					subject: 'Votre identifiant de connexion a changé',
+					text: `Bonjour ${profile.full_name},\n\nVotre identifiant de connexion a été modifié par un administrateur.\n\nNouvel identifiant : ${login}\n\nSi vous n'êtes pas à l'origine de cette modification, contactez votre administrateur.`
+				});
+			} catch (e) {
+				console.error('Erreur envoi email login:', e);
+			}
+		}
+
+		await writeAuditLog({
+			actorId: locals.profile.id,
+			action: 'account.update_login',
+			entity: 'profile',
+			entityId: params.id,
+			payload: { login }
+		});
+
+		return { success: true, action: 'login' };
+	},
+
+	regenerateLogin: async ({ locals, params }) => {
+		if (!locals.profile || locals.profile.role !== 'admin')
+			return fail(403, { error: 'Non autorisé.' });
+
+		const supabase = createServiceClient();
+		const login = await generateUniqueLogin(supabase);
+
+		await supabase.from('credential').update({ login }).eq('profile_id', params.id);
+
+		const { data: profile } = await supabase
+			.from('profile')
+			.select('email, full_name, status')
+			.eq('id', params.id)
+			.single();
+
+		if (profile?.status === 'active') {
+			try {
+				await sendMail({
+					to: profile.email,
+					subject: 'Votre identifiant de connexion a changé',
+					text: `Bonjour ${profile.full_name},\n\nVotre identifiant de connexion a été modifié par un administrateur.\n\nNouvel identifiant : ${login}\n\nSi vous n'êtes pas à l'origine de cette modification, contactez votre administrateur.`
+				});
+			} catch (e) {
+				console.error('Erreur envoi email login:', e);
+			}
+		}
+
+		await writeAuditLog({
+			actorId: locals.profile.id,
+			action: 'account.regenerate_login',
+			entity: 'profile',
+			entityId: params.id,
+			payload: { login }
+		});
+
+		return { success: true, action: 'login' };
 	}
 };

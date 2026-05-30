@@ -50,7 +50,7 @@
 				<dd>{doc.description}</dd>{/if}
 		</dl>
 
-		<a href="/app/documents/{doc.id}/download" class="btn-download" target="_blank" rel="noopener">
+		<a href="/documents/{doc.id}/download" class="btn-download" target="_blank" rel="noopener">
 			Télécharger
 		</a>
 	</div>

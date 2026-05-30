@@ -13,17 +13,17 @@
 	<p class="subtitle">Espace ASL — plateforme de gestion du lotissement</p>
 
 	<div class="shortcuts">
-		<a href="/app/info" class="card">
+		<a href="/informations" class="card">
 			<span class="card-icon">📢</span>
 			<strong>Informations</strong>
 			<span>Actualités et annonces</span>
 		</a>
-		<a href="/app/documents" class="card">
+		<a href="/documents" class="card">
 			<span class="card-icon">📄</span>
 			<strong>Documents</strong>
 			<span>Statuts, PV, budgets…</span>
 		</a>
-		<a href="/app/ag" class="card">
+		<a href="/assemblees-generales" class="card">
 			<span class="card-icon">🏛️</span>
 			<strong>Assemblées générales</strong>
 			<span>Convocations et émargement</span>

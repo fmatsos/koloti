@@ -1,6 +1,8 @@
 import { fail, redirect } from '@sveltejs/kit';
 import { z } from 'zod/v4';
 import type { Actions, PageServerLoad } from './$types';
+import { createServiceClient } from '$lib/server/supabase';
+import { PUBLIC_APP_URL } from '$env/static/public';
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 	const { session } = await locals.safeGetSession();
@@ -36,7 +38,9 @@ export const actions: Actions = {
 		const { login, password, redirectTo } = parsed.data;
 
 		// Résoudre le login en email via la table credential
-		const { data: credential } = await locals.supabase
+		// Service role requis : l'utilisateur n'est pas encore authentifié, les RLS bloquent anon
+		const serviceClient = createServiceClient();
+		const { data: credential } = await serviceClient
 			.from('credential')
 			.select('profile_id, profile:profile_id(email, status)')
 			.eq('login', login)
@@ -79,15 +83,16 @@ export const actions: Actions = {
 		const { login, redirectTo } = parsed.data;
 
 		// Résoudre le login en email
-		const { data: credential } = await locals.supabase
+		// Service role requis : l'utilisateur n'est pas encore authentifié, les RLS bloquent anon
+		const serviceClient = createServiceClient();
+		const { data: credential } = await serviceClient
 			.from('credential')
 			.select('profile_id, profile:profile_id(email, status)')
 			.eq('login', login)
 			.single();
 
 		if (!credential || !credential.profile) {
-			// Réponse uniforme — pas d'énumération
-			return { success: true };
+			return fail(400, { error: 'Login inconnu. Vérifiez votre identifiant ou contactez un administrateur.' });
 		}
 
 		const profile = Array.isArray(credential.profile) ? credential.profile[0] : credential.profile;
@@ -99,7 +104,7 @@ export const actions: Actions = {
 		await locals.supabase.auth.signInWithOtp({
 			email: profile.email,
 			options: {
-				emailRedirectTo: `${redirectTo}`
+				emailRedirectTo: `${PUBLIC_APP_URL}/auth/callback?next=${encodeURIComponent(redirectTo)}`
 			}
 		});
 

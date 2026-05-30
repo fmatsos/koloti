@@ -5,7 +5,7 @@ import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/publi
 import { createServiceClient } from '$lib/server/supabase';
 
 // Routes accessibles sans authentification
-const PUBLIC_ROUTES = ['/login', '/activate', '/magic-link'];
+const PUBLIC_ROUTES = ['/login', '/activate', '/magic-link', '/auth/callback'];
 
 function isPublicRoute(pathname: string): boolean {
 	return PUBLIC_ROUTES.some((route) => pathname.startsWith(route));
