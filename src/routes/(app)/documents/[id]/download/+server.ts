@@ -30,7 +30,8 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		.from(STORAGE_BUCKET)
 		.createSignedUrl(doc.storage_path, SIGNED_URL_EXPIRY, { download: doc.title });
 
-	if (signErr || !signed?.signedUrl) throw error(500, 'Impossible de générer le lien de téléchargement');
+	if (signErr || !signed?.signedUrl)
+		throw error(500, 'Impossible de générer le lien de téléchargement');
 
 	return new Response(null, {
 		status: 302,

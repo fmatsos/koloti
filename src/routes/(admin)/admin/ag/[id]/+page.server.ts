@@ -32,24 +32,39 @@ export const actions: Actions = {
 			return fail(403, { error: 'Non autorisé.' });
 
 		const supabase = createServiceClient();
-		const { data: current } = await supabase.from('assembly').select('status').eq('id', params.id).single();
-		if (current?.status !== 'draft') return fail(400, { error: 'Seule une AG en brouillon peut être modifiée.' });
+		const { data: current } = await supabase
+			.from('assembly')
+			.select('status')
+			.eq('id', params.id)
+			.single();
+		if (current?.status !== 'draft')
+			return fail(400, { error: 'Seule une AG en brouillon peut être modifiée.' });
 
 		const parsed = editSchema.safeParse(Object.fromEntries(await request.formData()));
-		if (!parsed.success) return fail(400, { error: parsed.error.issues[0]?.message ?? 'Invalide.' });
+		if (!parsed.success)
+			return fail(400, { error: parsed.error.issues[0]?.message ?? 'Invalide.' });
 
-		const { error: err } = await supabase.from('assembly').update({
-			title: parsed.data.title,
-			type: parsed.data.type,
-			mode: parsed.data.mode,
-			scheduled_at: parsed.data.scheduled_at,
-			location: parsed.data.location || null,
-			quorum_pct: parsed.data.quorum_pct
-		}).eq('id', params.id);
+		const { error: err } = await supabase
+			.from('assembly')
+			.update({
+				title: parsed.data.title,
+				type: parsed.data.type,
+				mode: parsed.data.mode,
+				scheduled_at: parsed.data.scheduled_at,
+				location: parsed.data.location || null,
+				quorum_pct: parsed.data.quorum_pct
+			})
+			.eq('id', params.id);
 
 		if (err) return fail(400, { error: err.message });
 
-		await writeAuditLog({ actorId: locals.profile.id, action: 'assembly.update', entity: 'assembly', entityId: params.id, payload: { title: parsed.data.title } });
+		await writeAuditLog({
+			actorId: locals.profile.id,
+			action: 'assembly.update',
+			entity: 'assembly',
+			entityId: params.id,
+			payload: { title: parsed.data.title }
+		});
 		return { success: true };
 	},
 
@@ -58,17 +73,31 @@ export const actions: Actions = {
 			return fail(403, { error: 'Non autorisé.' });
 
 		const supabase = createServiceClient();
-		const { data: current } = await supabase.from('assembly').select('status').eq('id', params.id).single();
-		if (current?.status !== 'convened') return fail(400, { error: "L'AG doit être convoquée avant d'être ouverte." });
+		const { data: current } = await supabase
+			.from('assembly')
+			.select('status')
+			.eq('id', params.id)
+			.single();
+		if (current?.status !== 'convened')
+			return fail(400, { error: "L'AG doit être convoquée avant d'être ouverte." });
 
-		const { error: err } = await supabase.from('assembly').update({
-			status: 'open',
-			opened_at: new Date().toISOString()
-		}).eq('id', params.id);
+		const { error: err } = await supabase
+			.from('assembly')
+			.update({
+				status: 'open',
+				opened_at: new Date().toISOString()
+			})
+			.eq('id', params.id);
 
 		if (err) return fail(400, { error: err.message });
 
-		await writeAuditLog({ actorId: locals.profile.id, action: 'assembly.open', entity: 'assembly', entityId: params.id, payload: {} });
+		await writeAuditLog({
+			actorId: locals.profile.id,
+			action: 'assembly.open',
+			entity: 'assembly',
+			entityId: params.id,
+			payload: {}
+		});
 		return { success: true };
 	}
 };

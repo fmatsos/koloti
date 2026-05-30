@@ -14,12 +14,15 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.single();
 
 	if (!ag) throw error(404, 'Assemblée introuvable');
-	if (ag.status !== 'open') throw error(400, "L'émargement n'est disponible que si l'AG est en cours.");
+	if (ag.status !== 'open')
+		throw error(400, "L'émargement n'est disponible que si l'AG est en cours.");
 
 	// Propriétés avec propriétaires actifs
 	const { data: properties } = await supabase
 		.from('property')
-		.select('id, reference, vote_weight, ownership(profile_id, is_primary, end_date, profile:profile_id(full_name))')
+		.select(
+			'id, reference, vote_weight, ownership(profile_id, is_primary, end_date, profile:profile_id(full_name))'
+		)
 		.order('reference');
 
 	// Émargements déjà enregistrés
@@ -34,9 +37,20 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		const ownerships = Array.isArray(p.ownership) ? p.ownership : [];
 		const active = ownerships.filter((o) => !o.end_date);
 		const primary = active.find((o: { is_primary: boolean }) => o.is_primary) ?? active[0];
-		const profile = primary ? (Array.isArray(primary.profile) ? primary.profile[0] : primary.profile) : null;
+		const profile = primary
+			? Array.isArray(primary.profile)
+				? primary.profile[0]
+				: primary.profile
+			: null;
 		const attendance = attendanceMap.get(p.id);
-		return { id: p.id, reference: p.reference, vote_weight: p.vote_weight, ownerName: profile?.full_name ?? '—', ownerId: primary?.profile_id ?? null, attendance };
+		return {
+			id: p.id,
+			reference: p.reference,
+			vote_weight: p.vote_weight,
+			ownerName: profile?.full_name ?? '—',
+			ownerId: primary?.profile_id ?? null,
+			attendance
+		};
 	});
 
 	// Calcul quorum
@@ -65,20 +79,28 @@ export const actions: Actions = {
 			return fail(403, { error: 'Non autorisé.' });
 
 		const parsed = attendSchema.safeParse(Object.fromEntries(await request.formData()));
-		if (!parsed.success) return fail(400, { error: parsed.error.issues[0]?.message ?? 'Invalide.' });
+		if (!parsed.success)
+			return fail(400, { error: parsed.error.issues[0]?.message ?? 'Invalide.' });
 
 		const supabase = createServiceClient();
-		const { data: ag } = await supabase.from('assembly').select('status').eq('id', params.id).single();
+		const { data: ag } = await supabase
+			.from('assembly')
+			.select('status')
+			.eq('id', params.id)
+			.single();
 		if (ag?.status !== 'open') return fail(400, { error: "L'AG n'est pas ouverte." });
 
 		// Upsert (unique par assembly_id, property_id)
-		const { error: err } = await supabase.from('attendance').upsert({
-			assembly_id: params.id,
-			property_id: parsed.data.property_id,
-			profile_id: parsed.data.profile_id,
-			mode: parsed.data.mode,
-			recorded_at: new Date().toISOString()
-		}, { onConflict: 'assembly_id,property_id' });
+		const { error: err } = await supabase.from('attendance').upsert(
+			{
+				assembly_id: params.id,
+				property_id: parsed.data.property_id,
+				profile_id: parsed.data.profile_id,
+				mode: parsed.data.mode,
+				recorded_at: new Date().toISOString()
+			},
+			{ onConflict: 'assembly_id,property_id' }
+		);
 
 		if (err) return fail(400, { error: err.message });
 
@@ -86,7 +108,11 @@ export const actions: Actions = {
 			actorId: locals.profile.id,
 			action: 'attendance.record',
 			entity: 'attendance',
-			payload: { assembly_id: params.id, property_id: parsed.data.property_id, mode: parsed.data.mode }
+			payload: {
+				assembly_id: params.id,
+				property_id: parsed.data.property_id,
+				mode: parsed.data.mode
+			}
 		});
 		return { success: true };
 	}

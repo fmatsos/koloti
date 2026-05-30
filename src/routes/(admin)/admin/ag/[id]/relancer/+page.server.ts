@@ -6,9 +6,14 @@ import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const supabase = createServiceClient();
-	const { data: ag } = await supabase.from('assembly').select('id, title, status').eq('id', params.id).single();
+	const { data: ag } = await supabase
+		.from('assembly')
+		.select('id, title, status')
+		.eq('id', params.id)
+		.single();
 	if (!ag) throw error(404, 'Assemblée introuvable');
-	if (ag.status !== 'convened') throw error(400, "L'AG doit être convoquée pour relancer les comptes.");
+	if (ag.status !== 'convened')
+		throw error(400, "L'AG doit être convoquée pour relancer les comptes.");
 
 	const { data: pending } = await supabase
 		.from('profile')
@@ -25,10 +30,17 @@ export const actions: Actions = {
 			return fail(403, { error: 'Réservé aux administrateurs.' });
 
 		const supabase = createServiceClient();
-		const { data: ag } = await supabase.from('assembly').select('status').eq('id', params.id).single();
+		const { data: ag } = await supabase
+			.from('assembly')
+			.select('status')
+			.eq('id', params.id)
+			.single();
 		if (ag?.status !== 'convened') return fail(400, { error: 'AG non convoquée.' });
 
-		const { data: pending } = await supabase.from('profile').select('id, full_name, email').eq('status', 'pending');
+		const { data: pending } = await supabase
+			.from('profile')
+			.select('id, full_name, email')
+			.eq('status', 'pending');
 		const fnUrl = `${PUBLIC_SUPABASE_URL}/functions/v1/issue-activation-link`;
 
 		let sent = 0;

@@ -4,7 +4,10 @@ import { computeQuorum } from './quorum';
 describe('computeQuorum', () => {
 	it('atteint le quorum quand exactement au seuil', () => {
 		const result = computeQuorum({
-			attendances: [{ mode: 'present', vote_weight: 50 }, { mode: 'present', vote_weight: 50 }],
+			attendances: [
+				{ mode: 'present', vote_weight: 50 },
+				{ mode: 'present', vote_weight: 50 }
+			],
 			totalVoteWeight: 200,
 			quorumPct: 50
 		});

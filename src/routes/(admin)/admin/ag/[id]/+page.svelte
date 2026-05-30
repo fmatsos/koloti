@@ -5,7 +5,11 @@
 	const agendaItems = $derived(Array.isArray(ag.agenda_item) ? ag.agenda_item : []);
 
 	const statusLabels: Record<string, string> = {
-		draft: 'Brouillon', convened: 'Convoquée', open: 'En cours', closed: 'Clôturée', archived: 'Archivée'
+		draft: 'Brouillon',
+		convened: 'Convoquée',
+		open: 'En cours',
+		closed: 'Clôturée',
+		archived: 'Archivée'
 	};
 
 	function formatDatetimeLocal(iso: string): string {
@@ -41,7 +45,9 @@
 						<label for="type">Type *</label>
 						<select id="type" name="type">
 							<option value="ordinaire" selected={ag.type === 'ordinaire'}>Ordinaire</option>
-							<option value="extraordinaire" selected={ag.type === 'extraordinaire'}>Extraordinaire</option>
+							<option value="extraordinaire" selected={ag.type === 'extraordinaire'}
+								>Extraordinaire</option
+							>
 						</select>
 					</div>
 					<div class="field">
@@ -55,25 +61,50 @@
 				</div>
 				<div class="field">
 					<label for="scheduled_at">Date et heure *</label>
-					<input id="scheduled_at" name="scheduled_at" type="datetime-local" value={formatDatetimeLocal(ag.scheduled_at)} required />
+					<input
+						id="scheduled_at"
+						name="scheduled_at"
+						type="datetime-local"
+						value={formatDatetimeLocal(ag.scheduled_at)}
+						required
+					/>
 				</div>
 				<div class="field">
 					<label for="location">Lieu</label>
-					<input id="location" name="location" type="text" value={ag.location ?? ''} maxlength="300" />
+					<input
+						id="location"
+						name="location"
+						type="text"
+						value={ag.location ?? ''}
+						maxlength="300"
+					/>
 				</div>
 				<div class="field">
 					<label for="quorum_pct">Quorum (%)</label>
-					<input id="quorum_pct" name="quorum_pct" type="number" min="1" max="100" value={ag.quorum_pct} required />
+					<input
+						id="quorum_pct"
+						name="quorum_pct"
+						type="number"
+						min="1"
+						max="100"
+						value={ag.quorum_pct}
+						required
+					/>
 				</div>
 				<button type="submit" class="btn-sm">Enregistrer</button>
 			</form>
 		{:else}
 			<dl>
-				<dt>Type</dt><dd>{ag.type === 'ordinaire' ? 'Ordinaire' : 'Extraordinaire'}</dd>
-				<dt>Mode</dt><dd>{ag.mode}</dd>
-				<dt>Date</dt><dd>{new Date(ag.scheduled_at).toLocaleString('fr-FR')}</dd>
-				<dt>Lieu</dt><dd>{ag.location ?? '—'}</dd>
-				<dt>Quorum</dt><dd>{ag.quorum_pct} %</dd>
+				<dt>Type</dt>
+				<dd>{ag.type === 'ordinaire' ? 'Ordinaire' : 'Extraordinaire'}</dd>
+				<dt>Mode</dt>
+				<dd>{ag.mode}</dd>
+				<dt>Date</dt>
+				<dd>{new Date(ag.scheduled_at).toLocaleString('fr-FR')}</dd>
+				<dt>Lieu</dt>
+				<dd>{ag.location ?? '—'}</dd>
+				<dt>Quorum</dt>
+				<dd>{ag.quorum_pct} %</dd>
 			</dl>
 		{/if}
 	</div>
@@ -108,7 +139,7 @@
 	<div class="card mt">
 		<h2>Ordre du jour</h2>
 		<ol class="agenda-list">
-			{#each agendaItems as item}
+			{#each agendaItems as item (item.id)}
 				<li>
 					<strong>{item.title}</strong>
 					{#if item.requires_vote}<span class="badge-vote">Vote</span>{/if}
@@ -120,35 +151,182 @@
 {/if}
 
 <style>
-	.page-header { margin-bottom: 1.5rem; }
-	.back-link { display: inline-block; margin-bottom: 0.5rem; font-size: 0.875rem; text-decoration: none; color: var(--color-text-muted, #6b7280); }
-	.header-row { display: flex; align-items: center; gap: 0.75rem; }
-	h1 { margin: 0; font-size: 1.5rem; }
-	h2 { margin: 0 0 1rem; font-size: 1rem; }
-	.detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: start; }
-	@media (max-width: 640px) { .detail-grid { grid-template-columns: 1fr; } }
-	.card { background: white; border-radius: var(--radius, 0.375rem); border: 1px solid var(--color-border, #e5e7eb); padding: 1.25rem; }
-	.mt { margin-top: 1rem; }
-	.field { margin-bottom: 0.75rem; }
-	.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
-	label { display: block; font-size: 0.8125rem; font-weight: 500; margin-bottom: 0.25rem; }
-	input[type="text"], input[type="datetime-local"], input[type="number"], select { width: 100%; padding: 0.4rem 0.625rem; border: 1px solid var(--color-border, #e5e7eb); border-radius: 0.25rem; font-size: 0.875rem; box-sizing: border-box; }
-	.btn-sm { padding: 0.375rem 0.875rem; background: var(--color-primary, #1a73e8); color: white; border: none; border-radius: 0.25rem; font-size: 0.8125rem; cursor: pointer; }
-	dl { display: grid; grid-template-columns: auto 1fr; gap: 0.25rem 1rem; font-size: 0.875rem; margin: 0; }
-	dt { font-weight: 500; color: var(--color-text-muted, #6b7280); }
-	dd { margin: 0; }
-	.action-list { display: flex; flex-direction: column; gap: 0.5rem; }
-	.btn-action { display: block; padding: 0.5rem 0.875rem; background: #f3f4f6; color: var(--color-text, #111827); border-radius: 0.25rem; font-size: 0.875rem; text-decoration: none; text-align: center; }
-	.btn-action-green { width: 100%; padding: 0.5rem 0.875rem; background: #16a34a; color: white; border: none; border-radius: 0.25rem; font-size: 0.875rem; cursor: pointer; }
-	.badge-status { font-size: 0.75rem; padding: 0.2rem 0.6rem; border-radius: 9999px; }
-	.badge-draft { background: #fef9c3; color: #854d0e; }
-	.badge-convened { background: #dbeafe; color: #1e40af; }
-	.badge-open { background: #dcfce7; color: #15803d; }
-	.badge-closed, .badge-archived { background: #f3f4f6; color: #6b7280; }
-	.agenda-list { padding-left: 1.25rem; margin: 0; font-size: 0.875rem; }
-	.agenda-list li { padding: 0.375rem 0; }
-	.item-desc { margin: 0.125rem 0 0; color: var(--color-text-muted, #6b7280); font-size: 0.8125rem; }
-	.badge-vote { display: inline-block; background: #ede9fe; color: #6d28d9; font-size: 0.7rem; padding: 0.1rem 0.4rem; border-radius: 9999px; margin-left: 0.375rem; }
-	.alert-success { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; padding: 0.75rem 1rem; border-radius: var(--radius, 0.375rem); margin-bottom: 1rem; font-size: 0.875rem; }
-	.alert-error { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; padding: 0.75rem 1rem; border-radius: var(--radius, 0.375rem); margin-bottom: 1rem; font-size: 0.875rem; }
+	.page-header {
+		margin-bottom: 1.5rem;
+	}
+	.back-link {
+		display: inline-block;
+		margin-bottom: 0.5rem;
+		font-size: 0.875rem;
+		text-decoration: none;
+		color: var(--color-text-muted, #6b7280);
+	}
+	.header-row {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+	}
+	h1 {
+		margin: 0;
+		font-size: 1.5rem;
+	}
+	h2 {
+		margin: 0 0 1rem;
+		font-size: 1rem;
+	}
+	.detail-grid {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 1rem;
+		align-items: start;
+	}
+	@media (max-width: 640px) {
+		.detail-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+	.card {
+		background: white;
+		border-radius: var(--radius, 0.375rem);
+		border: 1px solid var(--color-border, #e5e7eb);
+		padding: 1.25rem;
+	}
+	.mt {
+		margin-top: 1rem;
+	}
+	.field {
+		margin-bottom: 0.75rem;
+	}
+	.field-row {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 0.75rem;
+	}
+	label {
+		display: block;
+		font-size: 0.8125rem;
+		font-weight: 500;
+		margin-bottom: 0.25rem;
+	}
+	input[type='text'],
+	input[type='datetime-local'],
+	input[type='number'],
+	select {
+		width: 100%;
+		padding: 0.4rem 0.625rem;
+		border: 1px solid var(--color-border, #e5e7eb);
+		border-radius: 0.25rem;
+		font-size: 0.875rem;
+		box-sizing: border-box;
+	}
+	.btn-sm {
+		padding: 0.375rem 0.875rem;
+		background: var(--color-primary, #1a73e8);
+		color: white;
+		border: none;
+		border-radius: 0.25rem;
+		font-size: 0.8125rem;
+		cursor: pointer;
+	}
+	dl {
+		display: grid;
+		grid-template-columns: auto 1fr;
+		gap: 0.25rem 1rem;
+		font-size: 0.875rem;
+		margin: 0;
+	}
+	dt {
+		font-weight: 500;
+		color: var(--color-text-muted, #6b7280);
+	}
+	dd {
+		margin: 0;
+	}
+	.action-list {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+	.btn-action {
+		display: block;
+		padding: 0.5rem 0.875rem;
+		background: #f3f4f6;
+		color: var(--color-text, #111827);
+		border-radius: 0.25rem;
+		font-size: 0.875rem;
+		text-decoration: none;
+		text-align: center;
+	}
+	.btn-action-green {
+		width: 100%;
+		padding: 0.5rem 0.875rem;
+		background: #16a34a;
+		color: white;
+		border: none;
+		border-radius: 0.25rem;
+		font-size: 0.875rem;
+		cursor: pointer;
+	}
+	.badge-status {
+		font-size: 0.75rem;
+		padding: 0.2rem 0.6rem;
+		border-radius: 9999px;
+	}
+	.badge-draft {
+		background: #fef9c3;
+		color: #854d0e;
+	}
+	.badge-convened {
+		background: #dbeafe;
+		color: #1e40af;
+	}
+	.badge-open {
+		background: #dcfce7;
+		color: #15803d;
+	}
+	.badge-closed,
+	.badge-archived {
+		background: #f3f4f6;
+		color: #6b7280;
+	}
+	.agenda-list {
+		padding-left: 1.25rem;
+		margin: 0;
+		font-size: 0.875rem;
+	}
+	.agenda-list li {
+		padding: 0.375rem 0;
+	}
+	.item-desc {
+		margin: 0.125rem 0 0;
+		color: var(--color-text-muted, #6b7280);
+		font-size: 0.8125rem;
+	}
+	.badge-vote {
+		display: inline-block;
+		background: #ede9fe;
+		color: #6d28d9;
+		font-size: 0.7rem;
+		padding: 0.1rem 0.4rem;
+		border-radius: 9999px;
+		margin-left: 0.375rem;
+	}
+	.alert-success {
+		background: #f0fdf4;
+		color: #16a34a;
+		border: 1px solid #bbf7d0;
+		padding: 0.75rem 1rem;
+		border-radius: var(--radius, 0.375rem);
+		margin-bottom: 1rem;
+		font-size: 0.875rem;
+	}
+	.alert-error {
+		background: #fef2f2;
+		color: #dc2626;
+		border: 1px solid #fecaca;
+		padding: 0.75rem 1rem;
+		border-radius: var(--radius, 0.375rem);
+		margin-bottom: 1rem;
+		font-size: 0.875rem;
+	}
 </style>

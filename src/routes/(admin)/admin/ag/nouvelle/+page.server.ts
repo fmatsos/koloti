@@ -23,7 +23,8 @@ export const actions: Actions = {
 			return fail(403, { error: 'Non autorisé.' });
 
 		const parsed = createSchema.safeParse(Object.fromEntries(await request.formData()));
-		if (!parsed.success) return fail(400, { error: parsed.error.issues[0]?.message ?? 'Invalide.' });
+		if (!parsed.success)
+			return fail(400, { error: parsed.error.issues[0]?.message ?? 'Invalide.' });
 
 		const supabase = createServiceClient();
 		const { data: ag, error: err } = await supabase
@@ -48,7 +49,11 @@ export const actions: Actions = {
 			action: 'assembly.create',
 			entity: 'assembly',
 			entityId: ag.id,
-			payload: { title: parsed.data.title, type: parsed.data.type, scheduled_at: parsed.data.scheduled_at }
+			payload: {
+				title: parsed.data.title,
+				type: parsed.data.type,
+				scheduled_at: parsed.data.scheduled_at
+			}
 		});
 
 		redirect(303, `/admin/ag/${ag.id}`);

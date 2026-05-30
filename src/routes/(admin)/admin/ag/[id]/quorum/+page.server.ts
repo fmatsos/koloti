@@ -23,7 +23,10 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	const propMap = new Map((properties ?? []).map((p) => [p.id, p.vote_weight]));
 
 	const quorum = computeQuorum({
-		attendances: (attendances ?? []).map((a) => ({ mode: a.mode, vote_weight: propMap.get(a.property_id) ?? 1 })),
+		attendances: (attendances ?? []).map((a) => ({
+			mode: a.mode,
+			vote_weight: propMap.get(a.property_id) ?? 1
+		})),
 		totalVoteWeight,
 		quorumPct: ag.quorum_pct
 	});

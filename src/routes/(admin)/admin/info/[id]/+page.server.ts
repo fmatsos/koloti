@@ -28,7 +28,8 @@ export const actions: Actions = {
 			return fail(403, { error: 'Non autorisé.' });
 
 		const parsed = updateSchema.safeParse(Object.fromEntries(await request.formData()));
-		if (!parsed.success) return fail(400, { error: parsed.error.issues[0]?.message ?? 'Invalide.' });
+		if (!parsed.success)
+			return fail(400, { error: parsed.error.issues[0]?.message ?? 'Invalide.' });
 
 		const supabase = createServiceClient();
 
