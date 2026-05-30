@@ -91,15 +91,27 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const validityLabel =
 		validityHours <= 72 ? '72 heures' : `${Math.round(validityHours / 24)} jours`;
 
-	await sendMail({
-		to: targetProfile.email,
-		subject: 'Activation de votre compte',
-		text: `Bonjour ${targetProfile.full_name},\n\nActivez votre compte en cliquant sur le lien suivant :\n${activationUrl}\n\nCe lien est valable ${validityLabel}.`,
-		html: `<p>Bonjour ${targetProfile.full_name},</p>
+	let emailSent = true;
+	try {
+		await sendMail({
+			to: targetProfile.email,
+			subject: 'Activation de votre compte',
+			text: `Bonjour ${targetProfile.full_name},\n\nActivez votre compte en cliquant sur le lien suivant :\n${activationUrl}\n\nCe lien est valable ${validityLabel}.`,
+			html: `<p>Bonjour ${targetProfile.full_name},</p>
 <p>Activez votre compte en cliquant sur le lien suivant :<br>
 <a href="${activationUrl}">${activationUrl}</a></p>
 <p>Ce lien est valable ${validityLabel}.</p>`
-	});
+		});
+	} catch (e) {
+		console.error("Erreur envoi email activation:", e);
+		emailSent = false;
+	}
 
-	return json({ success: true, link_id: link.id, expires_at: expiresAt });
+	return json({
+		success: true,
+		link_id: link.id,
+		expires_at: expiresAt,
+		email_sent: emailSent,
+		...(emailSent ? {} : { warning: "Lien créé mais l'email n'a pas pu être envoyé." })
+	});
 };
