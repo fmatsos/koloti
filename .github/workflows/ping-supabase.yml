@@ -3,7 +3,7 @@ name: Ping Supabase (anti-pause free tier)
 on:
   schedule:
     # Toutes les 3 jours à 08h00 UTC (bien en dessous des 7 jours de pause)
-    - cron: "0 8 */3 * *"
+    - cron: '0 8 */3 * *'
   workflow_dispatch: # Déclenchement manuel possible
 
 jobs:

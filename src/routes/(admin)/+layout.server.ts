@@ -13,7 +13,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 	}
 
 	if (!['admin', 'editor'].includes(profile.role)) {
-		throw redirect(303, '/app?error=forbidden');
+		throw redirect(303, '/app/?error=forbidden');
 	}
 
 	return { session, profile };
