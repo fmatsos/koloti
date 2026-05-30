@@ -17,16 +17,19 @@
 		{#if isAdminOrEditor}
 			<li class="nav-separator" aria-hidden="true"></li>
 			<li>
-				<a href="/admin/comptes" class="nav-admin">Comptes</a>
+				<a href="/comptes" class="nav-admin">Comptes</a>
 			</li>
 			<li>
-				<a href="/admin/proprietes" class="nav-admin">Propriétés</a>
+				<a href="/proprietes" class="nav-admin">Propriétés</a>
 			</li>
 			<li>
-				<a href="/admin/documents/new" class="nav-admin">+ Document</a>
+				<a href="/documents/new" class="nav-admin">+ Document</a>
 			</li>
 			<li>
-				<a href="/admin/assemblees-generales/new" class="nav-admin">+ AG</a>
+				<a href="/assemblees-generales/new" class="nav-admin">+ AG</a>
+			</li>
+			<li>
+				<a href="/etat-nominatif" class="nav-admin">État nominatif</a>
 			</li>
 		{/if}
 	</ul>
