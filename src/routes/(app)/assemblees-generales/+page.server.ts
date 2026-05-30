@@ -14,5 +14,10 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	const { data: assemblees } = await query;
 
-	return { session: locals.session, profile: locals.profile, assemblees: assemblees ?? [], isAdminOrEditor };
+	return {
+		session: locals.session,
+		profile: locals.profile,
+		assemblees: assemblees ?? [],
+		isAdminOrEditor
+	};
 };

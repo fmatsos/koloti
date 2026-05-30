@@ -148,7 +148,8 @@ export const actions: Actions = {
 
 		const formData = Object.fromEntries(await request.formData());
 		const parsed = updateLoginSchema.safeParse(formData);
-		if (!parsed.success) return fail(400, { error: parsed.error.issues[0]?.message ?? 'Login invalide.' });
+		if (!parsed.success)
+			return fail(400, { error: parsed.error.issues[0]?.message ?? 'Login invalide.' });
 
 		const { login } = parsed.data;
 		const supabase = createServiceClient();

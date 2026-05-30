@@ -122,7 +122,9 @@
 					<form method="POST" action="?/open">
 						<button type="submit" class="btn-action-green">Ouvrir l'AG (marquer en cours)</button>
 					</form>
-					<a href="/assemblees-generales/{ag.id}/relancer" class="btn-action">Relancer comptes pending →</a>
+					<a href="/assemblees-generales/{ag.id}/relancer" class="btn-action"
+						>Relancer comptes pending →</a
+					>
 				{/if}
 
 				{#if ag.status === 'open'}

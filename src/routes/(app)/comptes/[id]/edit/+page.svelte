@@ -24,7 +24,9 @@
 		{:else if form.action === 'role'}Rôle mis à jour.
 		{:else if form.action === 'status'}Statut mis à jour.
 		{:else if form.action === 'reissue'}Nouveau lien d'activation envoyé.
-		{:else if form.action === 'login'}Login mis à jour.{compte.status === 'active' ? " L'utilisateur a été notifié par email." : ''}
+		{:else if form.action === 'login'}Login mis à jour.{compte.status === 'active'
+				? " L'utilisateur a été notifié par email."
+				: ''}
 		{/if}
 	</div>
 {/if}
@@ -55,14 +57,17 @@
 				</div>
 				<div class="login-actions">
 					<button type="submit" class="btn-sm">Enregistrer</button>
-					<button
-						type="submit"
-						form="regenerate-form"
-						class="btn-sm btn-secondary-outline"
-					>Régénérer (6 car.)</button>
+					<button type="submit" form="regenerate-form" class="btn-sm btn-secondary-outline"
+						>Régénérer (6 car.)</button
+					>
 				</div>
 			</form>
-			<form id="regenerate-form" method="POST" action="?/regenerateLogin" style="display:none"></form>
+			<form
+				id="regenerate-form"
+				method="POST"
+				action="?/regenerateLogin"
+				style="display:none"
+			></form>
 		</div>
 
 		<!-- Modifier email -->

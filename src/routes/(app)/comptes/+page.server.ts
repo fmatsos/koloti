@@ -19,5 +19,11 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 
 	const { data: comptes } = await query;
 
-	return { session: locals.session, profile: locals.profile, comptes: comptes ?? [], search, statusFilter };
+	return {
+		session: locals.session,
+		profile: locals.profile,
+		comptes: comptes ?? [],
+		search,
+		statusFilter
+	};
 };

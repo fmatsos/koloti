@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let mockClient: any;
 
 vi.mock('$lib/server/supabase', () => ({
@@ -58,6 +59,7 @@ function buildMockClient() {
 		auth
 	};
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	return { client: client as any, state, auth };
 }
 
@@ -82,6 +84,7 @@ describe('change credentials action', () => {
 				user: { id: 'user-id' },
 				profile: { id: 'user-id', must_change_credentials: true }
 			}
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} as any)) as any;
 
 		expect(result.status).toBe(400);
@@ -106,6 +109,7 @@ describe('change credentials action', () => {
 					user: { id: 'user-id' },
 					profile: { id: 'user-id', must_change_credentials: true }
 				}
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			} as any)
 		).rejects.toMatchObject({ status: 303 });
 

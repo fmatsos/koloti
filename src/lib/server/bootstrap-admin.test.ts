@@ -75,6 +75,7 @@ function createMockClient(options?: {
 		auth
 	};
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	return { client: client as any, state, auth, profileBuilder, credentialBuilder };
 }
 

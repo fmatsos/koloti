@@ -1,4 +1,4 @@
-import { error, fail, redirect } from '@sveltejs/kit';
+import { error, fail } from '@sveltejs/kit';
 import { z } from 'zod/v4';
 import { createServiceClient } from '$lib/server/supabase';
 import { writeAuditLog } from '$lib/server/audit';
