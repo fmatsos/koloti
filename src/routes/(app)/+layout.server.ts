@@ -12,8 +12,12 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 		throw redirect(303, '/change-credentials');
 	}
 
-	if (profile.status !== 'active') {
+	if (profile?.status === 'inactive') {
 		throw redirect(303, '/login?error=account_inactive');
+	}
+
+	if (profile?.status === 'pending') {
+		throw redirect(303, '/login?error=account_pending');
 	}
 
 	return { user, profile };
