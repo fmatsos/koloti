@@ -19,7 +19,6 @@ async function hashToken(token: string): Promise<string> {
 }
 
 export const POST: RequestHandler = async ({ request, locals }) => {
-	// Réservé aux admins
 	if (!locals.profile || locals.profile.role !== 'admin') {
 		throw error(403, 'Non autorisé');
 	}
@@ -31,7 +30,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const { profile_id, kind, extended_days } = parsed.data;
 	const supabase = createServiceClient();
 
-	// Vérifier le profil cible
 	const { data: targetProfile } = await supabase
 		.from('profile')
 		.select('id, email, full_name, status')
@@ -40,11 +38,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	if (!targetProfile) throw error(404, 'Profil introuvable');
 
-	// Calculer l'expiration
 	const validityHours = kind === 'extended' ? (extended_days ?? 7) * 24 : 72;
 	const expiresAt = new Date(Date.now() + validityHours * 60 * 60 * 1000).toISOString();
 
-	// Générer un token sûr
 	const tokenBytes = new Uint8Array(32);
 	crypto.getRandomValues(tokenBytes);
 	const tokenClear = Array.from(tokenBytes)
@@ -52,7 +48,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.join('');
 	const tokenHash = await hashToken(tokenClear);
 
-	// Invalider les liens précédents
 	await supabase
 		.from('activation_link')
 		.update({ revoked: true })
@@ -68,7 +63,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		payload: { profile_id }
 	});
 
-	// Créer le nouveau lien
 	const { data: link, error: insertError } = await supabase
 		.from('activation_link')
 		.insert({
@@ -91,7 +85,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		payload: { profile_id, kind, expires_at: expiresAt }
 	});
 
-	// Envoyer l'email (best-effort)
 	const activationUrl = `${PUBLIC_APP_URL}/activate/${tokenClear}`;
 
 	try {

@@ -100,7 +100,7 @@ export const actions: Actions = {
 
 		// Déclencher l'émission du lien d'activation via l'Edge Function
 		try {
-			const res = await fetch('/api/admin/issue-activation-link', {
+			const res = await fetch('/api/issue-activation-link', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ profile_id: authUser.user.id })
