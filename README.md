@@ -87,8 +87,8 @@ Voir [PLAN.md](./PLAN.md) pour les décisions d'architecture et [SPEC.md](./SPEC
 src/
 ├── routes/
 │   ├── (auth)/     # login, activation, magic-link
-│   ├── (app)/      # espace connecté (membres)
-│   └── (admin)/    # gestion (admin/éditeur)
+│   ├── (app)/      # espace connecté et gestion par rôle
+│   └── api/        # endpoints serveur
 ├── lib/
 │   ├── server/     # SERVEUR UNIQUEMENT — ne jamais importer côté client
 │   ├── supabase/   # clients browser/server

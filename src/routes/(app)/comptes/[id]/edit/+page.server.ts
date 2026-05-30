@@ -126,7 +126,7 @@ export const actions: Actions = {
 			return fail(403, { error: 'Non autorisé.' });
 
 		try {
-			const res = await fetch('/api/admin/issue-activation-link', {
+			const res = await fetch('/api/issue-activation-link', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ profile_id: params.id })

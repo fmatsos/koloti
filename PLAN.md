@@ -53,9 +53,8 @@ koloti/
 ├── src/
 │   ├── routes/
 │   │   ├── (auth)/                  # login, activation, magic-link, reset
-│   │   ├── (app)/                   # espace connecté : info, documents, annuaire, AG
-│   │   └── (admin)/                 # gestion comptes, propriétés, AG (admin/éditeur)
-│   │       └── +layout.server.ts    # garde de rôle
+│   │   ├── (app)/                   # espace connecté et gestion par rôle
+│   │   └── api/                     # endpoints serveur
 │   ├── lib/
 │   │   ├── server/                  # SERVEUR UNIQUEMENT : client service_role, audit, garde-fous
 │   │   ├── supabase/                # clients browser/server (@supabase/ssr)
@@ -126,7 +125,7 @@ Tables exploitées par le MVP : `profile`, `credential`, `activation_link`, `pro
 - **`load` serveur** (`+page.server.ts`) pour toute donnée protégée ; **form actions** pour les
   mutations (CSRF géré par SvelteKit) ; endpoints `+server.ts` pour les proxys (ex. signed URL).
 - **Session** centralisée dans `hooks.server.ts` + `App.Locals` typé ; gardes de route par groupe
-  (`(admin)`, `(app)`).
+  (`(auth)`, `(app)`) et contrôles de rôle par page.
 - **SRP** : composants de présentation sans logique métier ; logique dans `lib` ; effets de bord serveur
   dans `lib/server`.
 - Importation interdite de `lib/server` depuis le code client (vérifié par convention + lint).

@@ -71,11 +71,10 @@ serveur (zod) de toute entrée ; aucun secret commité.
 ### T0.7 — Session, gardes de routes & en-têtes de sécurité
 
 - 🎯 Gérer la session côté serveur, garder les routes par rôle/statut, poser les en-têtes de sécurité.
-- 📁 `src/hooks.server.ts`, `src/app.d.ts`, `src/routes/(app)/+layout.server.ts`,
-  `src/routes/(admin)/+layout.server.ts`.
+- 📁 `src/hooks.server.ts`, `src/app.d.ts`, `src/routes/(app)/+layout.server.ts`.
 - 🔒 Session via `@supabase/ssr` (cookies httpOnly) ; CSP/HSTS/`X-Content-Type-Options`/`Referrer-Policy` ;
   garde admin/éditeur effective ; redirection des comptes non `active`.
-- ✅ Route admin inaccessible à un membre (redirection) ; en-têtes présents dans la réponse ;
+- ✅ Routes de gestion inaccessibles à un membre (redirection) ; en-têtes présents dans la réponse ;
   `App.Locals` typé.
 - ⛓️ T0.6
 
@@ -176,7 +175,7 @@ serveur (zod) de toute entrée ; aucun secret commité.
 ### T1.1 — UI admin : liste des comptes
 
 - 🎯 Tableau filtrable des comptes (login, nom, email, rôle, statut, `last_login_at`).
-- 📁 `src/routes/(admin)/comptes/+page.server.ts` & `+page.svelte`.
+- 📁 `src/routes/(app)/comptes/+page.server.ts` & `+page.svelte`.
 - 🔒 **Jamais de mot de passe affiché** ; accès admin uniquement (RLS + garde).
 - ✅ Filtre par statut (`pending`/`active`/`inactive`), tri par dernière connexion ; comptes dormants
   repérables.
@@ -185,7 +184,7 @@ serveur (zod) de toute entrée ; aucun secret commité.
 ### T1.2 — Création de compte (admin)
 
 - 🎯 Créer un compte (nom + email + rôle), générer le `login`, déclencher le lien d'activation.
-- 📁 `src/routes/(admin)/comptes/nouveau/+page.server.ts` (form action), réutilise T0.9.
+- 📁 `src/routes/(app)/comptes/new/+page.server.ts` (form action), réutilise T0.9.
 - 🔒 Aucun mot de passe généré/transmis ; statut initial `pending` ; pas d'auto-inscription ; tracé.
 - ✅ Compte créé en `pending` + `credential.login` unique + email d'activation envoyé.
 - ⛓️ T0.9, T1.1
@@ -193,7 +192,7 @@ serveur (zod) de toute entrée ; aucun secret commité.
 ### T1.3 — Actions admin sur un compte
 
 - 🎯 Réémettre le lien, recommuniquer le login, corriger l'email, changer le rôle, activer/désactiver.
-- 📁 `src/routes/(admin)/comptes/[id]/+page.server.ts` & `+page.svelte`.
+- 📁 `src/routes/(app)/comptes/[id]/+page.server.ts` & `+page.svelte`.
 - 🔒 Correction d'email = `profile.email` + email Supabase Auth (Edge Function `service_role`), **login
   inchangé** ; désactivation = `inactive` (jamais de suppression) ; chaque action tracée.
 - ✅ Email modifiable sans changer le login ; lien réémis invalide le précédent ; rôle/statut modifiables ;
@@ -203,7 +202,7 @@ serveur (zod) de toute entrée ; aucun secret commité.
 ### T1.4 — CRUD propriétés
 
 - 🎯 Gérer les propriétés/lots et leur `vote_weight`.
-- 📁 `src/routes/(admin)/proprietes/+page.server.ts` & composants ; migration RLS `property`.
+- 📁 `src/routes/(app)/proprietes/+page.server.ts` & composants ; migration RLS `property`.
 - 🔒 Écriture admin/éditeur ; lecture membre.
 - ✅ Création/édition d'une propriété avec référence, adresse, `vote_weight` (défaut 1).
 - ⛓️ T0.7
@@ -211,7 +210,7 @@ serveur (zod) de toute entrée ; aucun secret commité.
 ### T1.5 — Gestion ownership (rattachement coloti ↔ propriété)
 
 - 🎯 Rattacher des colotis aux propriétés (multi-lots, indivision), gérer début/fin.
-- 📁 `src/routes/(admin)/proprietes/[id]/owners/+page.server.ts` & composants ; RLS `ownership`.
+- 📁 `src/routes/(app)/proprietes/[id]/owners/+page.server.ts` & composants ; RLS `ownership`.
 - 🔒 `unique(property_id, profile_id, start_date)` ; vente = `end_date` renseignée + compte `inactive`.
 - ✅ Un coloti peut avoir plusieurs lots ; indivision via `is_primary` ; historique conservé.
 - ⛓️ T1.4
@@ -219,7 +218,7 @@ serveur (zod) de toute entrée ; aucun secret commité.
 ### T1.6 — État nominatif exportable
 
 - 🎯 Vue exportable (CSV/PDF) : propriétés, propriétaires actuels, contacts, statut cotisation.
-- 📁 `src/routes/(admin)/etat-nominatif/+page.server.ts`, util export CSV, Edge Function PDF si besoin.
+- 📁 `src/routes/(app)/etat-nominatif/+page.server.ts`, util export CSV, Edge Function PDF si besoin.
 - 🔒 Accès admin ; données personnelles → pas de cache, génération à la demande.
 - ✅ Export CSV et PDF cohérents avec les données courantes (ownership actif).
 - ⛓️ T1.5
@@ -245,7 +244,7 @@ serveur (zod) de toute entrée ; aucun secret commité.
 ### T1.9 — Fil d'information (`info_post`)
 
 - 🎯 Publier des actualités markdown (brouillon/publié), lecture membres, CRUD éditeur/admin.
-- 📁 `src/routes/(app)/info/`, `src/routes/(admin)/info/`, util markdown assaini ; RLS `info_post`.
+- 📁 `src/routes/(app)/informations/`, util markdown assaini ; RLS `info_post`.
 - 🔒 Markdown **assaini** (anti-XSS) au rendu ; lecture limitée aux comptes `active` ; écriture
   éditeur/admin (SPEC §7.2).
 - ✅ Membre lit les posts publiés ; éditeur/admin crée/édite/publie ; brouillon invisible aux membres.
@@ -254,7 +253,7 @@ serveur (zod) de toute entrée ; aucun secret commité.
 ### T1.10 — Upload de documents
 
 - 🎯 Charger un document vers Storage avec métadonnées (titre, type, description, année, visibilité).
-- 📁 `src/routes/(admin)/documents/nouveau/+page.server.ts`, Edge Function/endpoint d'upload ; RLS `document`.
+- 📁 `src/routes/(app)/documents/new/+page.server.ts`, Edge Function/endpoint d'upload ; RLS `document`.
 - 🔒 Écriture éditeur/admin ; visibilité décidée à l'upload (`members`/`editors`/`admin`) ; upload tracé ;
   taille bornée (free tier).
 - ✅ Document chargé dans Storage + ligne `document` avec métadonnées ; typologie respectée.
@@ -272,7 +271,7 @@ serveur (zod) de toute entrée ; aucun secret commité.
 ### T1.12 — Gestion visibilité / suppression de document
 
 - 🎯 Modifier la visibilité ou supprimer un document (admin/éditeur).
-- 📁 `src/routes/(admin)/documents/[id]/+page.server.ts`.
+- 📁 `src/routes/(app)/documents/[id]/edit/+page.server.ts`.
 - 🔒 Changement de visibilité et suppression **tracés** ; suppression du fichier Storage associée.
 - ✅ Visibilité modifiable ; suppression effective (DB + Storage) ; actions dans `audit_log`.
 - ⛓️ T1.10
@@ -293,7 +292,7 @@ serveur (zod) de toute entrée ; aucun secret commité.
 ### T2.1 — CRUD assemblée (`draft`)
 
 - 🎯 Préparer une AG (titre, type, mode, date, lieu) en statut `draft`.
-- 📁 `src/routes/(admin)/ag/nouvelle/+page.server.ts`, `src/routes/(admin)/ag/[id]/+page.svelte` ; RLS `assembly`.
+- 📁 `src/routes/(app)/assemblees-generales/new/+page.server.ts`, `src/routes/(app)/assemblees-generales/[id]/+page.svelte` ; RLS `assembly`.
 - 🔒 Création éditeur/admin ; `quorum_pct` paramétrable (défaut 50).
 - ✅ AG créée en `draft` avec ses attributs ; éditable tant que `draft`.
 - ⛓️ T0.7
@@ -301,7 +300,7 @@ serveur (zod) de toute entrée ; aucun secret commité.
 ### T2.2 — CRUD ordre du jour (`agenda_item`)
 
 - 🎯 Gérer les points d'ordre du jour (position, `requires_vote`).
-- 📁 `src/routes/(admin)/ag/[id]/agenda/+page.server.ts` & composants ; RLS `agenda_item`.
+- 📁 `src/routes/(app)/assemblees-generales/[id]/agenda/+page.server.ts` & composants ; RLS `agenda_item`.
 - 🔒 Édition éditeur/admin ; cohérence des positions.
 - ✅ Points ajoutés/réordonnés/supprimés en `draft` ; `requires_vote` paramétrable.
 - ⛓️ T2.1
@@ -319,7 +318,7 @@ serveur (zod) de toute entrée ; aucun secret commité.
 
 - 🎯 Au passage `convened`, proposer le renvoi groupé d'un lien d'activation aux comptes `pending`,
   **sur confirmation admin**.
-- 📁 `src/routes/(admin)/ag/[id]/relancer/+page.server.ts`, réutilise T0.9 (boucle).
+- 📁 `src/routes/(app)/assemblees-generales/[id]/relancer/+page.server.ts`, réutilise T0.9 (boucle).
 - 🔒 **Semi-automatique** (pas d'envoi silencieux) ; chaque envoi tracé ; régénération invalide les
   liens précédents.
 - ✅ Liste des comptes `pending` présentée ; sur confirmation, un nouveau lien est envoyé à chacun ; tracé.
@@ -328,7 +327,7 @@ serveur (zod) de toute entrée ; aucun secret commité.
 ### T2.5 — Ouverture de l'AG (`open`)
 
 - 🎯 Passer `convened → open` ; activer l'émargement.
-- 📁 Action admin `src/routes/(admin)/ag/[id]/+page.server.ts`.
+- 📁 Action admin `src/routes/(app)/assemblees-generales/[id]/+page.server.ts`.
 - 🔒 `opened_at` renseigné ; émargement impossible avant `open` ; action tracée.
 - ✅ AG passe en `open` ; l'émargement devient possible.
 - ⛓️ T2.3
