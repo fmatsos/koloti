@@ -1,0 +1,94 @@
+# Pour la documentation complète, voir :
+# https://supabase.com/docs/guides/cli/config
+
+[project]
+id = "koloti"
+
+[api]
+# Port du serveur API REST local
+port = 54321
+# Schémas exposés via l'API
+schemas = ["public", "graphql_public"]
+# Schémas supplémentaires pour la recherche de fonctions
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[api.tls]
+enabled = false
+
+[db]
+# Port Postgres local
+port = 54322
+shadow_port = 54320
+major_version = 17
+
+[db.pooler]
+enabled = false
+port = 54329
+pool_mode = "transaction"
+default_pool_size = 20
+max_client_conn = 100
+
+[realtime]
+enabled = true
+ip_version = "IPv6"
+heartbeat_interval_ms = 0
+max_header_length = 4096
+
+[studio]
+enabled = true
+# Port du studio local
+port = 54323
+api_url = "http://127.0.0.1"
+openai_api_key = "env(OPENAI_API_KEY)"
+
+[inbucket]
+enabled = true
+# Port pour tester les emails localement
+port = 54324
+smtp_port = 54325
+pop3_port = 54326
+admin_email = "admin@email.com"
+sender_name = "Admin"
+
+[storage]
+enabled = true
+file_size_limit = "50MiB"
+
+[storage.image_transformation]
+enabled = false
+
+[auth]
+enabled = true
+# URL de l'app locale (SvelteKit dev server)
+site_url = "http://127.0.0.1:5173"
+# URLs de redirection autorisées
+additional_redirect_urls = ["https://mon-asl.netlify.app", "http://localhost:5173"]
+jwt_expiry = 3600
+# Désactiver la confirmation d'email en dev (activée en prod)
+enable_signup = false
+# En production : toujours utiliser un SMTP custom (Brevo/Resend)
+# pour la délivrabilité des liens d'activation, magic links, reset
+
+[auth.email]
+enable_signup = false
+double_confirm_changes = true
+enable_confirmations = false
+secure_password_change = false
+otp_length = 6
+otp_expiry = 3600
+
+[auth.sms]
+enable_signup = false
+enable_confirmations = false
+
+[edge_runtime]
+enabled = true
+policy = "oneshot"
+inspector_port = 8083
+
+[analytics]
+enabled = false
+gcp_project_id = ""
+gcp_project_number = ""
+gcp_jwt_path = "supabase/gcloud.json"

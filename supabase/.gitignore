@@ -1,0 +1,5 @@
+# Supabase local state
+.branches
+.temp
+.env
+seed.sql
