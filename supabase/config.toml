@@ -78,6 +78,23 @@ secure_password_change = false
 otp_length = 6
 otp_expiry = 3600
 
+# SMTP custom — requis en production pour la délivrabilité
+# Configurer via les secrets Supabase en production (jamais en clair ici)
+# Variables à positionner dans le dashboard Supabase :
+#   SMTP_ADMIN_EMAIL, SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_SENDER_NAME
+#
+# Brevo (ex-Sendinblue) : smtp-relay.brevo.com:587
+# Resend : smtp.resend.com:465 (TLS) ou 587 (STARTTLS)
+#
+# [auth.smtp]  ← À configurer dans le dashboard Supabase project settings
+# enabled = true
+# host = "smtp-relay.brevo.com"
+# port = 587
+# user = "env(SMTP_USER)"
+# pass = "env(SMTP_PASS)"
+# admin_email = "env(SMTP_FROM)"
+# sender_name = "env(SMTP_FROM_NAME)"
+
 [auth.sms]
 enable_signup = false
 enable_confirmations = false
