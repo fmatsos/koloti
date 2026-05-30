@@ -119,9 +119,14 @@ const authGuardHandle: Handle = async ({ event, resolve }) => {
 		throw redirect(303, '/app');
 	}
 
-	// Compte non actif → redirection avec message
-	if (profile && profile.status !== 'active') {
+	// Compte désactivé → redirection avec message
+	if (profile?.status === 'inactive') {
 		throw redirect(303, '/login?error=account_inactive');
+	}
+
+	// Compte en attente d'activation → redirection avec message
+	if (profile?.status === 'pending') {
+		throw redirect(303, '/login?error=account_pending');
 	}
 
 	return resolve(event);
