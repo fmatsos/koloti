@@ -3,6 +3,7 @@ import { z } from 'zod/v4';
 import { createServiceClient } from '$lib/server/supabase';
 import { writeAuditLog } from '$lib/server/audit';
 import { PUBLIC_APP_URL } from '$env/static/public';
+import { sendMail } from '$lib/server/email';
 import type { RequestHandler } from './$types';
 
 const schema = z.object({
@@ -87,15 +88,18 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	const activationUrl = `${PUBLIC_APP_URL}/activate/${tokenClear}`;
 
-	try {
-		await supabase.auth.admin.generateLink({
-			type: 'invite',
-			email: targetProfile.email,
-			options: { redirectTo: activationUrl }
-		});
-	} catch (e) {
-		console.error('Erreur envoi email activation:', e);
-	}
+	const validityLabel =
+		validityHours <= 72 ? '72 heures' : `${Math.round(validityHours / 24)} jours`;
+
+	await sendMail({
+		to: targetProfile.email,
+		subject: 'Activation de votre compte',
+		text: `Bonjour ${targetProfile.full_name},\n\nActivez votre compte en cliquant sur le lien suivant :\n${activationUrl}\n\nCe lien est valable ${validityLabel}.`,
+		html: `<p>Bonjour ${targetProfile.full_name},</p>
+<p>Activez votre compte en cliquant sur le lien suivant :<br>
+<a href="${activationUrl}">${activationUrl}</a></p>
+<p>Ce lien est valable ${validityLabel}.</p>`
+	});
 
 	return json({ success: true, link_id: link.id, expires_at: expiresAt });
 };
