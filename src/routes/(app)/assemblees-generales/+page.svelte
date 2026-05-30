@@ -54,9 +54,7 @@
 							</span>
 						</td>
 						<td class="muted">
-							{ag.scheduled_at
-								? new Date(ag.scheduled_at).toLocaleDateString('fr-FR')
-								: '—'}
+							{ag.scheduled_at ? new Date(ag.scheduled_at).toLocaleDateString('fr-FR') : '—'}
 						</td>
 						<td><a href="/assemblees-generales/{ag.id}" class="link">Voir</a></td>
 					</tr>

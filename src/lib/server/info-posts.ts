@@ -20,9 +20,12 @@ export async function loadInfoPage(page: number, profile: { role: string } | nul
 
 	let query = supabase
 		.from('info_post')
-		.select('id, title, body, is_published, published_at, created_at, author:author_id(full_name)', {
-			count: 'exact'
-		})
+		.select(
+			'id, title, body, is_published, published_at, created_at, author:author_id(full_name)',
+			{
+				count: 'exact'
+			}
+		)
 		.order('published_at', { ascending: false });
 
 	if (!isAdminOrEditor) query = query.eq('is_published', true);

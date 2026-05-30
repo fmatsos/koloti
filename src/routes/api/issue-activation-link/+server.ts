@@ -103,7 +103,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 <p>Ce lien est valable ${validityLabel}.</p>`
 		});
 	} catch (e) {
-		console.error("Erreur envoi email activation:", e);
+		console.error('Erreur envoi email activation:', e);
 		emailSent = false;
 	}
 

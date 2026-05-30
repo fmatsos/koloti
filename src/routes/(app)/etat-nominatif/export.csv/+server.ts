@@ -24,7 +24,9 @@ export const GET: RequestHandler = async ({ locals }) => {
 		const formattedAddress = [prop.street_number, prop.street_name].filter(Boolean).join(' ');
 
 		if (active.length === 0) {
-			lines.push([prop.reference, formattedAddress, prop.vote_weight, '', '', '', '', ''].join(';'));
+			lines.push(
+				[prop.reference, formattedAddress, prop.vote_weight, '', '', '', '', ''].join(';')
+			);
 		} else {
 			for (const o of active) {
 				const profile = Array.isArray(o.profile) ? o.profile[0] : o.profile;

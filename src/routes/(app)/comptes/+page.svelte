@@ -49,7 +49,9 @@
 			</thead>
 			<tbody>
 				{#each data.comptes as compte (compte.id)}
-					{@const cred = Array.isArray(compte.credential) ? compte.credential[0] : compte.credential}
+					{@const cred = Array.isArray(compte.credential)
+						? compte.credential[0]
+						: compte.credential}
 					<tr>
 						<td><code>{cred?.login ?? '—'}</code></td>
 						<td>{compte.full_name}</td>
