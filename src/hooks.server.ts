@@ -2,6 +2,7 @@ import { createServerClient } from '@supabase/ssr';
 import { type Handle, redirect } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
+import { bootstrapAdminAccount } from '$lib/server/bootstrap-admin';
 import { createServiceClient } from '$lib/server/supabase';
 
 // Routes accessibles sans authentification
@@ -10,6 +11,28 @@ const PUBLIC_ROUTES = ['/login', '/activate', '/magic-link', '/auth/callback'];
 function isPublicRoute(pathname: string): boolean {
 	return PUBLIC_ROUTES.some((route) => pathname.startsWith(route));
 }
+
+let bootstrapPromise: Promise<void> | null = null;
+
+async function ensureBootstrapAdmin() {
+	if (!bootstrapPromise) {
+		bootstrapPromise = bootstrapAdminAccount()
+			.then(() => undefined)
+			.catch((error) => {
+				console.error('[bootstrap-admin] Erreur:', error);
+			})
+			.finally(() => {
+				bootstrapPromise = null;
+			});
+	}
+
+	await bootstrapPromise;
+}
+
+const bootstrapHandle: Handle = async ({ event, resolve }) => {
+	await ensureBootstrapAdmin();
+	return resolve(event);
+};
 
 const supabaseHandle: Handle = async ({ event, resolve }) => {
 	event.locals.supabase = createServerClient<import('$lib/types/database').Database>(
@@ -88,6 +111,14 @@ const authGuardHandle: Handle = async ({ event, resolve }) => {
 
 	const profile = event.locals.profile;
 
+	if (profile?.must_change_credentials && pathname !== '/change-credentials') {
+		throw redirect(303, '/change-credentials');
+	}
+
+	if (pathname === '/change-credentials' && profile && !profile.must_change_credentials) {
+		throw redirect(303, '/app');
+	}
+
 	// Compte non actif → redirection avec message
 	if (profile && profile.status !== 'active') {
 		throw redirect(303, '/login?error=account_inactive');
@@ -131,6 +162,7 @@ const securityHeadersHandle: Handle = async ({ event, resolve }) => {
 };
 
 export const handle = sequence(
+	bootstrapHandle,
 	supabaseHandle,
 	sessionHandle,
 	authGuardHandle,

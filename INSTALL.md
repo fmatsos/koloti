@@ -250,29 +250,19 @@ npm run gen:types    # Regenerate src/lib/types/database.ts from local Supabase
 
 ## 6. First admin account
 
-After deploying and applying migrations, there is no admin account yet. Create the first one directly in Supabase:
+There is no manual Supabase bootstrap step anymore.
 
-1. In the Supabase dashboard → **Table editor → `profile`**, insert a row with `role = 'admin'`, `status = 'active'`
-2. In **Authentication → Users**, create a user with the same email and note the UUID
-3. Update the `profile` row with the correct `id` (matching the Auth user UUID)
+On the first app launch against an empty database, Koloti creates a default admin account automatically:
 
-Alternatively, run this SQL in the **SQL Editor**:
+- login: `admin`
+- password: random, printed once to stdout
 
-```sql
--- 1. Create the auth user (replace values)
-select auth.create_user(
-  uid := gen_random_uuid(),
-  email := 'admin@mon-asl.fr',
-  password := 'change-me-immediately',
-  email_confirm := true
-);
+You will see these credentials in:
 
--- 2. The profile row is created automatically by the auth trigger.
---    Promote it to admin:
-update profile
-set role = 'admin', status = 'active'
-where email = 'admin@mon-asl.fr';
-```
+- local terminal output when starting the app
+- Netlify runtime logs on the first request after deployment
+
+The first login forces a credential change. The administrator must choose a new login and a new password before continuing.
 
 ---
 

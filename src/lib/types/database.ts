@@ -612,6 +612,7 @@ export type Database = {
           full_name: string
           id: string
           last_login_at: string | null
+          must_change_credentials: boolean
           phone: string | null
           role: Database["public"]["Enums"]["user_role"]
           status: Database["public"]["Enums"]["account_status"]
@@ -623,6 +624,7 @@ export type Database = {
           full_name: string
           id: string
           last_login_at?: string | null
+          must_change_credentials?: boolean
           phone?: string | null
           role?: Database["public"]["Enums"]["user_role"]
           status?: Database["public"]["Enums"]["account_status"]
@@ -634,6 +636,7 @@ export type Database = {
           full_name?: string
           id?: string
           last_login_at?: string | null
+          must_change_credentials?: boolean
           phone?: string | null
           role?: Database["public"]["Enums"]["user_role"]
           status?: Database["public"]["Enums"]["account_status"]
@@ -1014,3 +1017,4 @@ export const Constants = {
     },
   },
 } as const
+

@@ -6,6 +6,9 @@ import { PUBLIC_APP_URL } from '$env/static/public';
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 	const user = await locals.safeGetUser();
+	if (user && locals.profile?.must_change_credentials) {
+		throw redirect(303, '/change-credentials');
+	}
 	if (user) throw redirect(303, '/app');
 
 	const error = url.searchParams.get('error');
@@ -92,7 +95,9 @@ export const actions: Actions = {
 			.single();
 
 		if (!credential || !credential.profile) {
-			return fail(400, { error: 'Login inconnu. Vérifiez votre identifiant ou contactez un administrateur.' });
+			return fail(400, {
+				error: 'Login inconnu. Vérifiez votre identifiant ou contactez un administrateur.'
+			});
 		}
 
 		const profile = Array.isArray(credential.profile) ? credential.profile[0] : credential.profile;

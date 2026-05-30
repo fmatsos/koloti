@@ -8,6 +8,10 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 		throw redirect(303, '/login');
 	}
 
+	if (profile.must_change_credentials) {
+		throw redirect(303, '/change-credentials');
+	}
+
 	if (profile.status !== 'active') {
 		throw redirect(303, '/login?error=account_inactive');
 	}
