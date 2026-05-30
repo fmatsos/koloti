@@ -12,6 +12,11 @@
 		courrier: 'Courrier',
 		autre: 'Autre'
 	};
+	const visLabels: Record<string, string> = {
+		members: 'Membres',
+		editors: 'Éditeurs',
+		admin: 'Admins'
+	};
 	function formatSize(bytes: number | null): string {
 		if (!bytes) return '';
 		if (bytes < 1048576) return `${(bytes / 1024).toFixed(0)} Ko`;
@@ -22,7 +27,12 @@
 <svelte:head><title>Documents — Koloti</title></svelte:head>
 
 <div class="page-header">
-	<h1>Documents</h1>
+	<div class="header-row">
+		<h1>Documents</h1>
+		{#if data.isAdminOrEditor}
+			<a href="/documents/new" class="btn-sm">+ Téléverser</a>
+		{/if}
+	</div>
 </div>
 
 <div class="filters">
@@ -60,12 +70,19 @@
 								· {doc.year}{/if}
 							{#if doc.size_bytes}
 								· {formatSize(doc.size_bytes)}{/if}
+							{#if data.isAdminOrEditor}
+								· {visLabels[doc.visibility] ?? doc.visibility}{/if}
 							· {new Date(doc.created_at).toLocaleDateString('fr-FR')}
 						</div>
 					</div>
-					<a href="/documents/{doc.id}/download" class="btn-dl" target="_blank" rel="noopener">
-						Télécharger
-					</a>
+					<div class="doc-actions">
+						<a href="/documents/{doc.id}/download" class="btn-dl" target="_blank" rel="noopener">
+							Télécharger
+						</a>
+						{#if data.isAdminOrEditor}
+							<a href="/documents/{doc.id}/edit" class="link-sm">Modifier</a>
+						{/if}
+					</div>
 				</li>
 			{/each}
 		</ul>
@@ -75,6 +92,11 @@
 <style>
 	.page-header {
 		margin-bottom: 1rem;
+	}
+	.header-row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
 	}
 	h1 {
 		margin: 0;
@@ -135,6 +157,24 @@
 		text-decoration: none;
 		white-space: nowrap;
 		flex-shrink: 0;
+	}
+	.btn-sm {
+		padding: 0.375rem 0.875rem;
+		background: var(--color-primary, #1a73e8);
+		color: white;
+		border-radius: 0.25rem;
+		font-size: 0.8125rem;
+		text-decoration: none;
+	}
+	.doc-actions {
+		display: flex;
+		gap: 0.75rem;
+		align-items: center;
+		flex-shrink: 0;
+	}
+	.link-sm {
+		font-size: 0.875rem;
+		color: var(--color-primary, #1a73e8);
 	}
 	.empty {
 		color: var(--color-text-muted, #6b7280);

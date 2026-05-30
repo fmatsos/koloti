@@ -17,6 +17,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	const supabase = createServiceClient();
 
 	const role = locals.profile?.role ?? 'member';
+	const isAdminOrEditor = ['admin', 'editor'].includes(role);
 	const typeParam = url.searchParams.get('type') ?? '';
 	const yearFilter = url.searchParams.get('year') ?? '';
 	const typeFilter = DOC_TYPES.includes(typeParam as Enums<'document_type'>)
@@ -32,7 +33,9 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 
 	let query = supabase
 		.from('document')
-		.select('id, title, type, year, size_bytes, created_at, visibility')
+		.select(
+			'id, title, type, visibility, year, size_bytes, created_at, uploaded_by:uploaded_by(full_name)'
+		)
 		.in('visibility', visibilities)
 		.order('created_at', { ascending: false });
 
@@ -46,6 +49,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		profile: locals.profile,
 		docs: docs ?? [],
 		typeFilter: typeParam,
-		yearFilter
+		yearFilter,
+		isAdminOrEditor
 	};
 };
