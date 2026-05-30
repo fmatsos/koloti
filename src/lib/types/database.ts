@@ -643,23 +643,32 @@ export type Database = {
       property: {
         Row: {
           address: string | null
+          cadastre_number: string | null
           created_at: string
           id: string
           reference: string
+          street_name: string | null
+          street_number: string | null
           vote_weight: number
         }
         Insert: {
           address?: string | null
+          cadastre_number?: string | null
           created_at?: string
           id?: string
           reference: string
+          street_name?: string | null
+          street_number?: string | null
           vote_weight?: number
         }
         Update: {
           address?: string | null
+          cadastre_number?: string | null
           created_at?: string
           id?: string
           reference?: string
+          street_name?: string | null
+          street_number?: string | null
           vote_weight?: number
         }
         Relationships: []
@@ -1008,4 +1017,3 @@ export const Constants = {
     },
   },
 } as const
-
