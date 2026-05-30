@@ -1,42 +1,106 @@
-import { error } from '@sveltejs/kit';
+import { error, fail, redirect } from '@sveltejs/kit';
+import { z } from 'zod/v4';
 import { createServiceClient } from '$lib/server/supabase';
-import { computeQuorum } from '$lib/server/quorum';
-import type { PageServerLoad } from './$types';
+import { writeAuditLog } from '$lib/server/audit';
+import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const supabase = createServiceClient();
+	const isAdminOrEditor = ['admin', 'editor'].includes(locals.profile?.role ?? '');
 	const { data: ag } = await supabase
 		.from('assembly')
-		.select(
-			'id, title, type, mode, status, scheduled_at, location, quorum_pct, agenda_item(id, position, title, description, requires_vote)'
-		)
+		.select('*, agenda_item(id, position, title, description, requires_vote)')
 		.eq('id', params.id)
+		.order('position', { referencedTable: 'agenda_item', ascending: true })
 		.single();
 
 	if (!ag) throw error(404, 'Assemblée introuvable');
+	if (ag.status === 'draft' && !isAdminOrEditor) throw error(404, 'Assemblée introuvable');
 
-	const agendaItems = (Array.isArray(ag.agenda_item) ? ag.agenda_item : []).sort(
-		(a: { position: number }, b: { position: number }) => a.position - b.position
-	);
+	return { session: locals.session, profile: locals.profile, ag, isAdminOrEditor };
+};
 
-	let quorum = null;
-	if (ag.status === 'open') {
-		const { data: properties } = await supabase.from('property').select('id, vote_weight');
-		const { data: attendances } = await supabase
-			.from('attendance')
-			.select('property_id, mode')
-			.eq('assembly_id', params.id);
-		const totalVoteWeight = (properties ?? []).reduce((s, p) => s + p.vote_weight, 0);
-		const propMap = new Map((properties ?? []).map((p) => [p.id, p.vote_weight]));
-		quorum = computeQuorum({
-			attendances: (attendances ?? []).map((a) => ({
-				mode: a.mode,
-				vote_weight: propMap.get(a.property_id) ?? 1
-			})),
-			totalVoteWeight,
-			quorumPct: ag.quorum_pct
+const editSchema = z.object({
+	title: z.string().min(1).max(255).trim(),
+	type: z.enum(['ordinaire', 'extraordinaire']),
+	mode: z.enum(['presentiel', 'en_ligne', 'hybride']),
+	scheduled_at: z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/),
+	location: z.string().max(300).trim().optional(),
+	quorum_pct: z.coerce.number().int().min(1).max(100)
+});
+
+export const actions: Actions = {
+	update: async ({ request, locals, params }) => {
+		if (!locals.profile || !['admin', 'editor'].includes(locals.profile.role))
+			return fail(403, { error: 'Non autorisé.' });
+
+		const supabase = createServiceClient();
+		const { data: current } = await supabase
+			.from('assembly')
+			.select('status')
+			.eq('id', params.id)
+			.single();
+		if (current?.status !== 'draft')
+			return fail(400, { error: 'Seule une AG en brouillon peut être modifiée.' });
+
+		const parsed = editSchema.safeParse(Object.fromEntries(await request.formData()));
+		if (!parsed.success)
+			return fail(400, { error: parsed.error.issues[0]?.message ?? 'Invalide.' });
+
+		const { error: err } = await supabase
+			.from('assembly')
+			.update({
+				title: parsed.data.title,
+				type: parsed.data.type,
+				mode: parsed.data.mode,
+				scheduled_at: parsed.data.scheduled_at,
+				location: parsed.data.location || null,
+				quorum_pct: parsed.data.quorum_pct
+			})
+			.eq('id', params.id);
+
+		if (err) return fail(400, { error: err.message });
+
+		await writeAuditLog({
+			actorId: locals.profile.id,
+			action: 'assembly.update',
+			entity: 'assembly',
+			entityId: params.id,
+			payload: { title: parsed.data.title }
 		});
-	}
+		return { success: true };
+	},
 
-	return { session: locals.session, profile: locals.profile, ag, agendaItems, quorum };
+	open: async ({ locals, params }) => {
+		if (!locals.profile || !['admin', 'editor'].includes(locals.profile.role))
+			return fail(403, { error: 'Non autorisé.' });
+
+		const supabase = createServiceClient();
+		const { data: current } = await supabase
+			.from('assembly')
+			.select('status')
+			.eq('id', params.id)
+			.single();
+		if (current?.status !== 'convened')
+			return fail(400, { error: "L'AG doit être convoquée avant d'être ouverte." });
+
+		const { error: err } = await supabase
+			.from('assembly')
+			.update({
+				status: 'open',
+				opened_at: new Date().toISOString()
+			})
+			.eq('id', params.id);
+
+		if (err) return fail(400, { error: err.message });
+
+		await writeAuditLog({
+			actorId: locals.profile.id,
+			action: 'assembly.open',
+			entity: 'assembly',
+			entityId: params.id,
+			payload: {}
+		});
+		return { success: true };
+	}
 };
