@@ -35,14 +35,14 @@ npm run dev
 
 Toutes les variables sont dans `.env` (jamais committer ce fichier — voir `.env.example`).
 
-| Variable | Portée | Description |
-|---|---|---|
-| `PUBLIC_SUPABASE_URL` | Client + Serveur | URL du projet Supabase |
-| `PUBLIC_SUPABASE_ANON_KEY` | Client + Serveur | Clé publique anon |
-| `SUPABASE_SERVICE_ROLE_KEY` | **Serveur uniquement** | Clé service_role (bypass RLS) |
-| `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASS` | Serveur | SMTP custom (Brevo/Resend) |
-| `SMTP_FROM` / `SMTP_FROM_NAME` | Serveur | Expéditeur des emails |
-| `PUBLIC_APP_URL` | Client + Serveur | URL publique de l'application |
+| Variable                                              | Portée                 | Description                   |
+| ----------------------------------------------------- | ---------------------- | ----------------------------- |
+| `PUBLIC_SUPABASE_URL`                                 | Client + Serveur       | URL du projet Supabase        |
+| `PUBLIC_SUPABASE_ANON_KEY`                            | Client + Serveur       | Clé publique anon             |
+| `SUPABASE_SERVICE_ROLE_KEY`                           | **Serveur uniquement** | Clé service_role (bypass RLS) |
+| `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASS` | Serveur                | SMTP custom (Brevo/Resend)    |
+| `SMTP_FROM` / `SMTP_FROM_NAME`                        | Serveur                | Expéditeur des emails         |
+| `PUBLIC_APP_URL`                                      | Client + Serveur       | URL publique de l'application |
 
 > ⚠️ `SUPABASE_SERVICE_ROLE_KEY` bypasse toutes les RLS. Ne jamais l'exposer côté client.
 
