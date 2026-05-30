@@ -32,15 +32,15 @@ Ces points conditionnent la mise en production, pas le développement :
 
 ## 3. Décisions d'architecture
 
-| Aspect | Décision | Justification (SPEC) |
-|---|---|---|
-| Front | **SvelteKit PWA**, `adapter-netlify` | Léger, déploiement Netlify natif, routes serveur disponibles (§3.2) |
-| Backend | **Supabase** (Postgres/RLS, Auth, Storage, Edge Functions Deno) | BaaS gratuit suffisant, SQL relationnel, RLS au plus près de la donnée (§3.2) |
-| Contrôle d'accès | **RLS Postgres** partout + logique en **Edge Functions** | Le front ne peut pas contourner (§3.2, §7.1) |
-| Logique sensible | **Edge Functions `service_role`** exclusivement | Non manipulable par le client ; transactions/invariants garantis (§7.1) |
-| Auth | Lien d'activation usage unique 72h → le coloti définit son mdp (optionnel) + magic link, sur le même compte ; login humain via table `credential` | Aucun secret transmis en clair ; découplage login↔email (§3.3, §7.3) |
-| Emails | **SMTP custom (Brevo/Resend)** dès le départ | Délivrabilité : l'email porte tous les flux d'accès (§3.3) |
-| Disponibilité | **Cron de ping** (GitHub Actions planifié) | Évite la pause free tier après 7 j d'inactivité (§1.3) |
+| Aspect           | Décision                                                                                                                                          | Justification (SPEC)                                                          |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| Front            | **SvelteKit PWA**, `adapter-netlify`                                                                                                              | Léger, déploiement Netlify natif, routes serveur disponibles (§3.2)           |
+| Backend          | **Supabase** (Postgres/RLS, Auth, Storage, Edge Functions Deno)                                                                                   | BaaS gratuit suffisant, SQL relationnel, RLS au plus près de la donnée (§3.2) |
+| Contrôle d'accès | **RLS Postgres** partout + logique en **Edge Functions**                                                                                          | Le front ne peut pas contourner (§3.2, §7.1)                                  |
+| Logique sensible | **Edge Functions `service_role`** exclusivement                                                                                                   | Non manipulable par le client ; transactions/invariants garantis (§7.1)       |
+| Auth             | Lien d'activation usage unique 72h → le coloti définit son mdp (optionnel) + magic link, sur le même compte ; login humain via table `credential` | Aucun secret transmis en clair ; découplage login↔email (§3.3, §7.3)          |
+| Emails           | **SMTP custom (Brevo/Resend)** dès le départ                                                                                                      | Délivrabilité : l'email porte tous les flux d'accès (§3.3)                    |
+| Disponibilité    | **Cron de ping** (GitHub Actions planifié)                                                                                                        | Évite la pause free tier après 7 j d'inactivité (§1.3)                        |
 
 **Principe directeur** : KISS/SRP. Une Edge Function = une responsabilité (émettre un lien, générer une
 signed URL, convoquer…). Pas de logique métier dans les composants Svelte. `lib/server` n'est **jamais**
@@ -144,23 +144,23 @@ Tables exploitées par le MVP : `profile`, `credential`, `activation_link`, `pro
 
 ## 10. Stratégie de test
 
-| Niveau | Outil | Cible |
-|---|---|---|
-| Unitaire | **Vitest** | utils, validation zod, calcul du quorum, garde-fous purs |
-| Sécurité | Client Supabase de test | **policies RLS** par rôle (membre/éditeur/admin, deny-by-default) |
-| Edge Functions | **Deno test** | émission/consommation de lien, génération signed URL, convocation |
-| E2E | **Playwright** | parcours activation, login mdp + magic link, upload/download document, cycle AG (draft→convened→open + émargement + quorum) |
+| Niveau         | Outil                   | Cible                                                                                                                       |
+| -------------- | ----------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| Unitaire       | **Vitest**              | utils, validation zod, calcul du quorum, garde-fous purs                                                                    |
+| Sécurité       | Client Supabase de test | **policies RLS** par rôle (membre/éditeur/admin, deny-by-default)                                                           |
+| Edge Functions | **Deno test**           | émission/consommation de lien, génération signed URL, convocation                                                           |
+| E2E            | **Playwright**          | parcours activation, login mdp + magic link, upload/download document, cycle AG (draft→convened→open + émargement + quorum) |
 
 **Definition of Done (par tâche)** : code typé, testé (niveau pertinent), policies RLS en place si la
 tâche touche une table, action sensible tracée dans `audit_log`, revue de non-fuite de secret.
 
 ## 11. Découpage en lots (MVP)
 
-| Lot | Contenu | Valeur |
-|---|---|---|
-| **Lot 0 — Socle** | Setup Supabase (région UE) + Netlify, auth par lien d'activation 72h + mdp défini par le coloti + magic link, `credential`, statuts de compte + `last_login_at`, **PWA installable**, **modèle de données complet**, RLS de base, cron de ping, SMTP custom | Fondations + app installable |
-| **Lot 1 — Annuaire, info & documents** | Comptes/rôles, propriétés, ownership, état nominatif, lien étendu + feuille de bienvenue PDF (QR), fil d'info, gestion documentaire (visibilité 3 niveaux, signed URLs) | Communication + documents + onboarding |
-| **Lot 2 — AG sans vote** | Cycle de vie AG, convocation + PDF, renvoi groupé des liens aux comptes `pending`, ordre du jour, émargement, quorum | Organisation des AG |
+| Lot                                    | Contenu                                                                                                                                                                                                                                                     | Valeur                                 |
+| -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
+| **Lot 0 — Socle**                      | Setup Supabase (région UE) + Netlify, auth par lien d'activation 72h + mdp défini par le coloti + magic link, `credential`, statuts de compte + `last_login_at`, **PWA installable**, **modèle de données complet**, RLS de base, cron de ping, SMTP custom | Fondations + app installable           |
+| **Lot 1 — Annuaire, info & documents** | Comptes/rôles, propriétés, ownership, état nominatif, lien étendu + feuille de bienvenue PDF (QR), fil d'info, gestion documentaire (visibilité 3 niveaux, signed URLs)                                                                                     | Communication + documents + onboarding |
+| **Lot 2 — AG sans vote**               | Cycle de vie AG, convocation + PDF, renvoi groupé des liens aux comptes `pending`, ordre du jour, émargement, quorum                                                                                                                                        | Organisation des AG                    |
 
 Détail tâche par tâche : [`TASKS.md`](./TASKS.md).
 
