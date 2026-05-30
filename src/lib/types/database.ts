@@ -642,7 +642,6 @@ export type Database = {
       }
       property: {
         Row: {
-          address: string | null
           cadastre_number: string | null
           created_at: string
           id: string
@@ -652,7 +651,6 @@ export type Database = {
           vote_weight: number
         }
         Insert: {
-          address?: string | null
           cadastre_number?: string | null
           created_at?: string
           id?: string
@@ -662,7 +660,6 @@ export type Database = {
           vote_weight?: number
         }
         Update: {
-          address?: string | null
           cadastre_number?: string | null
           created_at?: string
           id?: string
