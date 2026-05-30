@@ -5,8 +5,8 @@ import { createServiceClient } from '$lib/server/supabase';
 import { PUBLIC_APP_URL } from '$env/static/public';
 
 export const load: PageServerLoad = async ({ locals, url }) => {
-	const { session } = await locals.safeGetSession();
-	if (session) throw redirect(303, '/app');
+	const user = await locals.safeGetUser();
+	if (user) throw redirect(303, '/app');
 
 	const error = url.searchParams.get('error');
 	const redirectTo = url.searchParams.get('redirect') ?? '/app';
