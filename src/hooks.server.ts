@@ -2,6 +2,7 @@ import { createServerClient } from '@supabase/ssr';
 import { type Handle, redirect } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
+import { createServiceClient } from '$lib/server/supabase';
 
 // Routes accessibles sans authentification
 const PUBLIC_ROUTES = ['/login', '/activate', '/magic-link'];
@@ -64,6 +65,14 @@ const sessionHandle: Handle = async ({ event, resolve }) => {
 			.eq('id', user.id)
 			.single();
 		event.locals.profile = profile;
+
+		// Mise à jour de last_login_at (serveur uniquement, service_role)
+		// Limitée aux sessions avec un profil existant pour éviter les doublons
+		const serviceClient = createServiceClient();
+		await serviceClient
+			.from('profile')
+			.update({ last_login_at: new Date().toISOString() })
+			.eq('id', user.id);
 	}
 
 	return resolve(event);
