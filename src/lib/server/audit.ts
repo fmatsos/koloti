@@ -1,5 +1,5 @@
 import { createServiceClient } from '$lib/server/supabase';
-import type { Database } from '$lib/types/database';
+import type { Database, Json } from '$lib/types/database';
 
 type AuditInsert = Database['public']['Tables']['audit_log']['Insert'];
 
@@ -8,7 +8,7 @@ export interface AuditEntry {
 	action: string;
 	entity: string;
 	entityId?: string | null;
-	payload?: Record<string, unknown> | null;
+	payload?: Json | null;
 }
 
 // Écrit une entrée dans audit_log via service_role (append-only).
