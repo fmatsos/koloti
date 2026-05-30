@@ -100,13 +100,6 @@ const authGuardHandle: Handle = async ({ event, resolve }) => {
 		throw redirect(303, '/login?error=account_inactive');
 	}
 
-	// Zone admin — uniquement admin et éditeur
-	if (pathname.startsWith('/admin')) {
-		if (!profile || !['admin', 'editor'].includes(profile.role)) {
-			throw redirect(303, '/app/?error=forbidden');
-		}
-	}
-
 	return resolve(event);
 };
 
