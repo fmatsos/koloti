@@ -77,7 +77,7 @@ Deno.serve(async (req: Request) => {
 		// Vérifier que le profil cible existe et est en statut pending
 		const { data: targetProfile } = await adminClient
 			.from('profile')
-			.select('id, email, full_name, status')
+			.select('id, email, first_name, last_name, status')
 			.eq('id', profileId)
 			.single();
 
@@ -149,7 +149,7 @@ Deno.serve(async (req: Request) => {
 			{
 				data: {
 					activation_url: activationUrl,
-					full_name: targetProfile.full_name
+					full_name: `${targetProfile.first_name} ${targetProfile.last_name}`
 				},
 				redirectTo: activationUrl
 			}
