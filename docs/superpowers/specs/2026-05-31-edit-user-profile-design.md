@@ -49,11 +49,11 @@ ALTER TABLE public.profile
 
 ### Fichiers
 
-| Fichier | Rôle |
-|---------|------|
-| `src/routes/(app)/profil/+page.svelte` | 3 formulaires indépendants |
-| `src/routes/(app)/profil/+page.server.ts` | 3 actions nommées + load |
-| `src/routes/(app)/profil/nouveau-mot-de-passe/+page.svelte` | Formulaire nouveau mdp (post-recovery) |
+| Fichier                                                        | Rôle                                                 |
+| -------------------------------------------------------------- | ---------------------------------------------------- |
+| `src/routes/(app)/profil/+page.svelte`                         | 3 formulaires indépendants                           |
+| `src/routes/(app)/profil/+page.server.ts`                      | 3 actions nommées + load                             |
+| `src/routes/(app)/profil/nouveau-mot-de-passe/+page.svelte`    | Formulaire nouveau mdp (post-recovery)               |
 | `src/routes/(app)/profil/nouveau-mot-de-passe/+page.server.ts` | load (vérifie session recovery) + action setPassword |
 
 ### load()
@@ -67,12 +67,13 @@ Retourne `{ profile: locals.profile }` (déjà disponible via `(app)/+layout.ser
 
 ```ts
 const identitySchema = z.object({
-  first_name: z.string().trim().min(1, 'Le prénom est requis.').max(100),
-  last_name:  z.string().trim().min(1, 'Le nom est requis.').max(100),
+	first_name: z.string().trim().min(1, 'Le prénom est requis.').max(100),
+	last_name: z.string().trim().min(1, 'Le nom est requis.').max(100)
 });
 ```
 
 Étapes serveur :
+
 1. Valider avec Zod
 2. `supabase` (service role) : `UPDATE profile SET first_name, last_name WHERE id = user.id`
 3. `writeAuditLog({ action: 'profile.update_identity', entity: 'profile', entityId: user.id })`
@@ -85,11 +86,12 @@ const identitySchema = z.object({
 
 ```ts
 const emailSchema = z.object({
-  email: z.string().trim().toLowerCase().email('Email invalide.').max(254),
+	email: z.string().trim().toLowerCase().email('Email invalide.').max(254)
 });
 ```
 
 Étapes serveur :
+
 1. Valider avec Zod
 2. Vérifier que l'email n'est pas déjà utilisé dans `profile` (hors utilisateur courant)
 3. `auth.admin.updateUserById(user.id, { email })` — met à jour Supabase Auth
@@ -103,6 +105,7 @@ const emailSchema = z.object({
 **Action :** `?/requestPasswordChange`
 
 Étapes serveur :
+
 1. Appeler `locals.supabase.auth.resetPasswordForEmail(locals.user.email, { redirectTo: '${PUBLIC_APP_URL}/auth/callback?next=/profil/nouveau-mot-de-passe' })`
 2. Retourner `{ success: true, action: 'password_reset_sent' }` (toujours — pas d'énumération)
 
@@ -113,13 +116,18 @@ const emailSchema = z.object({
 **Action : `?/setPassword`**
 
 ```ts
-const setPasswordSchema = z.object({
-  password:         z.string().min(8, 'Au moins 8 caractères.').max(200),
-  password_confirm: z.string(),
-}).refine(d => d.password === d.password_confirm, { message: 'Les mots de passe ne correspondent pas.' });
+const setPasswordSchema = z
+	.object({
+		password: z.string().min(8, 'Au moins 8 caractères.').max(200),
+		password_confirm: z.string()
+	})
+	.refine((d) => d.password === d.password_confirm, {
+		message: 'Les mots de passe ne correspondent pas.'
+	});
 ```
 
 Étapes serveur :
+
 1. Valider avec Zod
 2. `locals.supabase.auth.updateUser({ password })` (utilise la session recovery active)
 3. `writeAuditLog({ action: 'profile.update_password', entity: 'profile', entityId: user.id })`
@@ -142,9 +150,9 @@ Dans `src/lib/components/Nav.svelte`, ajouter un lien vers `/profil` visible pou
 
 ```ts
 const updateProfileSchema = z.object({
-  first_name: z.string().trim().min(1).max(100),
-  last_name:  z.string().trim().min(1).max(100),
-  // email, phone, role restent inchangés
+	first_name: z.string().trim().min(1).max(100),
+	last_name: z.string().trim().min(1).max(100)
+	// email, phone, role restent inchangés
 });
 ```
 

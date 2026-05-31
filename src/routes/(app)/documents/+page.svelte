@@ -60,20 +60,27 @@
 		/>
 	</form>
 
-	<div class="card preset-filled-surface-50-950 rounded-xl border border-surface-200-800 shadow-sm overflow-hidden">
+	<div
+		class="card preset-filled-surface-50-950 rounded-xl border border-surface-200-800 shadow-sm overflow-hidden"
+	>
 		{#if data.docs.length === 0}
 			<p class="text-surface-500 p-6 text-center">Aucun document disponible.</p>
 		{:else}
 			<ul class="divide-y divide-surface-200-800">
 				{#each data.docs as doc (doc.id)}
-					<li class="flex items-center justify-between gap-4 px-5 py-3.5 hover:bg-surface-100-900 transition-colors">
+					<li
+						class="flex items-center justify-between gap-4 px-5 py-3.5 hover:bg-surface-100-900 transition-colors"
+					>
 						<div class="min-w-0">
 							<p class="font-medium text-sm truncate">{doc.title}</p>
 							<p class="text-xs text-surface-500 mt-0.5">
 								{typeLabels[doc.type] ?? doc.type}
-								{#if doc.year} · {doc.year}{/if}
-								{#if doc.size_bytes} · {formatSize(doc.size_bytes)}{/if}
-								{#if data.isAdminOrEditor} · {visLabels[doc.visibility] ?? doc.visibility}{/if}
+								{#if doc.year}
+									· {doc.year}{/if}
+								{#if doc.size_bytes}
+									· {formatSize(doc.size_bytes)}{/if}
+								{#if data.isAdminOrEditor}
+									· {visLabels[doc.visibility] ?? doc.visibility}{/if}
 								· {new Date(doc.created_at).toLocaleDateString('fr-FR')}
 							</p>
 						</div>

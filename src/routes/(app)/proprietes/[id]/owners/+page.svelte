@@ -26,7 +26,9 @@
 				{@const profile = Array.isArray(o.profile) ? o.profile[0] : o.profile}
 				<div class="ownership-row {o.end_date ? 'past' : 'current'}">
 					<div>
-						<strong>{[profile?.first_name, profile?.last_name].filter(Boolean).join(' ') || '—'}</strong>
+						<strong
+							>{[profile?.first_name, profile?.last_name].filter(Boolean).join(' ') || '—'}</strong
+						>
 						{#if o.is_primary}<span class="badge">Principal</span>{/if}
 						<br /><small>{profile?.email ?? ''}</small><br />
 						<small>Du {o.start_date}{o.end_date ? ` au ${o.end_date}` : ' (en cours)'}</small>

@@ -60,7 +60,9 @@ export const actions: Actions = {
 		const supabase = createServiceClient();
 		const { data: prop } = await supabase
 			.from('property')
-			.select('id, reference, ownership(id, end_date, profile:profile_id(id, first_name, last_name))')
+			.select(
+				'id, reference, ownership(id, end_date, profile:profile_id(id, first_name, last_name))'
+			)
 			.eq('reference', parsed.data.property_reference)
 			.single();
 
@@ -78,7 +80,9 @@ export const actions: Actions = {
 			return {
 				needsConfirmation: true,
 				property: { id: prop.id, reference: prop.reference },
-				currentOwnerName: ownerProfile ? `${ownerProfile.first_name} ${ownerProfile.last_name}`.trim() : '—'
+				currentOwnerName: ownerProfile
+					? `${ownerProfile.first_name} ${ownerProfile.last_name}`.trim()
+					: '—'
 			};
 		}
 

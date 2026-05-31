@@ -23,14 +23,17 @@
 			{#if passwordChanged}Mot de passe modifié avec succès.
 			{:else if form?.action === 'identity'}Identité mise à jour.
 			{:else if form?.action === 'email'}Email mis à jour.
-			{:else if form?.action === 'password_reset_sent'}Un lien de changement de mot de passe vous a été envoyé par email.
+			{:else if form?.action === 'password_reset_sent'}Un lien de changement de mot de passe vous a
+				été envoyé par email.
 			{/if}
 		</div>
 	{/if}
 
 	<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 items-start">
 		<!-- Identité -->
-		<div class="card preset-filled-surface-50-950 rounded-xl border border-surface-200-800 p-5 shadow-sm">
+		<div
+			class="card preset-filled-surface-50-950 rounded-xl border border-surface-200-800 p-5 shadow-sm"
+		>
 			<h2 class="h6 font-semibold mb-4">Identité</h2>
 			<form method="POST" action="?/updateIdentity" class="space-y-4">
 				<label class="label">
@@ -57,14 +60,19 @@
 						class="input w-full rounded-lg border border-surface-300-700 bg-surface-50-950 px-3 py-2 text-sm mt-1"
 					/>
 				</label>
-				<button type="submit" class="btn preset-filled-primary-500 rounded-lg text-sm px-4 py-2 w-full">
+				<button
+					type="submit"
+					class="btn preset-filled-primary-500 rounded-lg text-sm px-4 py-2 w-full"
+				>
 					Enregistrer
 				</button>
 			</form>
 		</div>
 
 		<!-- Email -->
-		<div class="card preset-filled-surface-50-950 rounded-xl border border-surface-200-800 p-5 shadow-sm">
+		<div
+			class="card preset-filled-surface-50-950 rounded-xl border border-surface-200-800 p-5 shadow-sm"
+		>
 			<h2 class="h6 font-semibold mb-4">Adresse email</h2>
 			<form method="POST" action="?/updateEmail" class="space-y-4">
 				<label class="label">
@@ -79,17 +87,23 @@
 						class="input w-full rounded-lg border border-surface-300-700 bg-surface-50-950 px-3 py-2 text-sm mt-1"
 					/>
 				</label>
-				<button type="submit" class="btn preset-filled-primary-500 rounded-lg text-sm px-4 py-2 w-full">
+				<button
+					type="submit"
+					class="btn preset-filled-primary-500 rounded-lg text-sm px-4 py-2 w-full"
+				>
 					Enregistrer
 				</button>
 			</form>
 		</div>
 
 		<!-- Mot de passe -->
-		<div class="card preset-filled-surface-50-950 rounded-xl border border-surface-200-800 p-5 shadow-sm">
+		<div
+			class="card preset-filled-surface-50-950 rounded-xl border border-surface-200-800 p-5 shadow-sm"
+		>
 			<h2 class="h6 font-semibold mb-4">Mot de passe</h2>
 			<p class="text-xs text-surface-500 mb-4">
-				Pour changer votre mot de passe, cliquez sur le bouton ci-dessous. Vous recevrez un email avec un lien sécurisé.
+				Pour changer votre mot de passe, cliquez sur le bouton ci-dessous. Vous recevrez un email
+				avec un lien sécurisé.
 			</p>
 			<form method="POST" action="?/requestPasswordChange">
 				<button type="submit" class="btn preset-tonal-primary rounded-lg text-sm px-4 py-2 w-full">
