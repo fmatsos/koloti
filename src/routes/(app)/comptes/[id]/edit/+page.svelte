@@ -10,12 +10,12 @@
 </script>
 
 <svelte:head>
-	<title>Modifier {compte.full_name} — Koloti</title>
+	<title>Modifier {compte.first_name} {compte.last_name} — Koloti</title>
 </svelte:head>
 
 <div class="page-header">
 	<a href="/comptes/{compte.id}/view" class="back-link">← Vue du compte</a>
-	<h1>Modifier {compte.full_name}</h1>
+	<h1>Modifier {compte.first_name} {compte.last_name}</h1>
 </div>
 
 {#if form?.success}

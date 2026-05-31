@@ -38,7 +38,7 @@
 							})}</time
 						>
 					{/if}
-					{#if author?.full_name}<span class="author">· {author.full_name}</span>{/if}
+					{#if author?.first_name || author?.last_name}<span class="author">· {author?.first_name} {author?.last_name}</span>{/if}
 				</div>
 			</div>
 			<div class="prose">{@html post.bodyPreviewHtml}</div>

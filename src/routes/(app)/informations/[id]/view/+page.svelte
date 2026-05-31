@@ -27,7 +27,7 @@
 				})}
 			</time>
 		{/if}
-		{#if author?.full_name}<span>· {author.full_name}</span>{/if}
+		{#if author?.first_name || author?.last_name}<span>· {author?.first_name} {author?.last_name}</span>{/if}
 		{#if !post.is_published}<span class="badge-draft">Brouillon</span>{/if}
 	</div>
 </div>

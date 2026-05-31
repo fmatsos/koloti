@@ -54,7 +54,7 @@
 						: compte.credential}
 					<tr>
 						<td><code>{cred?.login ?? '—'}</code></td>
-						<td>{compte.full_name}</td>
+						<td>{compte.first_name} {compte.last_name}</td>
 						<td>{compte.email}</td>
 						<td>{roleLabels[compte.role]}</td>
 						<td><span class="badge badge-{compte.status}">{statusLabels[compte.status]}</span></td>

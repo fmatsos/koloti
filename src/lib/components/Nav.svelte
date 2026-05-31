@@ -36,7 +36,7 @@
 
 	<div class="nav-user">
 		{#if profile}
-			<span class="nav-username" title={`Rôle : ${profile.role}`}>{profile.full_name}</span>
+			<span class="nav-username" title={`Rôle : ${profile.role}`}>{profile.first_name} {profile.last_name}</span>
 			<form method="POST" action="/logout">
 				<button type="submit" class="nav-logout">Déconnexion</button>
 			</form>

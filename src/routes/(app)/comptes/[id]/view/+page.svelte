@@ -30,12 +30,12 @@
 	});
 </script>
 
-<svelte:head><title>{compte.full_name} — Koloti</title></svelte:head>
+<svelte:head><title>{compte.first_name} {compte.last_name} — Koloti</title></svelte:head>
 
 <div class="page-header">
 	<a href="/comptes" class="back-link">← Retour aux comptes</a>
 	<div class="header-row">
-		<h1>{compte.full_name}</h1>
+		<h1>{compte.first_name} {compte.last_name}</h1>
 		<a href="/comptes/{compte.id}/edit" class="btn-sm btn-outline">Modifier</a>
 	</div>
 </div>

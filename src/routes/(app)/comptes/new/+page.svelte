@@ -3,7 +3,6 @@
 
 	let { form }: { form: ActionData } = $props();
 
-	let fullName = $state('');
 	let email = $state('');
 	let phone = $state('');
 	let role = $state('member');
@@ -25,15 +24,25 @@
 <div class="form-card">
 	<form method="POST">
 		<div class="field">
-			<label for="full_name">Nom complet <span class="required">*</span></label>
+			<label for="first_name">Prénom <span class="required">*</span></label>
 			<input
-				id="full_name"
-				name="full_name"
+				id="first_name"
+				name="first_name"
 				type="text"
+				value={form?.values?.first_name ?? ''}
 				required
 				maxlength="100"
-				bind:value={fullName}
-				placeholder="Prénom Nom"
+			/>
+		</div>
+		<div class="field">
+			<label for="last_name">Nom <span class="required">*</span></label>
+			<input
+				id="last_name"
+				name="last_name"
+				type="text"
+				value={form?.values?.last_name ?? ''}
+				required
+				maxlength="100"
 			/>
 		</div>
 
