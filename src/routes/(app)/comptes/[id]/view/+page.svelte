@@ -26,7 +26,7 @@
 
 	let dialog: HTMLDialogElement;
 	let welcomeDialog: HTMLDialogElement;
-	let isGeneratingWelcome = false;
+	let isGeneratingWelcome = $state(false);
 
 	$effect(() => {
 		if (form?.needsConfirmation && dialog) dialog.showModal();
@@ -194,7 +194,8 @@
 <dialog bind:this={welcomeDialog}>
 	<h2>Compte créé — Feuille de bienvenue ?</h2>
 	<p class="subheading">
-		<strong>{compte.first_name} {compte.last_name}</strong> · Identifiant : <code>{cred?.login ?? '—'}</code>
+		<strong>{compte.first_name} {compte.last_name}</strong> · Identifiant :
+		<code>{cred?.login ?? '—'}</code>
 	</p>
 	<div class="warning-box">
 		<p>

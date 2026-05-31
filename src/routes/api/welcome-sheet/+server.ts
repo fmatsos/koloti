@@ -2,7 +2,6 @@ import { error } from '@sveltejs/kit';
 import { z } from 'zod/v4';
 import { createServiceClient } from '$lib/server/supabase';
 import { writeAuditLog } from '$lib/server/audit';
-import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 import type { RequestHandler } from './$types';
 
 const schema = z.object({
@@ -87,7 +86,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 		.single();
 
 	if (insertError || !link) {
-		throw error(500, 'Erreur lors de la création du lien d\'activation');
+		throw error(500, "Erreur lors de la création du lien d'activation");
 	}
 
 	await writeAuditLog({
@@ -99,36 +98,41 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	});
 
 	// Call Edge Function to generate PDF
-	if (!locals.session?.access_token) {
-		throw error(401, 'Session expirée');
-	}
-
+	// Use the authenticated Supabase client to invoke the Edge Function
 	try {
-		const edgeFunctionUrl = `${PUBLIC_SUPABASE_URL}/functions/v1/welcome-sheet`;
-		const response = await fetch(edgeFunctionUrl, {
-			method: 'POST',
-			headers: {
-				'Authorization': `Bearer ${locals.session.access_token}`,
-				'apikey': PUBLIC_SUPABASE_ANON_KEY,
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-				profile_id,
-				token_clear: tokenClear
-			})
-		});
+		const { data: pdfResponse, error: functionError } = await supabase.functions.invoke(
+			'welcome-sheet',
+			{
+				body: {
+					profile_id,
+					token_clear: tokenClear
+				}
+			}
+		);
 
-		if (!response.ok) {
-			const errorText = await response.text();
-			console.error('Edge Function error:', response.status, errorText);
-			throw error(502, `Erreur génération PDF: ${response.status}`);
+		if (functionError || !pdfResponse) {
+			console.error('Edge Function error:', functionError);
+			throw error(502, 'Erreur génération PDF');
 		}
 
-		const pdfBytes = await response.arrayBuffer();
 		const fileName = `bienvenue-${targetProfile.first_name}-${targetProfile.last_name}`.replace(
 			/\s+/g,
 			'-'
 		);
+
+		// pdfResponse should be the PDF bytes
+		// If it's a Blob, convert to ArrayBuffer
+		let pdfBytes: ArrayBuffer;
+		if (pdfResponse instanceof Blob) {
+			pdfBytes = await pdfResponse.arrayBuffer();
+		} else if (pdfResponse instanceof ArrayBuffer) {
+			pdfBytes = pdfResponse;
+		} else if (typeof pdfResponse === 'string') {
+			// If base64 encoded, decode it
+			pdfBytes = Uint8Array.from(atob(pdfResponse as string), (c) => c.charCodeAt(0)).buffer;
+		} else {
+			throw error(502, 'Format PDF inattendu');
+		}
 
 		return new Response(pdfBytes, {
 			status: 200,
