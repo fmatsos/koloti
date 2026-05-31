@@ -101,6 +101,12 @@ export const actions: Actions = {
 			entityId: params.id,
 			payload: {}
 		});
+
+		// Fire-and-forget: do not await, failure must not affect the action
+		supabase.functions.invoke('notify-assembly-open', {
+			body: { assembly_id: params.id }
+		}).catch((e) => console.error('[notify-assembly-open] invoke error:', e));
+
 		return { success: true };
 	},
 
