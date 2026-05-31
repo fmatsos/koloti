@@ -2,7 +2,6 @@
 .branches
 .temp
 .env
-seed.sql
 
 # Supabase
 .branches
