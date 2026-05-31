@@ -36,7 +36,7 @@
 
 	<div class="nav-user">
 		{#if profile}
-			<span class="nav-username" title={`Rôle : ${profile.role}`}>{profile.first_name} {profile.last_name}</span>
+			<a href="/profil" class="nav-profile">{profile.first_name} {profile.last_name}</a>
 			<form method="POST" action="/logout">
 				<button type="submit" class="nav-logout">Déconnexion</button>
 			</form>
@@ -109,10 +109,15 @@
 		flex-shrink: 0;
 	}
 
-	.nav-username {
+	.nav-profile {
 		font-size: 0.875rem;
 		color: #6b7280;
 		white-space: nowrap;
+		text-decoration: none;
+	}
+
+	.nav-profile:hover {
+		color: var(--color-primary, #1a73e8);
 	}
 
 	.nav-logout {
