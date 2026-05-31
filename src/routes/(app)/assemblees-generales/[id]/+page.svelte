@@ -130,6 +130,9 @@
 				{/if}
 
 				{#if ag.status === 'open'}
+					<a href="/assemblees-generales/{ag.id}/notifications" class="btn-action">
+						Notifications d'ouverture →
+					</a>
 					<a href="/assemblees-generales/{ag.id}/emargement" class="btn-action">Émargement →</a>
 					<a href="/assemblees-generales/{ag.id}/quorum" class="btn-action">Quorum →</a>
 
