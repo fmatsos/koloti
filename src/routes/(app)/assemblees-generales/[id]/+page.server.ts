@@ -105,6 +105,7 @@ export const actions: Actions = {
 	},
 
 	close: async ({ locals, params }) => {
+		// Clôturer est réservé aux admins uniquement (pas aux éditeurs)
 		if (!locals.profile || locals.profile.role !== 'admin')
 			return fail(403, { error: 'Non autorisé.' });
 
@@ -114,7 +115,9 @@ export const actions: Actions = {
 			.select('status')
 			.eq('id', params.id)
 			.single();
-		if (current?.status !== 'open')
+		if (!current)
+			return fail(404, { error: 'Assemblée introuvable.' });
+		if (current.status !== 'open')
 			return fail(400, { error: "L'AG doit être en cours pour être clôturée." });
 
 		const { error: err } = await supabase
