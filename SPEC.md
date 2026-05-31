@@ -12,11 +12,11 @@
 Ces points conditionnent la valeur juridique de l'outil. Ils relèvent des statuts et de l'AG, **pas du développement**. Ils doivent être tranchés avant mise en production.
 
 1. **Autorisation du vote électronique.** La valeur officielle d'un vote en ligne dépend de ce que les statuts de l'ASL autorisent. Si les statuts ne prévoient pas explicitement le vote électronique (et/ou la tenue d'AG dématérialisées), tout vote en ligne est **contestable et potentiellement annulable**. → Décision à prendre en AG. Tant que ce point n'est pas acté, l'outil de vote doit être considéré comme **consultatif** (sondage), pas officiel.
-2. **Règles de majorité et pondération.** Le système retient par défaut *une voix par propriété* (et non par personne) et un *quorum à 50 %*. Ces valeurs doivent correspondre aux statuts. Elles sont paramétrables, mais le paramétrage par défaut doit être validé.
+2. **Règles de majorité et pondération.** Le système retient par défaut _une voix par propriété_ (et non par personne) et un _quorum à 50 %_. Ces valeurs doivent correspondre aux statuts. Elles sont paramétrables, mais le paramétrage par défaut doit être validé.
 3. **Plafond de procurations.** Retenu à 3 mandats maximum par mandataire. À confirmer avec les statuts (le plafond légal/statutaire peut différer).
 4. **RGPD.** L'ASL est responsable de traitement. Le registre des traitements, les durées de conservation et l'information des personnes doivent être formalisés (cf. §9).
 
-> **Limite assumée de cette spec** : elle décrit un système *techniquement* auditable et robuste (journal append-only, séparation émargement/bulletin, anti-double-vote). Elle ne garantit pas la *validité juridique* du vote, qui dépend des statuts et, en cas de litige, de l'appréciation d'un juge.
+> **Limite assumée de cette spec** : elle décrit un système _techniquement_ auditable et robuste (journal append-only, séparation émargement/bulletin, anti-double-vote). Elle ne garantit pas la _validité juridique_ du vote, qui dépend des statuts et, en cas de litige, de l'appréciation d'un juge.
 
 ---
 
@@ -34,17 +34,17 @@ Doter l'ASL d'un espace numérique unique permettant :
 
 ### 1.2 Contraintes structurantes
 
-| Contrainte | Décision | Conséquence |
-|---|---|---|
-| Hébergement gratuit | Netlify (front) + Supabase (backend) | Pas de tout-en-un Netlify ; découplage front/BaaS assumé |
-| Volumétrie | ~50 comptes max | Très en dessous des free tiers ; pas d'enjeu de scalabilité |
-| Authentification | Login + mot de passe (méthode principale) **ou** magic link, au choix du coloti, sur le même compte | À la création, lien d'activation (72h) ; le coloti définit lui-même son mot de passe. Dépend de la délivrabilité email |
-| Création de comptes | Par l'administrateur uniquement | Pas d'auto-inscription. L'admin voit les logins (jamais les mots de passe), réémet les identifiants et corrige les emails |
-| Vote officiel | Sous réserve statutaire (cf. §0) | Mode consultatif par défaut tant que non acté |
+| Contrainte          | Décision                                                                                            | Conséquence                                                                                                               |
+| ------------------- | --------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Hébergement gratuit | Netlify (front) + Supabase (backend)                                                                | Pas de tout-en-un Netlify ; découplage front/BaaS assumé                                                                  |
+| Volumétrie          | ~50 comptes max                                                                                     | Très en dessous des free tiers ; pas d'enjeu de scalabilité                                                               |
+| Authentification    | Login + mot de passe (méthode principale) **ou** magic link, au choix du coloti, sur le même compte | À la création, lien d'activation (72h) ; le coloti définit lui-même son mot de passe. Dépend de la délivrabilité email    |
+| Création de comptes | Par l'administrateur uniquement                                                                     | Pas d'auto-inscription. L'admin voit les logins (jamais les mots de passe), réémet les identifiants et corrige les emails |
+| Vote officiel       | Sous réserve statutaire (cf. §0)                                                                    | Mode consultatif par défaut tant que non acté                                                                             |
 
 ### 1.3 Risque opérationnel à connaître (free tier Supabase)
 
-Le projet Supacase gratuit est **mis en pause après 7 jours d'inactivité**. Pour une app consultée par intermittence (entre deux AG), cela provoque un cold start au premier accès, voire une suspension. **Mitigation** : un *cron de ping* (GitHub Actions planifié, ou Netlify scheduled function) maintient le projet actif. À industrialiser dès le départ. C'est de la dette assumée liée au choix gratuit.
+Le projet Supacase gratuit est **mis en pause après 7 jours d'inactivité**. Pour une app consultée par intermittence (entre deux AG), cela provoque un cold start au premier accès, voire une suspension. **Mitigation** : un _cron de ping_ (GitHub Actions planifié, ou Netlify scheduled function) maintient le projet actif. À industrialiser dès le départ. C'est de la dette assumée liée au choix gratuit.
 
 ---
 
@@ -52,11 +52,11 @@ Le projet Supacase gratuit est **mis en pause après 7 jours d'inactivité**. Po
 
 Trois rôles, hiérarchiques sur les permissions mais distincts fonctionnellement.
 
-| Rôle | Correspondance ASL | Permissions principales |
-|---|---|---|
-| **Admin** | Président | Tout : gestion comptes, rôles, contenus, AG, votes, cotisations, paramètres, export. Seul à pouvoir clôturer une AG et publier des résultats. |
-| **Éditeur** | Membres du syndicat | Création/édition d'informations, documents, convocations, ordre du jour. Pas de gestion des comptes ni des rôles. Ne peut pas altérer les votes. |
-| **Membre** | Coloti | Lecture des informations et documents. Déclaration de présence. Vote (sur les scrutins ouverts). Dépôt/réception de procuration. Consultation de ses cotisations. |
+| Rôle        | Correspondance ASL  | Permissions principales                                                                                                                                           |
+| ----------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Admin**   | Président           | Tout : gestion comptes, rôles, contenus, AG, votes, cotisations, paramètres, export. Seul à pouvoir clôturer une AG et publier des résultats.                     |
+| **Éditeur** | Membres du syndicat | Création/édition d'informations, documents, convocations, ordre du jour. Pas de gestion des comptes ni des rôles. Ne peut pas altérer les votes.                  |
+| **Membre**  | Coloti              | Lecture des informations et documents. Déclaration de présence. Vote (sur les scrutins ouverts). Dépôt/réception de procuration. Consultation de ses cotisations. |
 
 Notes :
 
@@ -86,14 +86,14 @@ Notes :
 
 ### 3.2 Choix techniques et justification
 
-| Composant | Choix | Pourquoi | Alternative écartée |
-|---|---|---|---|
-| Front | **SvelteKit en PWA** (`adapter-static` ou `adapter-netlify`, installable) | Léger, peu de boilerplate, déploiement Netlify natif, bon DX. PWA = installable sur smartphone, base pour les notifications (cf. §3.4) | React/Vite (plus verbeux) ; app native (disproportionné, coût de maintenance et stores) |
-| Backend | **Supabase** | Postgres relationnel (cohérent SQL), Auth magic link natif, RLS pour le RBAC en base, storage inclus, free tier suffisant | Firebase (NoSQL, moins naturel), Pocketbase (nécessite un VPS, pas "gratuit Netlify") |
-| Contrôle d'accès | **RLS Postgres** + logique Edge Functions | Sécurité au plus près de la donnée ; le front ne peut pas contourner | RBAC applicatif seul (contournable, surface de bug) |
-| Logique sensible (vote, clôture, exports) | **Supabase Edge Functions** (Deno) | Côté serveur, non manipulable par le client ; transactions et invariants garantis | Logique côté front (rejetée : un vote ne doit jamais être arbitré par le client) |
-| Authentification | **Supabase Auth** : email + mot de passe (méthode principale) et magic link, sur le même compte | Les deux méthodes nativement supportées par compte. Le login humain est un alias (table `credential`) traduit en email avant l'appel Supabase | Identifiant arbitraire natif (non supporté par Supabase Auth) ; email technique (plus lourd) |
-| Emails (activation, reset, magic link, convocations) | Supabase Auth + SMTP custom | Mot de passe temporaire, lien d'activation, reset et convocations = emails transactionnels | SMTP Supabase par défaut (délivrabilité insuffisante pour un facteur d'auth) |
+| Composant                                            | Choix                                                                                           | Pourquoi                                                                                                                                      | Alternative écartée                                                                          |
+| ---------------------------------------------------- | ----------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| Front                                                | **SvelteKit en PWA** (`adapter-static` ou `adapter-netlify`, installable)                       | Léger, peu de boilerplate, déploiement Netlify natif, bon DX. PWA = installable sur smartphone, base pour les notifications (cf. §3.4)        | React/Vite (plus verbeux) ; app native (disproportionné, coût de maintenance et stores)      |
+| Backend                                              | **Supabase**                                                                                    | Postgres relationnel (cohérent SQL), Auth magic link natif, RLS pour le RBAC en base, storage inclus, free tier suffisant                     | Firebase (NoSQL, moins naturel), Pocketbase (nécessite un VPS, pas "gratuit Netlify")        |
+| Contrôle d'accès                                     | **RLS Postgres** + logique Edge Functions                                                       | Sécurité au plus près de la donnée ; le front ne peut pas contourner                                                                          | RBAC applicatif seul (contournable, surface de bug)                                          |
+| Logique sensible (vote, clôture, exports)            | **Supabase Edge Functions** (Deno)                                                              | Côté serveur, non manipulable par le client ; transactions et invariants garantis                                                             | Logique côté front (rejetée : un vote ne doit jamais être arbitré par le client)             |
+| Authentification                                     | **Supabase Auth** : email + mot de passe (méthode principale) et magic link, sur le même compte | Les deux méthodes nativement supportées par compte. Le login humain est un alias (table `credential`) traduit en email avant l'appel Supabase | Identifiant arbitraire natif (non supporté par Supabase Auth) ; email technique (plus lourd) |
+| Emails (activation, reset, magic link, convocations) | Supabase Auth + SMTP custom                                                                     | Mot de passe temporaire, lien d'activation, reset et convocations = emails transactionnels                                                    | SMTP Supabase par défaut (délivrabilité insuffisante pour un facteur d'auth)                 |
 
 ### 3.3 Point de vigilance : authentification et emails
 
@@ -120,7 +120,7 @@ Implications techniques :
 **Notifications push — alerte à connaître dès maintenant (impacte la conception future) :**
 
 - **Android** : push web standard via service worker + Push API. Fonctionne bien, gratuit.
-- **iOS/iPadOS** : le push web n'est supporté **que si la PWA est installée sur l'écran d'accueil** (depuis iOS 16.4). Un coloti sur iPhone qui consulte dans Safari sans installer ne recevra **aucune** notification. C'est une contrainte Apple, non contournable côté code. → Conséquence : la notification ne peut pas être le canal d'information *fiable et universel*. **L'email reste le canal officiel** (convocations notamment) ; le push est un confort additionnel.
+- **iOS/iPadOS** : le push web n'est supporté **que si la PWA est installée sur l'écran d'accueil** (depuis iOS 16.4). Un coloti sur iPhone qui consulte dans Safari sans installer ne recevra **aucune** notification. C'est une contrainte Apple, non contournable côté code. → Conséquence : la notification ne peut pas être le canal d'information _fiable et universel_. **L'email reste le canal officiel** (convocations notamment) ; le push est un confort additionnel.
 - **Infrastructure push** : nécessite un service de delivery (clés VAPID pour le Web Push, stockage des abonnements `push_subscription` par compte, et un déclencheur côté serveur — Edge Function ou cron). À provisionner quand le besoin sera activé, pas au départ. Prévoir dès maintenant une table `push_subscription(profile_id, endpoint, keys, created_at)` pour ne pas avoir à remodeler plus tard, mais ne pas l'exploiter en Lot 0.
 
 **Recommandation** : livrer la PWA installable dès le Lot 0 (manifest + SW minimal, coût marginal), et **différer les notifications** à un lot ultérieur dédié, une fois l'usage installé. Ne pas bâtir de fonctionnalité critique (ex. alerte de vote) sur le push tant que la couverture iOS dépend de l'installation manuelle.
@@ -360,8 +360,8 @@ push_subscription (
 
 ### 4.2 Décisions de modélisation et trade-offs
 
-- **Séparation `vote_log` / `ballot_vote`.** C'est le point central pour concilier *anti-double-vote* (il faut savoir qui a voté → `vote_log`) et *secret du vote* (le choix ne doit pas être nominativement attribuable → `ballot_vote`). Les deux tables sont écrites dans la **même transaction** (Edge Function), mais sans clé étrangère reliant un bulletin à un votant.
-  - **Trade-off** : ce secret est *organisationnel*, pas cryptographique. L'admin Supabase (super-utilisateur DB) pourrait théoriquement corréler les timestamps. Pour une ASL de 50 colotis, un secret cryptographique fort (vote homomorphe, mixnets) est disproportionné. **Le secret repose donc sur la confiance dans l'administrateur de la base + le journal d'audit.** À assumer explicitement. Si le secret strict est une exigence statutaire forte, cette architecture ne suffit pas et il faut un prestataire de vote spécialisé.
+- **Séparation `vote_log` / `ballot_vote`.** C'est le point central pour concilier _anti-double-vote_ (il faut savoir qui a voté → `vote_log`) et _secret du vote_ (le choix ne doit pas être nominativement attribuable → `ballot_vote`). Les deux tables sont écrites dans la **même transaction** (Edge Function), mais sans clé étrangère reliant un bulletin à un votant.
+  - **Trade-off** : ce secret est _organisationnel_, pas cryptographique. L'admin Supabase (super-utilisateur DB) pourrait théoriquement corréler les timestamps. Pour une ASL de 50 colotis, un secret cryptographique fort (vote homomorphe, mixnets) est disproportionné. **Le secret repose donc sur la confiance dans l'administrateur de la base + le journal d'audit.** À assumer explicitement. Si le secret strict est une exigence statutaire forte, cette architecture ne suffit pas et il faut un prestataire de vote spécialisé.
 - **`vote_weight` sur la propriété, pas sur le coloti.** Implémente "une voix par propriété". Un coloti possédant 3 lots vote 3 fois (une par propriété). Modifiable si les statuts prévoient une pondération aux tantièmes (changer `vote_weight`).
 - **Procurations plafonnées en applicatif, pas en contrainte SQL pure.** La limite "≤3 mandats par mandataire et par AG" est un invariant vérifié dans l'Edge Function d'acceptation de procuration (un `check` SQL ne sait pas compter par groupe simplement sans trigger). Trigger possible mais ajoute de la complexité ; la validation applicative centralisée est plus lisible.
 - **`audit_log` append-only.** Aucune route d'édition/suppression. Permissions RLS : insertion par les fonctions serveur uniquement, lecture admin. C'est la pièce qui donne la traçabilité ("valeur probante" relative).
@@ -417,7 +417,7 @@ L'admin (et les éditeurs) chargent des documents pour les mettre à disposition
   - `editors` : éditeurs et admin uniquement. Pour les documents de travail non encore diffusables.
   - `admin` : président/admin uniquement. Pour les pièces les plus sensibles.
 - **Cas des factures — point de vigilance.** Les factures peuvent contenir des données de tiers (prestataires, coordonnées, RIB) ou des informations contractuelles. Évaluer la visibilité au cas par cas plutôt que de tout exposer en `members` par défaut. La transparence financière vis-à-vis des colotis est légitime (ils financent les charges), mais une facture brute peut comporter des éléments à ne pas diffuser largement. Décision à laisser à l'admin à l'upload, avec `members` possible mais non imposé.
-- **Sécurité de l'accès aux fichiers** : pas de bucket public. Les fichiers sont servis via des *signed URLs* à durée limitée, générées à la demande selon la visibilité du document et le rôle du demandeur (contrôle RLS sur la table `document` + génération de l'URL signée côté serveur). Un lien de téléchargement ne doit jamais être devinable ni partageable durablement.
+- **Sécurité de l'accès aux fichiers** : pas de bucket public. Les fichiers sont servis via des _signed URLs_ à durée limitée, générées à la demande selon la visibilité du document et le rôle du demandeur (contrôle RLS sur la table `document` + génération de l'URL signée côté serveur). Un lien de téléchargement ne doit jamais être devinable ni partageable durablement.
 - **Traçabilité** : upload, modification de visibilité et suppression tracés dans `audit_log`. Téléchargement traçable optionnellement.
 - **Organisation côté UI** : liste filtrable par type et par année, tri par date. Pas d'arborescence de dossiers complexe au départ (la typologie + l'année suffisent pour la volumétrie d'une ASL) ; à réévaluer seulement si le volume le justifie.
 
@@ -566,16 +566,16 @@ Implémentation : génération côté Edge Function (Deno) avec une lib PDF, ou 
 
 L'ASL est **responsable de traitement**. À formaliser :
 
-| Élément | Contenu |
-|---|---|
-| **Finalités** | Gestion de l'association, organisation des AG, appels de cotisations, communication aux colotis. |
-| **Base légale** | Intérêt légitime / obligation légale de l'ASL (tenue de l'état nominatif, gestion des charges) + exécution de mission statutaire. |
-| **Données collectées** | Identité, coordonnées (email, tél), propriété(s), statut de cotisation, participation et votes aux AG. |
-| **Durées de conservation** | Données de compte : durée d'appartenance à l'ASL + archivage légal. PV et votes : durée de conservation des décisions de l'association (plusieurs années). À borner explicitement. |
-| **Destinataires** | Président, syndicat (selon rôle). Sous-traitants : Supabase (hébergement DB/auth, **vérifier localisation des données — région UE à sélectionner à la création du projet**), Netlify, fournisseur SMTP. |
-| **Droits** | Accès, rectification, effacement (sous réserve des obligations légales de conservation), opposition. Procédure de demande à documenter (contact président). |
-| **Registre des traitements** | À tenir (obligation du responsable de traitement). |
-| **Secret du vote** | Limite technique documentée (cf. §4.2) à porter à la connaissance des colotis. |
+| Élément                      | Contenu                                                                                                                                                                                                 |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Finalités**                | Gestion de l'association, organisation des AG, appels de cotisations, communication aux colotis.                                                                                                        |
+| **Base légale**              | Intérêt légitime / obligation légale de l'ASL (tenue de l'état nominatif, gestion des charges) + exécution de mission statutaire.                                                                       |
+| **Données collectées**       | Identité, coordonnées (email, tél), propriété(s), statut de cotisation, participation et votes aux AG.                                                                                                  |
+| **Durées de conservation**   | Données de compte : durée d'appartenance à l'ASL + archivage légal. PV et votes : durée de conservation des décisions de l'association (plusieurs années). À borner explicitement.                      |
+| **Destinataires**            | Président, syndicat (selon rôle). Sous-traitants : Supabase (hébergement DB/auth, **vérifier localisation des données — région UE à sélectionner à la création du projet**), Netlify, fournisseur SMTP. |
+| **Droits**                   | Accès, rectification, effacement (sous réserve des obligations légales de conservation), opposition. Procédure de demande à documenter (contact président).                                             |
+| **Registre des traitements** | À tenir (obligation du responsable de traitement).                                                                                                                                                      |
+| **Secret du vote**           | Limite technique documentée (cf. §4.2) à porter à la connaissance des colotis.                                                                                                                          |
 
 > **Point dur** : choisir la **région UE** lors de la création du projet Supabase. Par défaut, des régions hors UE peuvent être proposées, ce qui complique la conformité (transferts hors UE). À traiter dès le setup, irréversible sans migration.
 
@@ -583,36 +583,36 @@ L'ASL est **responsable de traitement**. À formaliser :
 
 ## 10. Limites, dette et risques assumés
 
-| Risque / limite | Impact | Mitigation |
-|---|---|---|
-| Pause Supabase free tier (7j inactivité) | Cold start, voire suspension | Cron de ping (GitHub Actions) |
-| Magic link / email = canal d'accès unique | Verrouillage de compte si perte email | ≥2 admins, réémission de lien d'activation et correction d'email par l'admin |
-| Lien d'activation intercepté (email compromis) | Usurpation de compte avant activation par le coloti | Usage unique, expiration 72h, réémission par l'admin ; vote réservé aux comptes `active` |
-| Lien d'activation expiré / perdu | Coloti bloqué à l'inscription | Réémission unitaire par l'admin, ou renvoi groupé semi-automatique avant AG (compte reste `pending`) |
-| Lien étendu (feuille de bienvenue) perdu/intercepté | Fenêtre d'exploitation longue (jusqu'à 30j) | Usage unique, plafond 30j, révocation/régénération possible, activation tracée ; réservé au cas nouvel arrivant |
-| Feuille de bienvenue = secret d'accès sur papier | Accès si la feuille traîne | Lien usage unique inopérant après activation ; feuille non stockée, générée à la volée |
+| Risque / limite                                      | Impact                                                           | Mitigation                                                                                                           |
+| ---------------------------------------------------- | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Pause Supabase free tier (7j inactivité)             | Cold start, voire suspension                                     | Cron de ping (GitHub Actions)                                                                                        |
+| Magic link / email = canal d'accès unique            | Verrouillage de compte si perte email                            | ≥2 admins, réémission de lien d'activation et correction d'email par l'admin                                         |
+| Lien d'activation intercepté (email compromis)       | Usurpation de compte avant activation par le coloti              | Usage unique, expiration 72h, réémission par l'admin ; vote réservé aux comptes `active`                             |
+| Lien d'activation expiré / perdu                     | Coloti bloqué à l'inscription                                    | Réémission unitaire par l'admin, ou renvoi groupé semi-automatique avant AG (compte reste `pending`)                 |
+| Lien étendu (feuille de bienvenue) perdu/intercepté  | Fenêtre d'exploitation longue (jusqu'à 30j)                      | Usage unique, plafond 30j, révocation/régénération possible, activation tracée ; réservé au cas nouvel arrivant      |
+| Feuille de bienvenue = secret d'accès sur papier     | Accès si la feuille traîne                                       | Lien usage unique inopérant après activation ; feuille non stockée, générée à la volée                               |
 | Diffusion de factures contenant des données de tiers | Exposition de coordonnées/RIB de prestataires à tous les colotis | Visibilité par document décidée à l'upload ; `members` possible mais non imposé ; caviardage recommandé avant upload |
-| Quota Storage free tier (1 Go) | Saturation si nombreux scans volumineux | Privilégier PDF compressés ; surveiller le volume ; purge des documents obsolètes selon durées RGPD |
-| Délivrabilité email | Activation / reset / magic link / convocation en spam | SMTP custom (Brevo/Resend) dès le départ |
-| Secret du vote non cryptographique | Corrélation théorique par l'admin DB | Acceptation organisationnelle + audit log ; sinon prestataire dédié |
-| Valeur juridique du vote en ligne | Annulation possible si non prévu aux statuts | Décision AG préalable (cf. §0) ; mode consultatif par défaut |
-| Free tier = pas de SLA | Indisponibilité ponctuelle | Acceptable pour l'usage ; ne pas dépendre de l'outil le jour J sans plan B papier |
-| Évolution Supabase/Netlify (changement free tier) | Coût futur possible | Schéma SQL standard Postgres = portable ; éviter le lock-in sur fonctions propriétaires non essentielles |
-| Push iOS conditionné à l'installation PWA | Coloti iPhone non-installé = aucune notification | Email reste le canal officiel ; push = confort. Inciter à l'installation, ne jamais en faire un canal critique |
-| Service Worker servant des données périmées | Affichage de votes/cotisations obsolètes | SW en cache app-shell uniquement, jamais les données sensibles (network-first ou no-cache) |
+| Quota Storage free tier (1 Go)                       | Saturation si nombreux scans volumineux                          | Privilégier PDF compressés ; surveiller le volume ; purge des documents obsolètes selon durées RGPD                  |
+| Délivrabilité email                                  | Activation / reset / magic link / convocation en spam            | SMTP custom (Brevo/Resend) dès le départ                                                                             |
+| Secret du vote non cryptographique                   | Corrélation théorique par l'admin DB                             | Acceptation organisationnelle + audit log ; sinon prestataire dédié                                                  |
+| Valeur juridique du vote en ligne                    | Annulation possible si non prévu aux statuts                     | Décision AG préalable (cf. §0) ; mode consultatif par défaut                                                         |
+| Free tier = pas de SLA                               | Indisponibilité ponctuelle                                       | Acceptable pour l'usage ; ne pas dépendre de l'outil le jour J sans plan B papier                                    |
+| Évolution Supabase/Netlify (changement free tier)    | Coût futur possible                                              | Schéma SQL standard Postgres = portable ; éviter le lock-in sur fonctions propriétaires non essentielles             |
+| Push iOS conditionné à l'installation PWA            | Coloti iPhone non-installé = aucune notification                 | Email reste le canal officiel ; push = confort. Inciter à l'installation, ne jamais en faire un canal critique       |
+| Service Worker servant des données périmées          | Affichage de votes/cotisations obsolètes                         | SW en cache app-shell uniquement, jamais les données sensibles (network-first ou no-cache)                           |
 
 ---
 
 ## 11. Découpage en lots de livraison (MVP → complet)
 
-| Lot | Contenu | Valeur |
-|---|---|---|
-| **Lot 0 — Socle** | Setup Supabase (région UE) + Netlify, auth par lien d'activation (`activation_link`, 72h, usage unique) + mdp défini par le coloti + magic link (mdp optionnel), réémission unitaire de lien, mapping `credential`, statuts de compte (`pending`/`active`/`inactive`) + `last_login_at`, **PWA installable (manifest + SW minimal)**, modèle de données (incl. `push_subscription` non exploitée), RLS de base, cron de ping, SMTP custom | Fondations + app installable sur smartphone |
-| **Lot 1 — Annuaire & info** | Comptes/rôles, propriétés, ownership, état nominatif, **lien étendu + feuille de bienvenue PDF (QR code)**, fil d'info, **gestion documentaire (upload admin/éditeur, typologie, visibilité à 3 niveaux, signed URLs)** | Communication de base + mise à disposition des documents + onboarding nouvel arrivant |
-| **Lot 2 — AG sans vote** | Cycle de vie AG, convocation + PDF, **renvoi groupé des liens aux comptes `pending`**, ordre du jour, émargement, quorum | Organisation des AG |
-| **Lot 3 — Vote** | Scrutins, procurations, Edge Functions transactionnelles, résultats, audit log, PV PDF | Cœur sensible — à activer en mode officiel seulement après décision AG |
-| **Lot 4 — Cotisations** | Appels de fonds, suivi, attestation | Gestion financière légère |
-| **Lot 5 — Notifications push** | Exploitation de `push_subscription`, clés VAPID, abonnement côté SW, déclencheurs serveur | Confort additionnel — **jamais canal critique** (couverture iOS conditionnée à l'installation PWA) |
+| Lot                            | Contenu                                                                                                                                                                                                                                                                                                                                                                                                                                   | Valeur                                                                                             |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| **Lot 0 — Socle**              | Setup Supabase (région UE) + Netlify, auth par lien d'activation (`activation_link`, 72h, usage unique) + mdp défini par le coloti + magic link (mdp optionnel), réémission unitaire de lien, mapping `credential`, statuts de compte (`pending`/`active`/`inactive`) + `last_login_at`, **PWA installable (manifest + SW minimal)**, modèle de données (incl. `push_subscription` non exploitée), RLS de base, cron de ping, SMTP custom | Fondations + app installable sur smartphone                                                        |
+| **Lot 1 — Annuaire & info**    | Comptes/rôles, propriétés, ownership, état nominatif, **lien étendu + feuille de bienvenue PDF (QR code)**, fil d'info, **gestion documentaire (upload admin/éditeur, typologie, visibilité à 3 niveaux, signed URLs)**                                                                                                                                                                                                                   | Communication de base + mise à disposition des documents + onboarding nouvel arrivant              |
+| **Lot 2 — AG sans vote**       | Cycle de vie AG, convocation + PDF, **renvoi groupé des liens aux comptes `pending`**, ordre du jour, émargement, quorum                                                                                                                                                                                                                                                                                                                  | Organisation des AG                                                                                |
+| **Lot 3 — Vote**               | Scrutins, procurations, Edge Functions transactionnelles, résultats, audit log, PV PDF                                                                                                                                                                                                                                                                                                                                                    | Cœur sensible — à activer en mode officiel seulement après décision AG                             |
+| **Lot 4 — Cotisations**        | Appels de fonds, suivi, attestation                                                                                                                                                                                                                                                                                                                                                                                                       | Gestion financière légère                                                                          |
+| **Lot 5 — Notifications push** | Exploitation de `push_subscription`, clés VAPID, abonnement côté SW, déclencheurs serveur                                                                                                                                                                                                                                                                                                                                                 | Confort additionnel — **jamais canal critique** (couverture iOS conditionnée à l'installation PWA) |
 
 Recommandation : livrer Lots 0–2 d'abord (valeur immédiate, faible risque), traiter le Lot 3 (vote) une fois la question statutaire tranchée. Le mode consultatif permet de tester le vote sans enjeu juridique entre-temps.
 

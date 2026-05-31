@@ -1,0 +1,3 @@
+# Les icônes PNG (72x72 → 512x512) sont à générer depuis le logo SVG de l'ASL.
+# Outil recommandé : https://maskable.app/editor ou pwa-asset-generator
+# Commande : npx pwa-asset-generator logo.svg ./static/icons

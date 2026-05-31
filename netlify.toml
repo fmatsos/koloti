@@ -1,0 +1,39 @@
+[build]
+  command = "npm run build"
+  publish = ".netlify/v1/functions"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Fonctions Netlify (SvelteKit SSR via adapter-netlify)
+[functions]
+  node_bundler = "esbuild"
+
+# En-têtes de sécurité globaux (complément à ceux de hooks.server.ts)
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+
+# Cache agressif sur les assets statiques (hash dans le nom)
+[[headers]]
+  for = "/_app/immutable/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Manifest PWA — pas de cache long
+[[headers]]
+  for = "/manifest.webmanifest"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+    Content-Type = "application/manifest+json"
+
+# Service worker — pas de cache long
+[[headers]]
+  for = "/service-worker.js"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
