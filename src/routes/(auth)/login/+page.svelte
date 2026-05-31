@@ -109,6 +109,12 @@
 					>
 						{loading ? 'Connexion…' : 'Se connecter'}
 					</button>
+
+					<div class="mt-3 text-center">
+						<a href="/login/identifiant-oublie" class="text-xs text-surface-500 hover:text-surface-700-300">
+							Identifiant oublié ?
+						</a>
+					</div>
 				</form>
 			{:else}
 				<form
@@ -144,6 +150,12 @@
 					>
 						{loading ? 'Envoi…' : 'Recevoir un lien'}
 					</button>
+
+					<div class="mt-3 text-center">
+						<a href="/login/identifiant-oublie" class="text-xs text-surface-500 hover:text-surface-700-300">
+							Identifiant oublié ?
+						</a>
+					</div>
 				</form>
 			{/if}
 		{/if}
