@@ -12,6 +12,10 @@ vi.mock('$env/static/public', () => ({
 	PUBLIC_APP_URL: 'http://localhost:5173'
 }));
 
+vi.mock('$lib/server/audit', () => ({
+	writeAuditLog: vi.fn(async () => {})
+}));
+
 import { actions } from '../routes/(app)/profil/+page.server';
 
 function buildMockClient() {
