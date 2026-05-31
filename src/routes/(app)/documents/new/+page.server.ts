@@ -9,7 +9,7 @@ const MAX_SIZE_BYTES = 20 * 1024 * 1024; // 20 Mo
 
 export const load: PageServerLoad = async ({ locals }) => {
 	if (!locals.profile || !['admin', 'editor'].includes(locals.profile.role)) {
-		throw redirect(303, '/app/');
+		throw redirect(303, '/');
 	}
 
 	return { session: locals.session, profile: locals.profile };

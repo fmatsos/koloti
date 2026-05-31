@@ -47,12 +47,10 @@ self.addEventListener('fetch', (event) => {
 	// - Les requêtes non-GET
 	// - Les requêtes vers Supabase (données)
 	// - Les routes d'API (données en temps réel)
-	// - Les routes app (données sensibles)
 	if (
 		request.method !== 'GET' ||
 		url.hostname.includes('supabase') ||
-		url.pathname.startsWith('/api/') ||
-		url.pathname.startsWith('/app/')
+		url.pathname.startsWith('/api/')
 	) {
 		return;
 	}

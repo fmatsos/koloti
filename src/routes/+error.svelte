@@ -26,7 +26,7 @@
 			{page.error?.message ?? "Une erreur inattendue s'est produite."}
 		</p>
 		<div class="error-actions">
-			<a href="/app/" class="btn">Retour à l'accueil</a>
+			<a href="/" class="btn">Retour à l'accueil</a>
 			<a href="/login" class="btn btn-secondary">Connexion</a>
 		</div>
 	</div>

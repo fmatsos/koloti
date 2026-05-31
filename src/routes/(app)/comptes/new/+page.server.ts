@@ -6,7 +6,7 @@ import { generateUniqueLogin } from '$lib/server/generate-login';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
-	if (!locals.profile || locals.profile.role !== 'admin') throw redirect(303, '/app/');
+	if (!locals.profile || locals.profile.role !== 'admin') throw redirect(303, '/');
 	return { session: locals.session, profile: locals.profile };
 };
 
