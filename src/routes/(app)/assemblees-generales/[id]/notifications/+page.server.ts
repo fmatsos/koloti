@@ -22,14 +22,14 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
     const { data: rows } = await supabase
         .from('assembly_notification')
-        .select('id, email, full_name, status, error_msg, sent_at')
+        .select('id, email, first_name, last_name, status, error_msg, sent_at')
         .eq('assembly_id', params.id);
 
     const notifications = [...(rows ?? [])].sort((a, b) => {
         const sa = STATUS_ORDER[a.status] ?? 99;
         const sb = STATUS_ORDER[b.status] ?? 99;
         if (sa !== sb) return sa - sb;
-        return a.full_name.localeCompare(b.full_name, 'fr');
+        return `${a.first_name} ${a.last_name}`.localeCompare(`${b.first_name} ${b.last_name}`, 'fr');
     });
 
     const summary = {

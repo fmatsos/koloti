@@ -182,8 +182,9 @@ export type Database = {
           created_at: string
           email: string
           error_msg: string | null
-          full_name: string
+          first_name: string
           id: string
+          last_name: string
           profile_id: string | null
           sent_at: string | null
           status: string
@@ -193,8 +194,9 @@ export type Database = {
           created_at?: string
           email: string
           error_msg?: string | null
-          full_name: string
+          first_name: string
           id?: string
+          last_name: string
           profile_id?: string | null
           sent_at?: string | null
           status?: string
@@ -204,8 +206,9 @@ export type Database = {
           created_at?: string
           email?: string
           error_msg?: string | null
-          full_name?: string
+          first_name?: string
           id?: string
+          last_name?: string
           profile_id?: string | null
           sent_at?: string | null
           status?: string
