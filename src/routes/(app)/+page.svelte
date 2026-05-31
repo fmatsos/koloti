@@ -88,7 +88,7 @@
 			Accès rapide
 		</h2>
 		<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-			{#each shortcuts as s}
+			{#each shortcuts as s (s.href)}
 				<a
 					href={s.href}
 					class="card {s.color} rounded-xl p-5 flex flex-col gap-3 no-underline transition-all duration-200 hover:scale-[1.02] hover:shadow-md focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:outline-none"
@@ -113,7 +113,7 @@
 				Administration
 			</h2>
 			<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-				{#each adminShortcuts as s}
+				{#each adminShortcuts as s (s.href)}
 					<a
 						href={s.href}
 						class="card {s.color} rounded-xl p-5 flex flex-col gap-3 no-underline transition-all duration-200 hover:scale-[1.02] hover:shadow-md focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:outline-none"

@@ -49,7 +49,7 @@
 			>
 				Navigation
 			</Navigation.Label>
-			{#each mainLinks as link}
+			{#each mainLinks as link (link.href)}
 				<Navigation.TriggerAnchor
 					href={link.href}
 					aria-current={isActive(link.href) ? 'page' : undefined}
@@ -71,7 +71,7 @@
 				>
 					Administration
 				</Navigation.Label>
-				{#each adminLinks as link}
+				{#each adminLinks as link (link.href)}
 					<Navigation.TriggerAnchor
 						href={link.href}
 						aria-current={isActive(link.href) ? 'page' : undefined}
