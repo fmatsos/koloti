@@ -53,9 +53,7 @@
 					</div>
 				{/if}
 				<label for="email" class="label block">
-					<span class="text-sm font-medium text-surface-700-300 block mb-1.5">
-						Adresse email
-					</span>
+					<span class="text-sm font-medium text-surface-700-300 block mb-1.5"> Adresse email </span>
 					<input
 						id="email"
 						name="email"

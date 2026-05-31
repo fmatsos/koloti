@@ -103,9 +103,11 @@ export const actions: Actions = {
 		});
 
 		// Fire-and-forget: do not await, failure must not affect the action
-		supabase.functions.invoke('notify-assembly-open', {
-			body: { assembly_id: params.id }
-		}).catch((e) => console.error('[notify-assembly-open] invoke error:', e));
+		supabase.functions
+			.invoke('notify-assembly-open', {
+				body: { assembly_id: params.id }
+			})
+			.catch((e) => console.error('[notify-assembly-open] invoke error:', e));
 
 		return { success: true };
 	},
@@ -121,8 +123,7 @@ export const actions: Actions = {
 			.select('status')
 			.eq('id', params.id)
 			.single();
-		if (!current)
-			return fail(404, { error: 'Assemblée introuvable.' });
+		if (!current) return fail(404, { error: 'Assemblée introuvable.' });
 		if (current.status !== 'open')
 			return fail(400, { error: "L'AG doit être en cours pour être clôturée." });
 
