@@ -58,7 +58,7 @@
             <tbody>
                 {#each notifications as n (n.id)}
                     <tr>
-                        <td>{n.full_name}</td>
+                        <td>{n.first_name} {n.last_name}</td>
                         <td class="text-surface-500 text-xs">{n.email}</td>
                         <td>
                             <span class="badge text-xs rounded px-1.5 py-0.5" class:preset-tonal-success={n.status === 'sent'} class:preset-tonal-error={n.status === 'failed'} class:preset-tonal-warning={n.status === 'pending'}>
