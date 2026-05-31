@@ -367,6 +367,30 @@ Migrations live in `supabase/migrations/` and are applied in order.
 |---|---|
 | `0001_schema.sql` | Complete schema — enums, all tables, indexes, RLS helpers, and all RLS policies |
 
+### Development seed
+
+`supabase db reset` automatically runs `supabase/seed.sql` after migrations.
+
+It creates 10 accounts, 8 lots, 5 assemblies at every lifecycle stage, attendance records, documents, and more. Password for all accounts: **`Dev1234!`**
+
+| Email | Login | Role | Notes |
+|---|---|---|---|
+| `admin@koloti.local` | `admin` | admin | Bernard Martin, current president |
+| `syndic@koloti.local` | `marie` | editor | Marie Dupont, syndic |
+| `jplefebvre@example.com` | `jplef01` | member | LOT-01 |
+| `smoreau@example.com` | `smor02` | member | LOT-02 |
+| `abenali@example.com` | `abena03` | member | LOT-03 (×2 votes) |
+| `iroux@example.com` | `iroux04` | member | LOT-04 |
+| `fpetit@example.com` | `fpeti05` | member | LOT-05 (ex-LOT-03) |
+| `nsimon@example.com` | `nsimo06` | member | LOT-06 |
+| `tlaurent@example.com` | `tlau07` | member, **pending** | LOT-07 — activation URL below |
+| `cdubois@example.com` | `cdubo08` | member, **inactive** | ex-LOT-08, sold property |
+
+Pending activation URL for Thomas Laurent:
+```
+http://localhost:5173/activate/000000000000000000000000000000000000000000000000000000000000cafe
+```
+
 ### Migration workflow
 
 ```bash
