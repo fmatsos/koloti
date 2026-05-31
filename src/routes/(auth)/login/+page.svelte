@@ -23,27 +23,35 @@
 	<title>Connexion — Koloti</title>
 </svelte:head>
 
-<div class="auth-container">
-	<div class="auth-card">
-		<h1>Koloti</h1>
-		<p class="subtitle">Espace ASL — Connexion</p>
+<div class="min-h-dvh flex items-center justify-center p-4 bg-surface-100-900">
+	<div class="card preset-filled-surface-50-950 rounded-2xl p-8 w-full max-w-md shadow-xl border border-surface-200-800">
+		<!-- Logo + title -->
+		<div class="text-center mb-6">
+			<div class="text-4xl mb-2" aria-hidden="true">🏡</div>
+			<h1 class="h2 font-bold text-surface-900-100">Koloti</h1>
+			<p class="text-surface-500 text-sm mt-1">Espace ASL — Connexion</p>
+		</div>
 
 		{#if displayError}
-			<div class="alert alert-error" role="alert">
+			<div class="card preset-tonal-error rounded-xl p-3.5 text-sm mb-4" role="alert">
 				{displayError}
 			</div>
 		{/if}
 
 		{#if form?.success}
-			<div class="alert alert-success" role="status">
+			<div class="card preset-tonal-success rounded-xl p-3.5 text-sm mb-4" role="status">
 				Un lien de connexion vous a été envoyé par email. Vérifiez votre boîte de réception.
 			</div>
 		{:else}
-			<div class="tabs" role="tablist">
+			<!-- Mode tabs -->
+			<div class="flex gap-1 p-1 bg-surface-200-800 rounded-xl mb-6" role="tablist">
 				<button
 					role="tab"
 					aria-selected={mode === 'password'}
-					class:active={mode === 'password'}
+					class="flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all duration-150
+						{mode === 'password'
+						? 'bg-surface-50-950 text-surface-900-100 shadow-sm'
+						: 'text-surface-500 hover:text-surface-700-300'}"
 					onclick={() => (mode = 'password')}
 				>
 					Mot de passe
@@ -51,7 +59,10 @@
 				<button
 					role="tab"
 					aria-selected={mode === 'magiclink'}
-					class:active={mode === 'magiclink'}
+					class="flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all duration-150
+						{mode === 'magiclink'
+						? 'bg-surface-50-950 text-surface-900-100 shadow-sm'
+						: 'text-surface-500 hover:text-surface-700-300'}"
 					onclick={() => (mode = 'magiclink')}
 				>
 					Lien magique
@@ -59,11 +70,11 @@
 			</div>
 
 			{#if mode === 'password'}
-				<form method="POST" action="?/password" onsubmit={() => (loading = true)}>
+				<form method="POST" action="?/password" onsubmit={() => (loading = true)} class="space-y-4">
 					<input type="hidden" name="redirectTo" value={data.redirectTo} />
 
-					<div class="field">
-						<label for="login-pwd">Identifiant</label>
+					<label class="label block">
+						<span class="text-sm font-medium text-surface-700-300 block mb-1.5">Identifiant</span>
 						<input
 							id="login-pwd"
 							name="login"
@@ -72,11 +83,12 @@
 							bind:value={login}
 							required
 							placeholder="ex. lot12"
+							class="input w-full rounded-lg border border-surface-300-700 bg-surface-100-900 px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition"
 						/>
-					</div>
+					</label>
 
-					<div class="field">
-						<label for="password">Mot de passe</label>
+					<label class="label block">
+						<span class="text-sm font-medium text-surface-700-300 block mb-1.5">Mot de passe</span>
 						<input
 							id="password"
 							name="password"
@@ -84,19 +96,24 @@
 							autocomplete="current-password"
 							bind:value={password}
 							required
+							class="input w-full rounded-lg border border-surface-300-700 bg-surface-100-900 px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition"
 						/>
-					</div>
+					</label>
 
-					<button type="submit" class="btn-primary" disabled={loading}>
+					<button
+						type="submit"
+						class="btn preset-filled-primary-500 w-full rounded-lg py-2.5 text-sm font-semibold mt-2 transition-all duration-150 hover:opacity-90 disabled:opacity-50"
+						disabled={loading}
+					>
 						{loading ? 'Connexion…' : 'Se connecter'}
 					</button>
 				</form>
 			{:else}
-				<form method="POST" action="?/magiclink" onsubmit={() => (loading = true)}>
+				<form method="POST" action="?/magiclink" onsubmit={() => (loading = true)} class="space-y-4">
 					<input type="hidden" name="redirectTo" value={data.redirectTo} />
 
-					<div class="field">
-						<label for="login-magic">Identifiant</label>
+					<label class="label block">
+						<span class="text-sm font-medium text-surface-700-300 block mb-1.5">Identifiant</span>
 						<input
 							id="login-magic"
 							name="login"
@@ -105,14 +122,19 @@
 							bind:value={login}
 							required
 							placeholder="ex. lot12"
+							class="input w-full rounded-lg border border-surface-300-700 bg-surface-100-900 px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition"
 						/>
-					</div>
+					</label>
 
-					<p class="hint">
+					<p class="text-xs text-surface-500">
 						Un lien de connexion sera envoyé à l'adresse email associée à votre identifiant.
 					</p>
 
-					<button type="submit" class="btn-primary" disabled={loading}>
+					<button
+						type="submit"
+						class="btn preset-filled-primary-500 w-full rounded-lg py-2.5 text-sm font-semibold mt-2 transition-all duration-150 hover:opacity-90 disabled:opacity-50"
+						disabled={loading}
+					>
 						{loading ? 'Envoi…' : 'Recevoir un lien'}
 					</button>
 				</form>
@@ -120,120 +142,3 @@
 		{/if}
 	</div>
 </div>
-
-<style>
-	.auth-container {
-		min-height: 100vh;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		padding: 1rem;
-		background: var(--color-bg, #f5f5f5);
-	}
-
-	.auth-card {
-		background: white;
-		border-radius: 0.5rem;
-		padding: 2rem;
-		width: 100%;
-		max-width: 400px;
-		box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
-	}
-
-	h1 {
-		margin: 0 0 0.25rem;
-		font-size: 1.75rem;
-		text-align: center;
-	}
-
-	.subtitle {
-		text-align: center;
-		color: #666;
-		margin: 0 0 1.5rem;
-	}
-
-	.tabs {
-		display: flex;
-		gap: 0.5rem;
-		margin-bottom: 1.5rem;
-		border-bottom: 2px solid #eee;
-	}
-
-	.tabs button {
-		background: none;
-		border: none;
-		padding: 0.5rem 1rem;
-		cursor: pointer;
-		color: #666;
-		border-bottom: 2px solid transparent;
-		margin-bottom: -2px;
-	}
-
-	.tabs button.active {
-		color: var(--color-primary, #1a73e8);
-		border-bottom-color: var(--color-primary, #1a73e8);
-	}
-
-	.field {
-		margin-bottom: 1rem;
-	}
-
-	label {
-		display: block;
-		font-size: 0.875rem;
-		font-weight: 500;
-		margin-bottom: 0.25rem;
-	}
-
-	input[type='text'],
-	input[type='password'] {
-		width: 100%;
-		padding: 0.5rem 0.75rem;
-		border: 1px solid #ddd;
-		border-radius: 0.25rem;
-		font-size: 1rem;
-		box-sizing: border-box;
-	}
-
-	.btn-primary {
-		width: 100%;
-		padding: 0.75rem;
-		background: var(--color-primary, #1a73e8);
-		color: white;
-		border: none;
-		border-radius: 0.25rem;
-		font-size: 1rem;
-		cursor: pointer;
-		margin-top: 0.5rem;
-	}
-
-	.btn-primary:disabled {
-		opacity: 0.6;
-		cursor: not-allowed;
-	}
-
-	.alert {
-		padding: 0.75rem 1rem;
-		border-radius: 0.25rem;
-		margin-bottom: 1rem;
-		font-size: 0.875rem;
-	}
-
-	.alert-error {
-		background: #fef2f2;
-		color: #dc2626;
-		border: 1px solid #fecaca;
-	}
-
-	.alert-success {
-		background: #f0fdf4;
-		color: #16a34a;
-		border: 1px solid #bbf7d0;
-	}
-
-	.hint {
-		font-size: 0.875rem;
-		color: #666;
-		margin: 0 0 1rem;
-	}
-</style>

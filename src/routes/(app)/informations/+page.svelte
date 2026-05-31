@@ -6,33 +6,41 @@
 
 <svelte:head><title>Informations — Koloti</title></svelte:head>
 
-<div class="page-header">
-	<div class="header-row">
-		<h1>Fil d'informations</h1>
+<div class="space-y-6">
+	<div class="flex items-center justify-between">
+		<h1 class="h3 font-bold">Fil d'informations</h1>
 		{#if data.isAdminOrEditor}
-			<a href="/informations/new" class="btn-sm">+ Nouveau post</a>
+			<a href="/informations/new" class="btn preset-filled-primary-500 rounded-lg text-sm px-4 py-2">
+				+ Nouveau post
+			</a>
 		{/if}
 	</div>
-</div>
 
-{#if data.posts.length === 0}
-	<p class="empty">Aucune actualité publiée.</p>
-{:else}
-	<div class="posts">
-		{#each data.posts as post (post.id)}
-			{@const author = Array.isArray(post.author) ? post.author[0] : post.author}
-			<article class="post-card">
-				<div class="post-header">
-					<div class="title-row">
-						<h2><a href="/informations/{post.id}/view">{post.title}</a></h2>
+	{#if data.posts.length === 0}
+		<div class="card preset-filled-surface-100-900 rounded-xl p-8 text-center">
+			<p class="text-surface-500">Aucune actualité publiée.</p>
+		</div>
+	{:else}
+		<div class="flex flex-col gap-4">
+			{#each data.posts as post (post.id)}
+				{@const author = Array.isArray(post.author) ? post.author[0] : post.author}
+				<article class="card preset-filled-surface-50-950 rounded-xl border border-surface-200-800 p-6 shadow-sm transition-shadow hover:shadow-md">
+					<div class="flex flex-wrap items-baseline gap-2 mb-1">
+						<h2 class="h5 font-semibold">
+							<a href="/informations/{post.id}/view" class="hover:text-primary-500 transition-colors">
+								{post.title}
+							</a>
+						</h2>
 						{#if data.isAdminOrEditor && !post.is_published}
-							<span class="badge-draft">Brouillon</span>
+							<span class="badge preset-tonal-warning text-xs rounded-full px-2 py-0.5">Brouillon</span>
 						{/if}
 						{#if data.isAdminOrEditor}
-							<a href="/informations/{post.id}/edit" class="edit-link">Modifier</a>
+							<a href="/informations/{post.id}/edit" class="text-xs text-primary-500 hover:underline ml-auto">
+								Modifier
+							</a>
 						{/if}
 					</div>
-					<div class="meta">
+					<div class="flex items-center gap-2 text-xs text-surface-500 mb-3">
 						{#if post.published_at}
 							<time datetime={post.published_at}>
 								{new Date(post.published_at).toLocaleDateString('fr-FR', {
@@ -42,133 +50,30 @@
 								})}
 							</time>
 						{/if}
-						{#if author?.first_name || author?.last_name}<span class="author">· {author?.first_name} {author?.last_name}</span>{/if}
+						{#if author?.first_name || author?.last_name}
+							<span>·</span>
+							<span>{author?.first_name} {author?.last_name}</span>
+						{/if}
 					</div>
-				</div>
-				<div class="prose">{@html post.bodyPreviewHtml}</div>
-				{#if post.isTruncated}
-					<a href="/informations/{post.id}/view" class="read-more">Voir l'information complète →</a>
+					<div class="prose prose-sm text-surface-700-300 text-sm leading-relaxed">{@html post.bodyPreviewHtml}</div>
+					{#if post.isTruncated}
+						<a href="/informations/{post.id}/view" class="inline-block mt-3 text-sm text-primary-500 hover:underline">
+							Voir l'information complète →
+						</a>
+					{/if}
+				</article>
+			{/each}
+		</div>
+
+		{#if data.totalPages > 1}
+			<nav class="flex items-center justify-between pt-4 border-t border-surface-200-800 text-sm" aria-label="Pagination">
+				<span class="text-surface-500">Page {data.currentPage} / {data.totalPages}</span>
+				{#if data.currentPage < data.totalPages}
+					<a href="/informations/page/{data.currentPage + 1}" class="btn preset-tonal-primary rounded-lg px-4 py-1.5 text-sm">
+						Page suivante →
+					</a>
 				{/if}
-			</article>
-		{/each}
-	</div>
-
-	{#if data.totalPages > 1}
-		<nav class="pagination">
-			<span class="page-info">Page {data.currentPage} / {data.totalPages}</span>
-			{#if data.currentPage < data.totalPages}
-				<a href="/informations/page/{data.currentPage + 1}" class="page-link">Page suivante →</a>
-			{/if}
-		</nav>
+			</nav>
+		{/if}
 	{/if}
-{/if}
-
-<style>
-	.page-header {
-		margin-bottom: 1.5rem;
-	}
-	.header-row {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-	}
-	h1 {
-		margin: 0;
-		font-size: 1.5rem;
-	}
-	.posts {
-		display: flex;
-		flex-direction: column;
-		gap: 1.25rem;
-	}
-	.post-card {
-		background: white;
-		border-radius: var(--radius, 0.375rem);
-		border: 1px solid var(--color-border, #e5e7eb);
-		padding: 1.5rem;
-	}
-	.post-header {
-		margin-bottom: 1rem;
-	}
-	.title-row {
-		display: flex;
-		align-items: baseline;
-		gap: 0.5rem;
-		margin-bottom: 0.25rem;
-		flex-wrap: wrap;
-	}
-	h2 {
-		margin: 0;
-		font-size: 1.125rem;
-	}
-	h2 a {
-		color: inherit;
-		text-decoration: none;
-	}
-	h2 a:hover {
-		text-decoration: underline;
-	}
-	.edit-link {
-		font-size: 0.75rem;
-		color: var(--color-primary, #1a73e8);
-		margin-left: auto;
-	}
-	.badge-draft {
-		display: inline-block;
-		background: #fef9c3;
-		color: #854d0e;
-		font-size: 0.75rem;
-		padding: 0.1rem 0.5rem;
-		border-radius: 9999px;
-	}
-	.meta {
-		font-size: 0.8125rem;
-		color: var(--color-text-muted, #6b7280);
-	}
-	.author {
-		margin-left: 0.25rem;
-	}
-	.read-more {
-		display: inline-block;
-		margin-top: 0.75rem;
-		font-size: 0.875rem;
-		color: var(--color-primary, #1a73e8);
-	}
-	.pagination {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		margin-top: 1.5rem;
-		padding: 0.75rem 0;
-		border-top: 1px solid var(--color-border, #e5e7eb);
-		font-size: 0.875rem;
-	}
-	.page-info,
-	.empty {
-		color: var(--color-text-muted, #6b7280);
-	}
-	.page-link {
-		color: var(--color-primary, #1a73e8);
-		text-decoration: none;
-	}
-	.prose {
-		font-size: 0.9375rem;
-		line-height: 1.6;
-	}
-	.prose :global(p) {
-		margin: 0 0 0.75rem;
-	}
-	.prose :global(ul),
-	.prose :global(ol) {
-		margin: 0 0 0.75rem;
-		padding-left: 1.5rem;
-	}
-	.btn-sm {
-		padding: 0.375rem 0.875rem;
-		background: var(--color-primary, #1a73e8);
-		color: white;
-		border-radius: 0.25rem;
-		font-size: 0.8125rem;
-		text-decoration: none;
-	}
-</style>
+</div>
