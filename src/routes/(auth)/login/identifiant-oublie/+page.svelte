@@ -3,6 +3,7 @@
     import type { ActionData } from './$types';
     let { form }: { form: ActionData } = $props();
     let loading = $state(false);
+    let emailError = $state('');
 </script>
 
 <svelte:head>
@@ -33,12 +34,30 @@
             <p class="text-sm text-surface-500 mb-6">
                 Saisissez votre adresse email pour recevoir la liste de vos identifiants associés.
             </p>
-            <form method="POST" onsubmit={() => (loading = true)} class="space-y-4">
-                <label class="label block">
+            <form
+                method="POST"
+                onsubmit={() => {
+                    const emailInput = document.getElementById('email') as HTMLInputElement | null;
+                    if (!emailInput?.value.includes('@')) {
+                        emailError = 'Veuillez entrer une adresse email valide.';
+                        return;
+                    }
+                    emailError = '';
+                    loading = true;
+                }}
+                class="space-y-4"
+            >
+                {#if emailError}
+                    <div class="card preset-tonal-error rounded-xl p-3.5 text-sm mb-4" role="alert">
+                        {emailError}
+                    </div>
+                {/if}
+                <label for="email" class="label block">
                     <span class="text-sm font-medium text-surface-700-300 block mb-1.5">
                         Adresse email
                     </span>
                     <input
+                        id="email"
                         name="email"
                         type="email"
                         autocomplete="email"
