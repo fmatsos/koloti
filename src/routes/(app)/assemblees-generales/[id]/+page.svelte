@@ -137,11 +137,11 @@
 						<Dialog closeOnInteractOutside={false}>
 							<Dialog.Trigger class="btn-action-danger w-full">Clôturer l'AG</Dialog.Trigger>
 							<Portal>
-								<Dialog.Backdrop class="fixed inset-0 z-50 bg-surface-50-950/50" />
+								<Dialog.Backdrop class="fixed inset-0 z-40 bg-surface-50-950/50" />
 								<Dialog.Positioner class="fixed inset-0 z-50 flex justify-center items-center p-4">
 									<Dialog.Content class="card bg-surface-100-900 w-full max-w-md p-6 space-y-4 shadow-xl">
 										<Dialog.Title class="text-lg font-bold">Clôturer l'assemblée générale</Dialog.Title>
-										<Dialog.Description>
+										<Dialog.Description class="text-error-500 font-semibold">
 											Cette action est irréversible. L'AG passera au statut "Clôturée".
 										</Dialog.Description>
 										<footer class="flex justify-end gap-2">
@@ -356,7 +356,7 @@
 		margin-bottom: 1rem;
 		font-size: 0.875rem;
 	}
-	.btn-action-danger {
+	:global(.btn-action-danger) {
 		display: block;
 		padding: 0.5rem 0.875rem;
 		background: #dc2626;
