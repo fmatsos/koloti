@@ -1,8 +1,6 @@
 import { error, fail, redirect } from '@sveltejs/kit';
 import { createServiceClient } from '$lib/server/supabase';
 import { writeAuditLog } from '$lib/server/audit';
-import { PUBLIC_SUPABASE_URL } from '$env/static/public';
-import { SUPABASE_SERVICE_ROLE_KEY } from '$env/static/private';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
@@ -25,37 +23,26 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 };
 
 export const actions: Actions = {
-	default: async ({ locals, params, fetch }) => {
+	default: async ({ locals, params }) => {
 		if (!locals.profile || !['admin', 'editor'].includes(locals.profile.role))
 			return fail(403, { error: 'Non autorisé.' });
 
-		// Appel de la Edge Function convene-assembly
-		const fnUrl = `${PUBLIC_SUPABASE_URL}/functions/v1/convene-assembly`;
-		const res = await fetch(fnUrl, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-				'x-koloti-actor-id': locals.profile.id
-			},
-			body: JSON.stringify({ assembly_id: params.id })
+		const supabase = createServiceClient();
+		const { data, error: fnError } = await supabase.functions.invoke('convene-assembly', {
+			body: { assembly_id: params.id },
+			headers: { 'x-koloti-actor-id': locals.profile.id }
 		});
 
-		if (!res.ok) {
-			const body = await res.json().catch(() => ({}));
-			return fail(res.status, {
-				error: (body as { error?: string }).error ?? 'Erreur lors de la convocation.'
-			});
+		if (fnError) {
+			return fail(500, { error: fnError.message ?? 'Erreur lors de la convocation.' });
 		}
-
-		const result = await res.json();
 
 		await writeAuditLog({
 			actorId: locals.profile.id,
 			action: 'assembly.convene_initiated',
 			entity: 'assembly',
 			entityId: params.id,
-			payload: { recipients: result.recipients }
+			payload: { recipients: data.recipients }
 		});
 
 		redirect(303, `/assemblees-generales/${params.id}`);

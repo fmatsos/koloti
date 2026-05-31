@@ -9,22 +9,22 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	if (user && locals.profile?.must_change_credentials) {
 		throw redirect(303, '/change-credentials');
 	}
-	if (user) throw redirect(303, '/app');
+	if (user) throw redirect(303, '/');
 
 	const error = url.searchParams.get('error');
-	const redirectTo = url.searchParams.get('redirect') ?? '/app';
+	const redirectTo = url.searchParams.get('redirect') ?? '/';
 	return { session: null, profile: null, error, redirectTo };
 };
 
 const passwordSchema = z.object({
 	login: z.string().min(1).max(50),
 	password: z.string().min(1).max(200),
-	redirectTo: z.string().default('/app')
+	redirectTo: z.string().default('/')
 });
 
 const magicLinkSchema = z.object({
 	login: z.string().min(1).max(50),
-	redirectTo: z.string().default('/app')
+	redirectTo: z.string().default('/')
 });
 
 export const actions: Actions = {

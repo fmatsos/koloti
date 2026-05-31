@@ -10,7 +10,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	if (!locals.profile.must_change_credentials) {
-		throw redirect(303, '/app');
+		throw redirect(303, '/');
 	}
 
 	const supabase = createServiceClient();
@@ -58,7 +58,7 @@ export const actions: Actions = {
 		}
 
 		if (!locals.profile.must_change_credentials) {
-			throw redirect(303, '/app');
+			throw redirect(303, '/');
 		}
 
 		const formData = Object.fromEntries(await request.formData());
@@ -137,6 +137,6 @@ export const actions: Actions = {
 			});
 		}
 
-		throw redirect(303, '/app');
+		throw redirect(303, '/');
 	}
 };

@@ -116,7 +116,7 @@ const authGuardHandle: Handle = async ({ event, resolve }) => {
 	}
 
 	if (pathname === '/change-credentials' && profile && !profile.must_change_credentials) {
-		throw redirect(303, '/app');
+		throw redirect(303, '/');
 	}
 
 	// Compte désactivé → redirection avec message

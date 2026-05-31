@@ -5,7 +5,7 @@ import type { RequestHandler } from './$types';
 // emailRedirectTo doit pointer ici ; le paramètre `next` porte la destination finale.
 export const GET: RequestHandler = async ({ url, locals }) => {
 	const code = url.searchParams.get('code');
-	const next = url.searchParams.get('next') ?? '/app';
+	const next = url.searchParams.get('next') ?? '/';
 
 	if (code) {
 		const { error } = await locals.supabase.auth.exchangeCodeForSession(code);
