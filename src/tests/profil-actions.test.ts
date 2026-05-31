@@ -128,7 +128,7 @@ describe('profil : updateEmail', () => {
 	});
 });
 
-describe("profil : requestPasswordChange", () => {
+describe('profil : requestPasswordChange', () => {
 	it("retourne toujours succès (pas d'énumération)", async () => {
 		const supabaseMock = {
 			auth: { resetPasswordForEmail: vi.fn(async () => ({ error: null })) }

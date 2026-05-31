@@ -12,16 +12,21 @@
 <!-- Toast notifications -->
 <Toast.Group {toaster}>
 	{#snippet children(toast)}
-		<Toast toast={toast} class="card shadow-lg p-4 rounded-xl flex items-start gap-3 max-w-sm">
+		<Toast {toast} class="card shadow-lg p-4 rounded-xl flex items-start gap-3 max-w-sm">
 			<div class="flex-1 min-w-0">
 				{#if toast.title}
 					<Toast.Title class="font-semibold text-sm">{toast.title}</Toast.Title>
 				{/if}
 				{#if toast.description}
-					<Toast.Description class="text-xs text-surface-600-400 mt-0.5">{toast.description}</Toast.Description>
+					<Toast.Description class="text-xs text-surface-600-400 mt-0.5"
+						>{toast.description}</Toast.Description
+					>
 				{/if}
 			</div>
-			<Toast.CloseTrigger class="text-surface-400 hover:text-surface-700 transition-colors flex-shrink-0" aria-label="Fermer">
+			<Toast.CloseTrigger
+				class="text-surface-400 hover:text-surface-700 transition-colors flex-shrink-0"
+				aria-label="Fermer"
+			>
 				✕
 			</Toast.CloseTrigger>
 		</Toast>
@@ -31,7 +36,10 @@
 <!-- App shell: sidebar + header + main + footer -->
 <div class="grid grid-cols-[260px_1fr] grid-rows-[auto_1fr_auto] min-h-svh">
 	<!-- Sidebar -->
-	<aside class="col-start-1 row-start-1 row-span-3 overflow-y-auto sticky top-0 h-svh shadow-sm" aria-label="Navigation latérale">
+	<aside
+		class="col-start-1 row-start-1 row-span-3 overflow-y-auto sticky top-0 h-svh shadow-sm"
+		aria-label="Navigation latérale"
+	>
 		<AppSidebar profile={data.profile} />
 	</aside>
 
@@ -41,11 +49,7 @@
 	</header>
 
 	<!-- Main content -->
-	<main
-		class="col-start-2 row-start-2 p-6 min-w-0"
-		id="main-content"
-		tabindex="-1"
-	>
+	<main class="col-start-2 row-start-2 p-6 min-w-0" id="main-content" tabindex="-1">
 		{@render children()}
 	</main>
 

@@ -28,7 +28,9 @@
 		</p>
 		<ul class="account-list">
 			{#each data.pending as p (p.id)}
-				<li><strong>{p.first_name} {p.last_name}</strong> <span class="muted">— {p.email}</span></li>
+				<li>
+					<strong>{p.first_name} {p.last_name}</strong> <span class="muted">— {p.email}</span>
+				</li>
 			{/each}
 		</ul>
 

@@ -24,7 +24,9 @@
 </svelte:head>
 
 <div class="min-h-dvh flex items-center justify-center p-4 bg-surface-100-900">
-	<div class="card preset-filled-surface-50-950 rounded-2xl p-8 w-full max-w-md shadow-xl border border-surface-200-800">
+	<div
+		class="card preset-filled-surface-50-950 rounded-2xl p-8 w-full max-w-md shadow-xl border border-surface-200-800"
+	>
 		<!-- Logo + title -->
 		<div class="text-center mb-6">
 			<div class="text-4xl mb-2" aria-hidden="true">🏡</div>
@@ -109,7 +111,12 @@
 					</button>
 				</form>
 			{:else}
-				<form method="POST" action="?/magiclink" onsubmit={() => (loading = true)} class="space-y-4">
+				<form
+					method="POST"
+					action="?/magiclink"
+					onsubmit={() => (loading = true)}
+					class="space-y-4"
+				>
 					<input type="hidden" name="redirectTo" value={data.redirectTo} />
 
 					<label class="label block">

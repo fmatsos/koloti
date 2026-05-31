@@ -81,7 +81,10 @@
 
 	<!-- Main shortcuts -->
 	<section aria-labelledby="nav-heading">
-		<h2 id="nav-heading" class="h5 font-semibold text-surface-700-300 mb-4 uppercase tracking-wider text-xs">
+		<h2
+			id="nav-heading"
+			class="h5 font-semibold text-surface-700-300 mb-4 uppercase tracking-wider text-xs"
+		>
 			Accès rapide
 		</h2>
 		<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -103,7 +106,10 @@
 	<!-- Admin shortcuts -->
 	{#if isAdminOrEditor}
 		<section aria-labelledby="admin-heading">
-			<h2 id="admin-heading" class="h5 font-semibold text-surface-700-300 mb-4 uppercase tracking-wider text-xs">
+			<h2
+				id="admin-heading"
+				class="h5 font-semibold text-surface-700-300 mb-4 uppercase tracking-wider text-xs"
+			>
 				Administration
 			</h2>
 			<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

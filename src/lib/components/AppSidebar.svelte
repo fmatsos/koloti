@@ -26,7 +26,10 @@
 	];
 </script>
 
-<Navigation layout="sidebar" class="flex flex-col h-full bg-surface-100-900 border-r border-surface-300-700">
+<Navigation
+	layout="sidebar"
+	class="flex flex-col h-full bg-surface-100-900 border-r border-surface-300-700"
+>
 	<Navigation.Header class="p-4 border-b border-surface-300-700">
 		<a
 			href="/"
@@ -41,7 +44,9 @@
 
 	<Navigation.Content class="flex-1 overflow-y-auto p-3">
 		<Navigation.Group>
-			<Navigation.Label class="text-xs font-semibold uppercase tracking-widest text-surface-400 px-3 py-1.5">
+			<Navigation.Label
+				class="text-xs font-semibold uppercase tracking-widest text-surface-400 px-3 py-1.5"
+			>
 				Navigation
 			</Navigation.Label>
 			{#each mainLinks as link}
@@ -61,7 +66,9 @@
 
 		{#if isAdminOrEditor}
 			<Navigation.Group class="mt-4">
-				<Navigation.Label class="text-xs font-semibold uppercase tracking-widest text-surface-400 px-3 py-1.5">
+				<Navigation.Label
+					class="text-xs font-semibold uppercase tracking-widest text-surface-400 px-3 py-1.5"
+				>
 					Administration
 				</Navigation.Label>
 				{#each adminLinks as link}
