@@ -91,7 +91,7 @@ describe('actions.close', () => {
 			params: buildParams(),
 			request: new Request('http://localhost')
 		} as never);
-		expect(result).toMatchObject({ data: { success: true } });
+		expect(result).toMatchObject({ success: true });
 	});
 
 	it('met à jour status=closed et closed_at dans la DB si admin + statut open', async () => {

@@ -134,6 +134,6 @@ export const actions: Actions = {
 			entityId: params.id,
 			payload: {}
 		});
-		return { data: { success: true } };
+		return { success: true };
 	}
 };
