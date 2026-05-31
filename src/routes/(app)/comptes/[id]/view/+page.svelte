@@ -25,9 +25,40 @@
 	}
 
 	let dialog: HTMLDialogElement;
+	let welcomeDialog: HTMLDialogElement;
+	let isGeneratingWelcome = false;
+
 	$effect(() => {
 		if (form?.needsConfirmation && dialog) dialog.showModal();
 	});
+
+	$effect(() => {
+		if (data.created && welcomeDialog) welcomeDialog.showModal();
+	});
+
+	async function downloadWelcomeSheet() {
+		isGeneratingWelcome = true;
+		try {
+			const response = await fetch(`/api/welcome-sheet?profile_id=${compte.id}`);
+			if (!response.ok) {
+				throw new Error(`Erreur: ${response.status}`);
+			}
+			const blob = await response.blob();
+			const url = URL.createObjectURL(blob);
+			const a = document.createElement('a');
+			a.href = url;
+			a.download = `bienvenue-${compte.first_name}-${compte.last_name}.pdf`;
+			document.body.appendChild(a);
+			a.click();
+			URL.revokeObjectURL(url);
+			a.remove();
+			welcomeDialog.close();
+		} catch (err) {
+			console.error('Erreur téléchargement PDF:', err);
+		} finally {
+			isGeneratingWelcome = false;
+		}
+	}
 </script>
 
 <svelte:head><title>{compte.first_name} {compte.last_name} — Koloti</title></svelte:head>
@@ -69,6 +100,17 @@
 			<dt>Dernière connexion</dt>
 			<dd>{fmt(compte.last_login_at)}</dd>
 		</dl>
+		{#if compte.status === 'pending'}
+			<hr />
+			<button
+				type="button"
+				onclick={() => downloadWelcomeSheet()}
+				disabled={isGeneratingWelcome}
+				class="btn-sm btn-outline full-width"
+			>
+				{isGeneratingWelcome ? 'Génération...' : 'Générer la feuille de bienvenue (PDF)'}
+			</button>
+		{/if}
 	</div>
 
 	<div class="card">
@@ -147,6 +189,32 @@
 			<button type="submit" class="btn-sm">Confirmer le transfert</button>
 		</div>
 	</form>
+</dialog>
+
+<dialog bind:this={welcomeDialog}>
+	<h2>Compte créé — Feuille de bienvenue ?</h2>
+	<p class="subheading">
+		<strong>{compte.first_name} {compte.last_name}</strong> · Identifiant : <code>{cred?.login ?? '—'}</code>
+	</p>
+	<div class="warning-box">
+		<p>
+			Générer la feuille de bienvenue créera un lien d'activation valable <strong>30 jours</strong>
+			et <strong>invalidera le lien email</strong> envoyé précédemment (72 heures).
+		</p>
+	</div>
+	<div class="dialog-actions">
+		<button type="button" onclick={() => welcomeDialog.close()} class="btn-outline btn-sm"
+			>Ignorer</button
+		>
+		<button
+			type="button"
+			onclick={downloadWelcomeSheet}
+			disabled={isGeneratingWelcome}
+			class="btn-primary btn-sm"
+		>
+			{isGeneratingWelcome ? 'Génération...' : 'Générer et télécharger'}
+		</button>
+	</div>
 </dialog>
 
 <style>
@@ -320,5 +388,36 @@
 		background: #fef2f2;
 		color: #dc2626;
 		border: 1px solid #fecaca;
+	}
+	.subheading {
+		font-size: 0.875rem;
+		margin: 0.5rem 0 1rem;
+		color: #6b7280;
+	}
+	.warning-box {
+		background: #fffbeb;
+		border: 1px solid #fbbf24;
+		border-radius: 0.375rem;
+		padding: 0.75rem 1rem;
+		margin-bottom: 1rem;
+		font-size: 0.875rem;
+	}
+	.warning-box p {
+		margin: 0;
+	}
+	.btn-primary {
+		background: var(--color-primary, #1a73e8);
+		color: white;
+		border: none;
+	}
+	.btn-primary:hover:not(:disabled) {
+		background: #1557b0;
+	}
+	.btn-primary:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+	.full-width {
+		width: 100%;
 	}
 </style>
