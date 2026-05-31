@@ -61,7 +61,9 @@ async function sendEmail(opts: {
 		}
 		return;
 	}
-	throw new Error('[notify-assembly-open] No email provider configured (BREVO_API_KEY or RESEND_API_KEY required)');
+	throw new Error(
+		'[notify-assembly-open] No email provider configured (BREVO_API_KEY or RESEND_API_KEY required)'
+	);
 }
 
 Deno.serve(async (req: Request) => {
@@ -73,8 +75,13 @@ Deno.serve(async (req: Request) => {
 
 		if (!supabaseUrl || !serviceRoleKey) {
 			return new Response(
-				JSON.stringify({ error: 'Missing required environment variables: SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY' }),
-				{ status: 500, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } }
+				JSON.stringify({
+					error: 'Missing required environment variables: SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY'
+				}),
+				{
+					status: 500,
+					headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' }
+				}
 			);
 		}
 
@@ -162,7 +169,9 @@ Deno.serve(async (req: Request) => {
 			minute: '2-digit'
 		});
 		const typeLabel =
-			ag.type === 'ordinaire' ? 'Assemblée Générale Ordinaire' : 'Assemblée Générale Extraordinaire';
+			ag.type === 'ordinaire'
+				? 'Assemblée Générale Ordinaire'
+				: 'Assemblée Générale Extraordinaire';
 		const agUrl = `${appUrl}/assemblees-generales/${ag.id}`;
 
 		let sent = 0;
@@ -176,7 +185,9 @@ Deno.serve(async (req: Request) => {
 
 			const html =
 				`<p>Bonjour ${escapeHtml(profile.first_name)} ${escapeHtml(profile.last_name)},</p>` +
-				`<p>La séance <strong>${escapeHtml(ag.title)}</strong> (${escapeHtml(typeLabel)}, le ${escapeHtml(dateStr)}) est désormais ouverte.</p>` +
+				`<p>La séance <strong>${escapeHtml(ag.title)}</strong> (${escapeHtml(
+					typeLabel
+				)}, le ${escapeHtml(dateStr)}) est désormais ouverte.</p>` +
 				`<p><a href="${escapeHtml(agUrl)}">Accédez à l'AG</a></p>`;
 
 			try {

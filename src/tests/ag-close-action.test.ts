@@ -49,7 +49,6 @@ beforeEach(() => {
 });
 
 describe('actions.close', () => {
-
 	it('retourne 403 si non connecté', async () => {
 		const { client } = buildMockClient('open');
 		mockClient = client;
