@@ -16,7 +16,7 @@ async function sendEmail(opts: {
 }): Promise<void> {
 	const brevoApiKey = Deno.env.get('BREVO_API_KEY');
 	if (brevoApiKey) {
-		await fetch('https://api.brevo.com/v3/smtp/email', {
+		const response = await fetch('https://api.brevo.com/v3/smtp/email', {
 			method: 'POST',
 			headers: { 'api-key': brevoApiKey, 'Content-Type': 'application/json' },
 			body: JSON.stringify({
@@ -27,11 +27,15 @@ async function sendEmail(opts: {
 				textContent: opts.text
 			})
 		});
+		if (!response.ok) {
+			const errorText = await response.text();
+			throw new Error(`Brevo API error ${response.status}: ${errorText}`);
+		}
 		return;
 	}
 	const resendApiKey = Deno.env.get('RESEND_API_KEY');
 	if (resendApiKey) {
-		await fetch('https://api.resend.com/emails', {
+		const response = await fetch('https://api.resend.com/emails', {
 			method: 'POST',
 			headers: { Authorization: `Bearer ${resendApiKey}`, 'Content-Type': 'application/json' },
 			body: JSON.stringify({
@@ -42,17 +46,29 @@ async function sendEmail(opts: {
 				text: opts.text
 			})
 		});
+		if (!response.ok) {
+			const errorText = await response.text();
+			throw new Error(`Resend API error ${response.status}: ${errorText}`);
+		}
 		return;
 	}
-	console.warn('[notify-assembly-open] Aucun provider email configuré — email non envoyé à', opts.to);
+	throw new Error('[notify-assembly-open] No email provider configured (BREVO_API_KEY or RESEND_API_KEY required)');
 }
 
 Deno.serve(async (req: Request) => {
 	if (req.method === 'OPTIONS') return new Response(null, { headers: CORS_HEADERS });
 
 	try {
-		const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-		const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+		const supabaseUrl = Deno.env.get('SUPABASE_URL');
+		const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+
+		if (!supabaseUrl || !serviceRoleKey) {
+			return new Response(
+				JSON.stringify({ error: 'Missing required environment variables: SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY' }),
+				{ status: 500, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } }
+			);
+		}
+
 		const appUrl = Deno.env.get('PUBLIC_APP_URL') ?? 'http://localhost:5173';
 		const smtpFrom = Deno.env.get('SMTP_FROM') ?? 'noreply@koloti.app';
 		const smtpFromName = Deno.env.get('SMTP_FROM_NAME') ?? 'Koloti';
@@ -100,17 +116,32 @@ Deno.serve(async (req: Request) => {
 
 		const activeProfiles = profiles ?? [];
 
-		// Bulk insert pending rows
+		// Bulk insert pending rows and capture returned IDs
+		const notificationMap = new Map<string, string>();
 		if (activeProfiles.length > 0) {
-			await adminClient.from('assembly_notification').insert(
-				activeProfiles.map((p) => ({
-					assembly_id: assemblyId,
-					profile_id: p.id,
-					email: p.email,
-					full_name: `${p.first_name} ${p.last_name}`,
-					status: 'pending'
-				}))
-			);
+			const { data: inserted, error: insertError } = await adminClient
+				.from('assembly_notification')
+				.insert(
+					activeProfiles.map((p) => ({
+						assembly_id: assemblyId,
+						profile_id: p.id,
+						email: p.email,
+						full_name: `${p.first_name} ${p.last_name}`,
+						status: 'pending'
+					}))
+				)
+				.select('id, profile_id');
+
+			if (insertError) {
+				throw new Error(`Failed to insert assembly notifications: ${insertError.message}`);
+			}
+
+			// Build map of profile_id -> notification_id
+			if (inserted) {
+				for (const row of inserted) {
+					notificationMap.set(row.profile_id, row.id);
+				}
+			}
 		}
 
 		const dateStr = new Date(ag.scheduled_at).toLocaleString('fr-FR', {
@@ -148,22 +179,26 @@ Deno.serve(async (req: Request) => {
 					html
 				});
 
-				await adminClient
-					.from('assembly_notification')
-					.update({ status: 'sent', sent_at: new Date().toISOString() })
-					.eq('assembly_id', assemblyId)
-					.eq('profile_id', profile.id);
+				const notifId = notificationMap.get(profile.id);
+				if (notifId) {
+					await adminClient
+						.from('assembly_notification')
+						.update({ status: 'sent', sent_at: new Date().toISOString() })
+						.eq('id', notifId);
+				}
 
 				sent++;
 			} catch (e) {
 				const errorMsg = e instanceof Error ? e.message : String(e);
 				console.error('[notify-assembly-open] Erreur envoi à', profile.email, errorMsg);
 
-				await adminClient
-					.from('assembly_notification')
-					.update({ status: 'failed', error_msg: errorMsg })
-					.eq('assembly_id', assemblyId)
-					.eq('profile_id', profile.id);
+				const notifId = notificationMap.get(profile.id);
+				if (notifId) {
+					await adminClient
+						.from('assembly_notification')
+						.update({ status: 'failed', error_msg: errorMsg })
+						.eq('id', notifId);
+				}
 
 				failed++;
 			}
