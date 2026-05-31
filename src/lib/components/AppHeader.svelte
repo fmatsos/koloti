@@ -12,7 +12,7 @@
 <AppBar class="bg-surface-50-950 border-b border-surface-200-800 shadow-sm px-4 py-2.5">
 	<AppBar.Lead>
 		<nav aria-label="Fil d'ariane" class="flex items-center gap-1 text-sm min-w-0">
-			{#each crumbs as crumb, i}
+			{#each crumbs as crumb, i (crumb.href)}
 				{#if i > 0}
 					<span class="text-surface-400 mx-0.5 select-none" aria-hidden="true">/</span>
 				{/if}
