@@ -102,5 +102,38 @@ export const actions: Actions = {
 			payload: {}
 		});
 		return { success: true };
+	},
+
+	close: async ({ locals, params }) => {
+		if (!locals.profile || locals.profile.role !== 'admin')
+			return fail(403, { error: 'Non autorisé.' });
+
+		const supabase = createServiceClient();
+		const { data: current } = await supabase
+			.from('assembly')
+			.select('status')
+			.eq('id', params.id)
+			.single();
+		if (current?.status !== 'open')
+			return fail(400, { error: "L'AG doit être en cours pour être clôturée." });
+
+		const { error: err } = await supabase
+			.from('assembly')
+			.update({
+				status: 'closed',
+				closed_at: new Date().toISOString()
+			})
+			.eq('id', params.id);
+
+		if (err) return fail(400, { error: err.message });
+
+		await writeAuditLog({
+			actorId: locals.profile.id,
+			action: 'assembly.close',
+			entity: 'assembly',
+			entityId: params.id,
+			payload: {}
+		});
+		return { data: { success: true } };
 	}
 };
