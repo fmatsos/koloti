@@ -21,7 +21,7 @@ export async function loadInfoPage(page: number, profile: { role: string } | nul
 	let query = supabase
 		.from('info_post')
 		.select(
-			'id, title, body, is_published, published_at, created_at, author:author_id(full_name)',
+			'id, title, body, is_published, published_at, created_at, author:author_id(first_name, last_name)',
 			{
 				count: 'exact'
 			}

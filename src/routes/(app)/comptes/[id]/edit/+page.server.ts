@@ -14,7 +14,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		.from('profile')
 		.select(
 			`
-			id, full_name, email, phone, role, status, last_login_at, activated_at, created_at,
+			id, first_name, last_name, email, phone, role, status, last_login_at, activated_at, created_at,
 			credential(id, login)
 		`
 		)
@@ -169,7 +169,7 @@ export const actions: Actions = {
 		// Notifier l'utilisateur si son compte est actif
 		const { data: profile } = await supabase
 			.from('profile')
-			.select('email, full_name, status')
+			.select('email, first_name, last_name, status')
 			.eq('id', params.id)
 			.single();
 
@@ -178,7 +178,7 @@ export const actions: Actions = {
 				await sendMail({
 					to: profile.email,
 					subject: 'Votre identifiant de connexion a changé',
-					text: `Bonjour ${profile.full_name},\n\nVotre identifiant de connexion a été modifié par un administrateur.\n\nNouvel identifiant : ${login}\n\nSi vous n'êtes pas à l'origine de cette modification, contactez votre administrateur.`
+					text: `Bonjour ${profile.first_name} ${profile.last_name},\n\nVotre identifiant de connexion a été modifié par un administrateur.\n\nNouvel identifiant : ${login}\n\nSi vous n'êtes pas à l'origine de cette modification, contactez votre administrateur.`
 				});
 			} catch (e) {
 				console.error('Erreur envoi email login:', e);
@@ -207,7 +207,7 @@ export const actions: Actions = {
 
 		const { data: profile } = await supabase
 			.from('profile')
-			.select('email, full_name, status')
+			.select('email, first_name, last_name, status')
 			.eq('id', params.id)
 			.single();
 
@@ -216,7 +216,7 @@ export const actions: Actions = {
 				await sendMail({
 					to: profile.email,
 					subject: 'Votre identifiant de connexion a changé',
-					text: `Bonjour ${profile.full_name},\n\nVotre identifiant de connexion a été modifié par un administrateur.\n\nNouvel identifiant : ${login}\n\nSi vous n'êtes pas à l'origine de cette modification, contactez votre administrateur.`
+					text: `Bonjour ${profile.first_name} ${profile.last_name},\n\nVotre identifiant de connexion a été modifié par un administrateur.\n\nNouvel identifiant : ${login}\n\nSi vous n'êtes pas à l'origine de cette modification, contactez votre administrateur.`
 				});
 			} catch (e) {
 				console.error('Erreur envoi email login:', e);

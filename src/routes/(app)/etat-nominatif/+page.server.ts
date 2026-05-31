@@ -12,7 +12,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	const { data: rows } = await supabase
 		.from('property')
 		.select(
-			'id, reference, street_number, street_name, cadastre_number, vote_weight, ownership(id, start_date, end_date, is_primary, profile:profile_id(full_name, email, phone))'
+			'id, reference, street_number, street_name, cadastre_number, vote_weight, ownership(id, start_date, end_date, is_primary, profile:profile_id(first_name, last_name, email, phone))'
 		)
 		.order('reference');
 

@@ -11,7 +11,7 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
 	const { data: compte } = await supabase
 		.from('profile')
 		.select(
-			'id, full_name, email, phone, role, status, last_login_at, activated_at, created_at, credential(id, login)'
+			'id, first_name, last_name, email, phone, role, status, last_login_at, activated_at, created_at, credential(id, login)'
 		)
 		.eq('id', params.id)
 		.single();
@@ -60,7 +60,7 @@ export const actions: Actions = {
 		const supabase = createServiceClient();
 		const { data: prop } = await supabase
 			.from('property')
-			.select('id, reference, ownership(id, end_date, profile:profile_id(id, full_name))')
+			.select('id, reference, ownership(id, end_date, profile:profile_id(id, first_name, last_name))')
 			.eq('reference', parsed.data.property_reference)
 			.single();
 
@@ -78,7 +78,7 @@ export const actions: Actions = {
 			return {
 				needsConfirmation: true,
 				property: { id: prop.id, reference: prop.reference },
-				currentOwnerName: ownerProfile?.full_name ?? '—'
+				currentOwnerName: ownerProfile ? `${ownerProfile.first_name} ${ownerProfile.last_name}`.trim() : '—'
 			};
 		}
 

@@ -11,7 +11,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 };
 
 const newAccountSchema = z.object({
-	full_name: z.string().min(2).max(100).trim(),
+	first_name: z.string().min(1, 'Le prénom est requis.').max(100).trim(),
+	last_name: z.string().min(1, 'Le nom est requis.').max(100).trim(),
 	email: z.string().email().max(200).toLowerCase().trim(),
 	phone: z.string().max(20).trim().optional(),
 	role: z.enum(['admin', 'editor', 'member'])
@@ -33,7 +34,7 @@ export const actions: Actions = {
 			});
 		}
 
-		const { full_name, email, phone, role } = parsed.data;
+		const { first_name, last_name, email, phone, role } = parsed.data;
 		const supabase = createServiceClient();
 
 		// Vérifier que l'email n'est pas déjà utilisé
@@ -64,7 +65,8 @@ export const actions: Actions = {
 		const { error: profileError } = await supabase.from('profile').insert({
 			id: authUser.user.id,
 			email,
-			full_name,
+			first_name,
+			last_name,
 			phone: phone ?? null,
 			role,
 			status: 'pending'
@@ -95,7 +97,7 @@ export const actions: Actions = {
 			action: 'account.create',
 			entity: 'profile',
 			entityId: authUser.user.id,
-			payload: { email, full_name, role, login }
+			payload: { email, first_name, last_name, role, login }
 		});
 
 		// Déclencher l'émission du lien d'activation via l'Edge Function

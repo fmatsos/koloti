@@ -84,7 +84,7 @@ export const load: PageServerLoad = async ({ params }) => {
 
 	const { data: profile } = await supabase
 		.from('profile')
-		.select('id, full_name, email')
+		.select('id, first_name, last_name, email')
 		.eq('id', link.profile_id)
 		.single();
 
@@ -95,7 +95,7 @@ export const load: PageServerLoad = async ({ params }) => {
 		reason: null as null,
 		token,
 		linkId: link.id,
-		fullName: profile?.full_name ?? null
+		fullName: profile ? `${profile.first_name} ${profile.last_name}`.trim() : null
 	};
 };
 
