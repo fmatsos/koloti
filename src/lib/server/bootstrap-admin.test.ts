@@ -101,7 +101,8 @@ describe('bootstrapAdminAccount', () => {
 		expect(state.profileInsertRows).toEqual([
 			expect.objectContaining({
 				email: BOOTSTRAP_ADMIN_EMAIL,
-				full_name: BOOTSTRAP_ADMIN_FULL_NAME,
+				first_name: BOOTSTRAP_ADMIN_FULL_NAME,
+				last_name: '',
 				role: 'admin',
 				status: 'active',
 				must_change_credentials: true
