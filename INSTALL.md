@@ -1,6 +1,6 @@
 # Koloti — Installation & Configuration Guide
 
-> **Koloti** is a SvelteKit 5 PWA for managing an ASL *(Association Syndicale Libre)*.
+> **Koloti** is a SvelteKit 5 PWA for managing an ASL _(Association Syndicale Libre)_.
 > Stack: **SvelteKit · Supabase · Netlify · Tailwind CSS · Skeleton UI**
 
 ---
@@ -30,15 +30,15 @@ Browser  ←→  SvelteKit (Netlify Functions)  ←→  Supabase (Postgres + Aut
                                              ←→  SMTP relay (Brevo / Resend)
 ```
 
-| Layer | Technology | Notes |
-|---|---|---|
-| Frontend | SvelteKit 5 + Tailwind 4 + Skeleton UI | Runes mode, PWA |
-| Backend | SvelteKit SSR — Netlify adapter | Server-side rendering + API routes |
-| Database | Supabase (Postgres 17) | RLS on all tables |
-| Auth | Supabase Auth | Magic links, custom activation flow |
-| Storage | Supabase Storage | Private bucket, signed URLs |
-| Serverless | Supabase Edge Functions (Deno 2) | Email workflows |
-| CI/CD | GitHub Actions | Lint → Test → Build → Deploy |
+| Layer      | Technology                             | Notes                               |
+| ---------- | -------------------------------------- | ----------------------------------- |
+| Frontend   | SvelteKit 5 + Tailwind 4 + Skeleton UI | Runes mode, PWA                     |
+| Backend    | SvelteKit SSR — Netlify adapter        | Server-side rendering + API routes  |
+| Database   | Supabase (Postgres 17)                 | RLS on all tables                   |
+| Auth       | Supabase Auth                          | Magic links, custom activation flow |
+| Storage    | Supabase Storage                       | Private bucket, signed URLs         |
+| Serverless | Supabase Edge Functions (Deno 2)       | Email workflows                     |
+| CI/CD      | GitHub Actions                         | Lint → Test → Build → Deploy        |
 
 ---
 
@@ -46,13 +46,13 @@ Browser  ←→  SvelteKit (Netlify Functions)  ←→  Supabase (Postgres + Aut
 
 Install these tools before starting.
 
-| Tool | Version | Install |
-|---|---|---|
-| **Node.js** | 22 (see `.nvmrc`) | [nodejs.org](https://nodejs.org) or `nvm install` |
-| **npm** | 10+ | Bundled with Node 22 |
-| **Docker** | latest | [docker.com](https://www.docker.com) — required for local Supabase |
-| **Supabase CLI** | latest | `npm install -g supabase` |
-| **Git** | 2.x+ | [git-scm.com](https://git-scm.com) |
+| Tool             | Version           | Install                                                            |
+| ---------------- | ----------------- | ------------------------------------------------------------------ |
+| **Node.js**      | 22 (see `.nvmrc`) | [nodejs.org](https://nodejs.org) or `nvm install`                  |
+| **npm**          | 10+               | Bundled with Node 22                                               |
+| **Docker**       | latest            | [docker.com](https://www.docker.com) — required for local Supabase |
+| **Supabase CLI** | latest            | `npm install -g supabase`                                          |
+| **Git**          | 2.x+              | [git-scm.com](https://git-scm.com)                                 |
 
 > **nvm users:** run `nvm install` at the project root. The `.nvmrc` file pins the correct Node version.
 
@@ -69,6 +69,7 @@ npm run dev                   # starts Supabase, generates .env.development, sta
 ```
 
 `npm run dev` is the only command you need. It:
+
 1. Starts local Supabase (Docker).
 2. Reads `supabase status` and **auto-generates `.env.development`** with the local API URL and keys.
 3. Starts the Vite dev server.
@@ -111,13 +112,13 @@ supabase start
 
 This starts a local stack:
 
-| Service | Local URL |
-|---|---|
-| REST API | `http://127.0.0.1:54321` |
-| Supabase Studio | `http://127.0.0.1:54323` |
-| Email UI (Inbucket) | `http://127.0.0.1:54324` |
-| SMTP (for dev) | `127.0.0.1:54325` |
-| Postgres | `postgresql://postgres:postgres@127.0.0.1:54322/postgres` |
+| Service             | Local URL                                                 |
+| ------------------- | --------------------------------------------------------- |
+| REST API            | `http://127.0.0.1:54321`                                  |
+| Supabase Studio     | `http://127.0.0.1:54323`                                  |
+| Email UI (Inbucket) | `http://127.0.0.1:54324`                                  |
+| SMTP (for dev)      | `127.0.0.1:54325`                                         |
+| Postgres            | `postgresql://postgres:postgres@127.0.0.1:54322/postgres` |
 
 > All outgoing emails during local development are **captured** by Inbucket — nothing is sent. Open `http://127.0.0.1:54324` to inspect emails.
 
@@ -189,20 +190,20 @@ Supabase's built-in email has very low delivery limits on the free tier. Use a c
 
 **Recommended providers:**
 
-| Provider | Free tier | Notes |
-|---|---|---|
-| [Brevo](https://brevo.com) | 300 emails/day | Easy setup |
+| Provider                     | Free tier      | Notes              |
+| ---------------------------- | -------------- | ------------------ |
+| [Brevo](https://brevo.com)   | 300 emails/day | Easy setup         |
 | [Resend](https://resend.com) | 100 emails/day | Developer-friendly |
 
 **In the Supabase dashboard:** Authentication → Settings → SMTP Settings → enable **Custom SMTP**.
 
 Brevo settings:
 
-| Field | Value |
-|---|---|
-| Host | `smtp-relay.brevo.com` |
-| Port | `587` |
-| Username | Your Brevo account email |
+| Field    | Value                                        |
+| -------- | -------------------------------------------- |
+| Host     | `smtp-relay.brevo.com`                       |
+| Port     | `587`                                        |
+| Username | Your Brevo account email                     |
 | Password | SMTP API key — **not** your account password |
 
 > ⚠️ Email reliability is critical. All access flows (account activation, magic links, assembly notifications) go through email.
@@ -211,22 +212,22 @@ Brevo settings:
 
 In **Authentication → Settings**:
 
-| Setting | Value |
-|---|---|
-| Site URL | `https://your-app.netlify.app` |
-| Redirect URLs | `https://your-app.netlify.app/**` |
-| JWT expiry | `3600` seconds (1 hour) |
+| Setting             | Value                                                   |
+| ------------------- | ------------------------------------------------------- |
+| Site URL            | `https://your-app.netlify.app`                          |
+| Redirect URLs       | `https://your-app.netlify.app/**`                       |
+| JWT expiry          | `3600` seconds (1 hour)                                 |
 | Email confirmations | **Disabled** — activation is handled by the custom flow |
 
 ### 2.6 Create the Storage bucket
 
 In **Storage → New bucket**:
 
-| Field | Value |
-|---|---|
-| Name | `documents` |
-| Access | **Private** (downloads use signed URLs) |
-| Max file size | `20 MB` |
+| Field              | Value                                                                                           |
+| ------------------ | ----------------------------------------------------------------------------------------------- |
+| Name               | `documents`                                                                                     |
+| Access             | **Private** (downloads use signed URLs)                                                         |
+| Max file size      | `20 MB`                                                                                         |
 | Allowed MIME types | `application/pdf, image/*, application/msword, application/vnd.openxmlformats-officedocument.*` |
 
 ### 2.7 Deploy Edge Functions
@@ -301,35 +302,35 @@ Static assets under `/_app/immutable/*` are served with `Cache-Control: immutabl
 
 ### 4.1 Workflows
 
-| Workflow | Trigger | What it does |
-|---|---|---|
-| `ci.yml` | Push to `main` or `claude/**`, PR to `main` | Lint → TypeScript check → Unit tests → Build |
-| `deploy.yml` | Push to `main`, manual | Build → Apply Supabase migrations → Deploy to Netlify |
-| `ping-supabase.yml` | Every 3 days (cron) | Pings `/api/health` to keep the free-tier project awake |
+| Workflow            | Trigger                                     | What it does                                            |
+| ------------------- | ------------------------------------------- | ------------------------------------------------------- |
+| `ci.yml`            | Push to `main` or `claude/**`, PR to `main` | Lint → TypeScript check → Unit tests → Build            |
+| `deploy.yml`        | Push to `main`, manual                      | Build → Apply Supabase migrations → Deploy to Netlify   |
+| `ping-supabase.yml` | Every 3 days (cron)                         | Pings `/api/health` to keep the free-tier project awake |
 
 ### 4.2 Required repository secrets
 
 Go to **GitHub → Settings → Secrets and variables → Actions** and add:
 
-| Secret | Description |
-|---|---|
-| `PUBLIC_SUPABASE_URL` | Supabase project URL |
-| `PUBLIC_SUPABASE_ANON_KEY` | Supabase anon (Publishable) key |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service_role (Secret) key |
-| `SUPABASE_ACCESS_TOKEN` | Supabase CLI token — run `supabase login` and copy the token |
-| `SUPABASE_DB_PASSWORD` | Database password — set when you created the project |
-| `SMTP_HOST` | SMTP server hostname |
-| `SMTP_PORT` | SMTP port (usually `587`) |
-| `SMTP_USER` | SMTP username |
-| `SMTP_PASS` | SMTP password or API key |
-| `SMTP_FROM` | Sender email address |
-| `SMTP_FROM_NAME` | Sender display name |
-| `PUBLIC_APP_URL` | Public app URL (no trailing slash) |
-| `NETLIFY_AUTH_TOKEN` | Netlify personal access token |
-| `NETLIFY_SITE_ID` | Netlify site ID (Site settings → General) |
-| `APP_URL` | App URL used by the health-check cron |
-| `SUPABASE_URL` | Supabase project URL (used by ping cron) |
-| `SUPABASE_ANON_KEY` | Supabase anon key (used by ping cron) |
+| Secret                      | Description                                                  |
+| --------------------------- | ------------------------------------------------------------ |
+| `PUBLIC_SUPABASE_URL`       | Supabase project URL                                         |
+| `PUBLIC_SUPABASE_ANON_KEY`  | Supabase anon (Publishable) key                              |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service_role (Secret) key                           |
+| `SUPABASE_ACCESS_TOKEN`     | Supabase CLI token — run `supabase login` and copy the token |
+| `SUPABASE_DB_PASSWORD`      | Database password — set when you created the project         |
+| `SMTP_HOST`                 | SMTP server hostname                                         |
+| `SMTP_PORT`                 | SMTP port (usually `587`)                                    |
+| `SMTP_USER`                 | SMTP username                                                |
+| `SMTP_PASS`                 | SMTP password or API key                                     |
+| `SMTP_FROM`                 | Sender email address                                         |
+| `SMTP_FROM_NAME`            | Sender display name                                          |
+| `PUBLIC_APP_URL`            | Public app URL (no trailing slash)                           |
+| `NETLIFY_AUTH_TOKEN`        | Netlify personal access token                                |
+| `NETLIFY_SITE_ID`           | Netlify site ID (Site settings → General)                    |
+| `APP_URL`                   | App URL used by the health-check cron                        |
+| `SUPABASE_URL`              | Supabase project URL (used by ping cron)                     |
+| `SUPABASE_ANON_KEY`         | Supabase anon key (used by ping cron)                        |
 
 ### 4.3 Anti-pause cron (free tier)
 
@@ -341,19 +342,19 @@ The workflow `ping-supabase.yml` runs every 3 days and pings `/api/health`. No e
 
 ## 5 · Environment variables reference
 
-| Variable | Scope | Required | Description |
-|---|---|---|---|
-| `PUBLIC_SUPABASE_URL` | Client + Server | ✅ | Supabase project URL |
-| `PUBLIC_SUPABASE_ANON_KEY` | Client + Server | ✅ | Supabase anon (public) key |
-| `SUPABASE_SERVICE_ROLE_KEY` | **Server only** | ✅ | Service role key — bypasses RLS, **never expose client-side** |
-| `SMTP_HOST` | Server | ✅ | SMTP server hostname |
-| `SMTP_PORT` | Server | ✅ | SMTP port (`587` for STARTTLS) |
-| `SMTP_USER` | Server | ✅ | SMTP username |
-| `SMTP_PASS` | Server | ✅ | SMTP password or API key |
-| `SMTP_FROM` | Server | ✅ | Sender email address |
-| `SMTP_FROM_NAME` | Server | ✅ | Sender display name |
-| `PUBLIC_APP_URL` | Client + Server | ✅ | Public app URL — no trailing slash |
-| `NODE_ENV` | Server | — | `development` or `production` |
+| Variable                    | Scope           | Required | Description                                                   |
+| --------------------------- | --------------- | -------- | ------------------------------------------------------------- |
+| `PUBLIC_SUPABASE_URL`       | Client + Server | ✅       | Supabase project URL                                          |
+| `PUBLIC_SUPABASE_ANON_KEY`  | Client + Server | ✅       | Supabase anon (public) key                                    |
+| `SUPABASE_SERVICE_ROLE_KEY` | **Server only** | ✅       | Service role key — bypasses RLS, **never expose client-side** |
+| `SMTP_HOST`                 | Server          | ✅       | SMTP server hostname                                          |
+| `SMTP_PORT`                 | Server          | ✅       | SMTP port (`587` for STARTTLS)                                |
+| `SMTP_USER`                 | Server          | ✅       | SMTP username                                                 |
+| `SMTP_PASS`                 | Server          | ✅       | SMTP password or API key                                      |
+| `SMTP_FROM`                 | Server          | ✅       | Sender email address                                          |
+| `SMTP_FROM_NAME`            | Server          | ✅       | Sender display name                                           |
+| `PUBLIC_APP_URL`            | Client + Server | ✅       | Public app URL — no trailing slash                            |
+| `NODE_ENV`                  | Server          | —        | `development` or `production`                                 |
 
 **Local dev note:** `PUBLIC_SUPABASE_URL`, `PUBLIC_SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY` are **auto-generated** into `.env.development` by `npm run dev`. You do not need to set them manually for local development.
 
@@ -363,8 +364,8 @@ The workflow `ping-supabase.yml` runs every 3 days and pings `/api/health`. No e
 
 Migrations live in `supabase/migrations/` and are applied in order.
 
-| File | Description |
-|---|---|
+| File              | Description                                                                     |
+| ----------------- | ------------------------------------------------------------------------------- |
 | `0001_schema.sql` | Complete schema — enums, all tables, indexes, RLS helpers, and all RLS policies |
 
 ### Development seed
@@ -373,20 +374,21 @@ Migrations live in `supabase/migrations/` and are applied in order.
 
 It creates 10 accounts, 8 lots, 5 assemblies at every lifecycle stage, attendance records, documents, and more. Password for all accounts: **`Dev1234!`**
 
-| Email | Login | Role | Notes |
-|---|---|---|---|
-| `admin@koloti.local` | `admin` | admin | Bernard Martin, current president |
-| `syndic@koloti.local` | `marie` | editor | Marie Dupont, syndic |
-| `jplefebvre@example.com` | `jplef01` | member | LOT-01 |
-| `smoreau@example.com` | `smor02` | member | LOT-02 |
-| `abenali@example.com` | `abena03` | member | LOT-03 (×2 votes) |
-| `iroux@example.com` | `iroux04` | member | LOT-04 |
-| `fpetit@example.com` | `fpeti05` | member | LOT-05 (ex-LOT-03) |
-| `nsimon@example.com` | `nsimo06` | member | LOT-06 |
-| `tlaurent@example.com` | `tlau07` | member, **pending** | LOT-07 — activation URL below |
-| `cdubois@example.com` | `cdubo08` | member, **inactive** | ex-LOT-08, sold property |
+| Email                    | Login     | Role                 | Notes                             |
+| ------------------------ | --------- | -------------------- | --------------------------------- |
+| `admin@koloti.local`     | `admin`   | admin                | Bernard Martin, current president |
+| `syndic@koloti.local`    | `marie`   | editor               | Marie Dupont, syndic              |
+| `jplefebvre@example.com` | `jplef01` | member               | LOT-01                            |
+| `smoreau@example.com`    | `smor02`  | member               | LOT-02                            |
+| `abenali@example.com`    | `abena03` | member               | LOT-03 (×2 votes)                 |
+| `iroux@example.com`      | `iroux04` | member               | LOT-04                            |
+| `fpetit@example.com`     | `fpeti05` | member               | LOT-05 (ex-LOT-03)                |
+| `nsimon@example.com`     | `nsimo06` | member               | LOT-06                            |
+| `tlaurent@example.com`   | `tlau07`  | member, **pending**  | LOT-07 — activation URL below     |
+| `cdubois@example.com`    | `cdubo08` | member, **inactive** | ex-LOT-08, sold property          |
 
 Pending activation URL for Thomas Laurent:
+
 ```
 http://localhost:5173/activate/000000000000000000000000000000000000000000000000000000000000cafe
 ```
@@ -418,13 +420,13 @@ supabase db push --linked
 
 Edge Functions run on Deno 2 in Supabase's infrastructure. They handle all email workflows.
 
-| Function | Purpose |
-|---|---|
+| Function                | Purpose                                    |
+| ----------------------- | ------------------------------------------ |
 | `issue-activation-link` | Sends the initial account activation email |
-| `issue-extended-link` | Sends an extended-access link |
-| `welcome-sheet` | Sends the welcome document to a new member |
-| `convene-assembly` | Sends assembly convocation emails |
-| `notify-assembly-open` | Notifies members when an assembly opens |
+| `issue-extended-link`   | Sends an extended-access link              |
+| `welcome-sheet`         | Sends the welcome document to a new member |
+| `convene-assembly`      | Sends assembly convocation emails          |
+| `notify-assembly-open`  | Notifies members when an assembly opens    |
 
 ### Deploy all functions at once
 
@@ -449,11 +451,13 @@ Emails sent by local Edge Functions are captured by Inbucket at `http://127.0.0.
 There is no manual bootstrap step.
 
 On the first request against an **empty database**, Koloti automatically:
+
 1. Detects there is no admin account.
 2. Creates a default account with login `admin` and a **random password**.
 3. Prints the credentials **once** to stdout.
 
 Find the credentials in:
+
 - **Local dev:** in the terminal where `npm run dev` is running.
 - **Production:** in Netlify runtime logs on the first request after deployment.
 
