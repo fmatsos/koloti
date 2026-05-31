@@ -3,6 +3,9 @@
 
 	let { form }: { form: ActionData } = $props();
 
+	type FormWithValues = { error?: string; values?: Record<string, string> };
+	const formData = $derived(form as FormWithValues | null);
+
 	let email = $state('');
 	let phone = $state('');
 	let role = $state('member');
@@ -17,8 +20,8 @@
 	<h1>Créer un compte</h1>
 </div>
 
-{#if form?.error}
-	<div class="alert alert-error">{form.error}</div>
+{#if formData?.error}
+	<div class="alert alert-error">{formData.error}</div>
 {/if}
 
 <div class="form-card">
@@ -29,7 +32,7 @@
 				id="first_name"
 				name="first_name"
 				type="text"
-				value={form?.values?.first_name ?? ''}
+				value={formData?.values?.first_name ?? ''}
 				required
 				maxlength="100"
 			/>
@@ -40,7 +43,7 @@
 				id="last_name"
 				name="last_name"
 				type="text"
-				value={form?.values?.last_name ?? ''}
+				value={formData?.values?.last_name ?? ''}
 				required
 				maxlength="100"
 			/>
