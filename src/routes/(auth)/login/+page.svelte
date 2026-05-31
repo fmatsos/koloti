@@ -52,8 +52,8 @@
 					aria-selected={mode === 'password'}
 					class="flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all duration-150
 						{mode === 'password'
-						? 'bg-surface-50-950 text-surface-900-100 shadow-sm'
-						: 'text-surface-500 hover:text-surface-700-300'}"
+							? 'bg-surface-50-950 text-surface-900-100 shadow-sm'
+							: 'text-surface-500 hover:text-surface-700-300'}"
 					onclick={() => (mode = 'password')}
 				>
 					Mot de passe
@@ -63,8 +63,8 @@
 					aria-selected={mode === 'magiclink'}
 					class="flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all duration-150
 						{mode === 'magiclink'
-						? 'bg-surface-50-950 text-surface-900-100 shadow-sm'
-						: 'text-surface-500 hover:text-surface-700-300'}"
+							? 'bg-surface-50-950 text-surface-900-100 shadow-sm'
+							: 'text-surface-500 hover:text-surface-700-300'}"
 					onclick={() => (mode = 'magiclink')}
 				>
 					Lien magique
