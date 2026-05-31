@@ -6,6 +6,15 @@ const CORS_HEADERS = {
 		'authorization, x-client-info, apikey, content-type, x-koloti-actor-id'
 };
 
+function escapeHtml(s: string): string {
+	return s
+		.replace(/&/g, '&amp;')
+		.replace(/</g, '&lt;')
+		.replace(/>/g, '&gt;')
+		.replace(/"/g, '&quot;')
+		.replace(/'/g, '&#39;');
+}
+
 async function sendEmail(opts: {
 	from: string;
 	fromName: string;
@@ -166,16 +175,16 @@ Deno.serve(async (req: Request) => {
 				`Accédez à l'AG : ${agUrl}`;
 
 			const html =
-				`<p>Bonjour ${profile.first_name} ${profile.last_name},</p>` +
-				`<p>La séance <strong>${ag.title}</strong> (${typeLabel}, le ${dateStr}) est désormais ouverte.</p>` +
-				`<p><a href="${agUrl}">Accédez à l'AG</a></p>`;
+				`<p>Bonjour ${escapeHtml(profile.first_name)} ${escapeHtml(profile.last_name)},</p>` +
+				`<p>La séance <strong>${escapeHtml(ag.title)}</strong> (${escapeHtml(typeLabel)}, le ${escapeHtml(dateStr)}) est désormais ouverte.</p>` +
+				`<p><a href="${escapeHtml(agUrl)}">Accédez à l'AG</a></p>`;
 
 			try {
 				await sendEmail({
 					from: smtpFrom,
 					fromName: smtpFromName,
 					to: profile.email,
-					subject: `L'AG "${ag.title}" est maintenant ouverte`,
+					subject: `L'AG "${escapeHtml(ag.title)}" est maintenant ouverte`,
 					text,
 					html
 				});
