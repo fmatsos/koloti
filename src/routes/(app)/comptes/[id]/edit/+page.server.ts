@@ -7,7 +7,7 @@ import { sendMail } from '$lib/server/email';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals, params }) => {
-	if (!locals.profile || locals.profile.role !== 'admin') throw redirect(303, '/app/');
+	if (!locals.profile || locals.profile.role !== 'admin') throw redirect(303, '/');
 
 	const supabase = createServiceClient();
 	const { data: compte } = await supabase

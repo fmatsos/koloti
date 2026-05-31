@@ -6,7 +6,7 @@ import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	if (!locals.profile || !['admin', 'editor'].includes(locals.profile.role)) {
-		throw redirect(303, '/app/');
+		throw redirect(303, '/');
 	}
 
 	return { session: locals.session, profile: locals.profile };

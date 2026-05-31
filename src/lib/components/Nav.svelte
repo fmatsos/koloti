@@ -7,7 +7,7 @@
 </script>
 
 <nav class="app-nav" aria-label="Navigation principale">
-	<a href="/app/" class="nav-brand">Koloti</a>
+	<a href="/" class="nav-brand">Koloti</a>
 
 	<ul class="nav-links" role="list">
 		<li><a href="/informations">Informations</a></li>

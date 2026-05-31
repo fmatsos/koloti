@@ -5,7 +5,7 @@ import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	if (!locals.profile || locals.profile.role !== 'admin') {
-		throw redirect(303, '/app/');
+		throw redirect(303, '/');
 	}
 
 	const supabase = createServiceClient();

@@ -8,7 +8,7 @@ const STORAGE_BUCKET = 'documents';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	if (!locals.profile || !['admin', 'editor'].includes(locals.profile.role)) {
-		throw redirect(303, '/app/');
+		throw redirect(303, '/');
 	}
 
 	const supabase = createServiceClient();

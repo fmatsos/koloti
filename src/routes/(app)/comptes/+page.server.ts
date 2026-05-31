@@ -3,7 +3,7 @@ import { createServiceClient } from '$lib/server/supabase';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals, url }) => {
-	if (!locals.profile || locals.profile.role !== 'admin') throw redirect(303, '/app/');
+	if (!locals.profile || locals.profile.role !== 'admin') throw redirect(303, '/');
 
 	const supabase = createServiceClient();
 	const search = url.searchParams.get('q') ?? '';
