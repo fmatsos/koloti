@@ -75,7 +75,7 @@ Deno.serve(async (req: Request) => {
 		// Récupérer le profil + dernier lien d'activation actif
 		const { data: targetProfile } = await adminClient
 			.from('profile')
-			.select('id, full_name, email')
+			.select('id, first_name, last_name, email')
 			.eq('id', profileId)
 			.single();
 
@@ -168,7 +168,7 @@ Deno.serve(async (req: Request) => {
 			font: fontBold,
 			color: dark
 		});
-		page.drawText(`Nom : ${targetProfile.full_name}`, {
+		page.drawText(`Nom : ${targetProfile.first_name} ${targetProfile.last_name}`, {
 			x: 56,
 			y: boxY + 50,
 			size: 11,
@@ -282,7 +282,7 @@ Deno.serve(async (req: Request) => {
 			headers: {
 				...CORS_HEADERS,
 				'Content-Type': 'application/pdf',
-				'Content-Disposition': `attachment; filename="bienvenue-${targetProfile.full_name.replace(/\s+/g, '-')}.pdf"`,
+				'Content-Disposition': `attachment; filename="bienvenue-${`${targetProfile.first_name} ${targetProfile.last_name}`.replace(/\s+/g, '-')}.pdf"`,
 				'Cache-Control': 'no-store'
 			}
 		});

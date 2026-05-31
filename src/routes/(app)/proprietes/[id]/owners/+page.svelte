@@ -26,7 +26,7 @@
 				{@const profile = Array.isArray(o.profile) ? o.profile[0] : o.profile}
 				<div class="ownership-row {o.end_date ? 'past' : 'current'}">
 					<div>
-						<strong>{profile?.full_name ?? '—'}</strong>
+						<strong>{[profile?.first_name, profile?.last_name].filter(Boolean).join(' ') || '—'}</strong>
 						{#if o.is_primary}<span class="badge">Principal</span>{/if}
 						<br /><small>{profile?.email ?? ''}</small><br />
 						<small>Du {o.start_date}{o.end_date ? ` au ${o.end_date}` : ' (en cours)'}</small>
@@ -52,7 +52,7 @@
 				<select id="profile_id" name="profile_id" required>
 					<option value="">— Choisir —</option>
 					{#each data.profiles as p (p.id)}
-						<option value={p.id}>{p.full_name} ({p.email})</option>
+						<option value={p.id}>{p.first_name} {p.last_name} ({p.email})</option>
 					{/each}
 				</select>
 			</div>

@@ -11,10 +11,10 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 
 	let query = supabase
 		.from('profile')
-		.select('id, full_name, email, role, status, last_login_at, credential(login)')
-		.order('full_name');
+		.select('id, first_name, last_name, email, role, status, last_login_at, credential(login)')
+		.order('last_name');
 
-	if (search) query = query.or(`full_name.ilike.%${search}%,email.ilike.%${search}%`);
+	if (search) query = query.or(`first_name.ilike.%${search}%,last_name.ilike.%${search}%,email.ilike.%${search}%`);
 	if (statusFilter) query = query.eq('status', statusFilter as 'pending' | 'active' | 'inactive');
 
 	const { data: comptes } = await query;

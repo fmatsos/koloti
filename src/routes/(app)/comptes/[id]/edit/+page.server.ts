@@ -14,7 +14,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		.from('profile')
 		.select(
 			`
-			id, full_name, email, phone, role, status, last_login_at, activated_at, created_at,
+			id, first_name, last_name, email, phone, role, status, last_login_at, activated_at, created_at,
 			credential(id, login)
 		`
 		)
@@ -30,6 +30,11 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		created: null as boolean | null
 	};
 };
+
+const updateNameSchema = z.object({
+	first_name: z.string().trim().min(1, 'Le prénom est requis.').max(100),
+	last_name: z.string().trim().min(1, 'Le nom est requis.').max(100)
+});
 
 const updateEmailSchema = z.object({
 	email: z.string().email().max(200).toLowerCase().trim()
@@ -48,6 +53,31 @@ const updateRoleSchema = z.object({
 });
 
 export const actions: Actions = {
+	updateName: async ({ request, locals, params }) => {
+		if (!locals.profile || locals.profile.role !== 'admin')
+			return fail(403, { error: 'Non autorisé.' });
+
+		const formData = Object.fromEntries(await request.formData());
+		const parsed = updateNameSchema.safeParse(formData);
+		if (!parsed.success)
+			return fail(400, { error: parsed.error.issues[0]?.message ?? 'Données invalides.' });
+
+		const { first_name, last_name } = parsed.data;
+		const supabase = createServiceClient();
+
+		await supabase.from('profile').update({ first_name, last_name }).eq('id', params.id);
+
+		await writeAuditLog({
+			actorId: locals.profile.id,
+			action: 'account.update_name',
+			entity: 'profile',
+			entityId: params.id,
+			payload: { first_name, last_name }
+		});
+
+		return { success: true, action: 'name' };
+	},
+
 	updateEmail: async ({ request, locals, params }) => {
 		if (!locals.profile || locals.profile.role !== 'admin')
 			return fail(403, { error: 'Non autorisé.' });
@@ -169,7 +199,7 @@ export const actions: Actions = {
 		// Notifier l'utilisateur si son compte est actif
 		const { data: profile } = await supabase
 			.from('profile')
-			.select('email, full_name, status')
+			.select('email, first_name, last_name, status')
 			.eq('id', params.id)
 			.single();
 
@@ -178,7 +208,7 @@ export const actions: Actions = {
 				await sendMail({
 					to: profile.email,
 					subject: 'Votre identifiant de connexion a changé',
-					text: `Bonjour ${profile.full_name},\n\nVotre identifiant de connexion a été modifié par un administrateur.\n\nNouvel identifiant : ${login}\n\nSi vous n'êtes pas à l'origine de cette modification, contactez votre administrateur.`
+					text: `Bonjour ${profile.first_name} ${profile.last_name},\n\nVotre identifiant de connexion a été modifié par un administrateur.\n\nNouvel identifiant : ${login}\n\nSi vous n'êtes pas à l'origine de cette modification, contactez votre administrateur.`
 				});
 			} catch (e) {
 				console.error('Erreur envoi email login:', e);
@@ -207,7 +237,7 @@ export const actions: Actions = {
 
 		const { data: profile } = await supabase
 			.from('profile')
-			.select('email, full_name, status')
+			.select('email, first_name, last_name, status')
 			.eq('id', params.id)
 			.single();
 
@@ -216,7 +246,7 @@ export const actions: Actions = {
 				await sendMail({
 					to: profile.email,
 					subject: 'Votre identifiant de connexion a changé',
-					text: `Bonjour ${profile.full_name},\n\nVotre identifiant de connexion a été modifié par un administrateur.\n\nNouvel identifiant : ${login}\n\nSi vous n'êtes pas à l'origine de cette modification, contactez votre administrateur.`
+					text: `Bonjour ${profile.first_name} ${profile.last_name},\n\nVotre identifiant de connexion a été modifié par un administrateur.\n\nNouvel identifiant : ${login}\n\nSi vous n'êtes pas à l'origine de cette modification, contactez votre administrateur.`
 				});
 			} catch (e) {
 				console.error('Erreur envoi email login:', e);

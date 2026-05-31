@@ -87,7 +87,8 @@ export async function bootstrapAdminAccount(
 	const { error: profileError } = await client.from('profile').insert({
 		id: authUserId,
 		email: BOOTSTRAP_ADMIN_EMAIL,
-		full_name: BOOTSTRAP_ADMIN_FULL_NAME,
+		first_name: BOOTSTRAP_ADMIN_FULL_NAME,
+		last_name: '',
 		role: 'admin',
 		status: 'active',
 		must_change_credentials: true

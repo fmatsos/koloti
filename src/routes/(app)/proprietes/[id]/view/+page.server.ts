@@ -14,7 +14,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			`
 			id, reference, street_number, street_name, cadastre_number,
 			ownership(id, start_date, end_date, is_primary,
-				profile:profile_id(id, full_name, email))
+				profile:profile_id(id, first_name, last_name, email))
 		`
 		)
 		.eq('id', params.id)

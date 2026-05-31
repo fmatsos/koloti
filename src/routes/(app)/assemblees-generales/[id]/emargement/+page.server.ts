@@ -25,7 +25,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	const { data: properties } = await supabase
 		.from('property')
 		.select(
-			'id, reference, vote_weight, ownership(profile_id, is_primary, end_date, profile:profile_id(full_name))'
+			'id, reference, vote_weight, ownership(profile_id, is_primary, end_date, profile:profile_id(first_name, last_name))'
 		)
 		.order('reference');
 
@@ -51,7 +51,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			id: p.id,
 			reference: p.reference,
 			vote_weight: p.vote_weight,
-			ownerName: profile?.full_name ?? '—',
+			ownerName: profile ? `${profile.first_name} ${profile.last_name}`.trim() : '—',
 			ownerId: primary?.profile_id ?? null,
 			attendance
 		};

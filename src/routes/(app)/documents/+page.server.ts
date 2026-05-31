@@ -34,7 +34,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	let query = supabase
 		.from('document')
 		.select(
-			'id, title, type, visibility, year, size_bytes, created_at, uploaded_by:uploaded_by(full_name)'
+			'id, title, type, visibility, year, size_bytes, created_at, uploaded_by:uploaded_by(first_name, last_name)'
 		)
 		.in('visibility', visibilities)
 		.order('created_at', { ascending: false });

@@ -46,7 +46,7 @@
 									<td rowspan={prop.activeOwnerships.length} class="center">{prop.vote_weight}</td>
 								{/if}
 								<td>
-									{profile?.full_name ?? '—'}
+									{[profile?.first_name, profile?.last_name].filter(Boolean).join(' ') || '—'}
 									{#if o.is_primary}<span class="badge">Principal</span>{/if}
 									<br /><small class="muted">{profile?.email ?? ''}</small>
 								</td>

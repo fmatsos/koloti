@@ -45,7 +45,7 @@
 							? ownership.profile[0]
 							: ownership.profile}
 						<li>
-							<strong><a href="/comptes/{profile?.id}/view">{profile?.full_name ?? '—'}</a></strong>
+							<strong><a href="/comptes/{profile?.id}/view">{[profile?.first_name, profile?.last_name].filter(Boolean).join(' ') || '—'}</a></strong>
 							{#if ownership.is_primary}<span class="badge-primary">Principal</span>{/if}
 							<br /><small class="muted"
 								>{profile?.email ?? ''} · depuis {ownership.start_date}</small
@@ -66,7 +66,7 @@
 							? ownership.profile[0]
 							: ownership.profile}
 						<li>
-							<strong>{profile?.full_name ?? '—'}</strong>
+							<strong>{[profile?.first_name, profile?.last_name].filter(Boolean).join(' ') || '—'}</strong>
 							<br /><small class="muted">{ownership.start_date} → {ownership.end_date}</small>
 						</li>
 					{/each}

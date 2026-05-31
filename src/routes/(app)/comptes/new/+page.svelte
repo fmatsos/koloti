@@ -3,7 +3,9 @@
 
 	let { form }: { form: ActionData } = $props();
 
-	let fullName = $state('');
+	type FormWithValues = { error?: string; values?: Record<string, string> };
+	const formData = $derived(form as FormWithValues | null);
+
 	let email = $state('');
 	let phone = $state('');
 	let role = $state('member');
@@ -18,22 +20,32 @@
 	<h1>Créer un compte</h1>
 </div>
 
-{#if form?.error}
-	<div class="alert alert-error">{form.error}</div>
+{#if formData?.error}
+	<div class="alert alert-error">{formData.error}</div>
 {/if}
 
 <div class="form-card">
 	<form method="POST">
 		<div class="field">
-			<label for="full_name">Nom complet <span class="required">*</span></label>
+			<label for="first_name">Prénom <span class="required">*</span></label>
 			<input
-				id="full_name"
-				name="full_name"
+				id="first_name"
+				name="first_name"
 				type="text"
+				value={formData?.values?.first_name ?? ''}
 				required
 				maxlength="100"
-				bind:value={fullName}
-				placeholder="Prénom Nom"
+			/>
+		</div>
+		<div class="field">
+			<label for="last_name">Nom <span class="required">*</span></label>
+			<input
+				id="last_name"
+				name="last_name"
+				type="text"
+				value={formData?.values?.last_name ?? ''}
+				required
+				maxlength="100"
 			/>
 		</div>
 

@@ -20,9 +20,9 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 	const { data: pending } = await supabase
 		.from('profile')
-		.select('id, full_name, email')
+		.select('id, first_name, last_name, email')
 		.eq('status', 'pending')
-		.order('full_name');
+		.order('last_name');
 
 	return { session: locals.session, profile: locals.profile, ag, pending: pending ?? [] };
 };
@@ -42,7 +42,7 @@ export const actions: Actions = {
 
 		const { data: pending } = await supabase
 			.from('profile')
-			.select('id, full_name, email')
+			.select('id, first_name, last_name, email')
 			.eq('status', 'pending');
 		let sent = 0;
 		const errors: string[] = [];

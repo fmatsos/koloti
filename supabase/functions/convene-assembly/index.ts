@@ -277,7 +277,7 @@ Deno.serve(async (req: Request) => {
 		// Récupérer tous les profils actifs
 		const { data: profiles } = await adminClient
 			.from('profile')
-			.select('id, email, full_name')
+			.select('id, email, first_name, last_name')
 			.eq('status', 'active');
 
 		const date = new Date(ag.scheduled_at);
@@ -292,7 +292,7 @@ Deno.serve(async (req: Request) => {
 		let sent = 0;
 		for (const profile of profiles ?? []) {
 			const html = `
-				<p>Bonjour ${profile.full_name},</p>
+				<p>Bonjour ${profile.first_name} ${profile.last_name},</p>
 				<p>Vous êtes convoqué(e) à l'<strong>${ag.title}</strong> qui se tiendra le <strong>${dateStr}</strong>${ag.location ? ` (${ag.location})` : ''}.</p>
 				<p>Veuillez trouver la convocation et l'ordre du jour en pièce jointe.</p>
 				<p>Vous pouvez accéder à votre espace en ligne : <a href="${appUrl}">${appUrl}</a></p>

@@ -21,16 +21,16 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	const { data: ownerships } = await supabase
 		.from('ownership')
 		.select(
-			'id, profile_id, start_date, end_date, is_primary, profile:profile_id(full_name, email)'
+			'id, profile_id, start_date, end_date, is_primary, profile:profile_id(first_name, last_name, email)'
 		)
 		.eq('property_id', params.id)
 		.order('start_date', { ascending: false });
 
 	const { data: profiles } = await supabase
 		.from('profile')
-		.select('id, full_name, email')
+		.select('id, first_name, last_name, email')
 		.eq('status', 'active')
-		.order('full_name');
+		.order('last_name');
 
 	return {
 		session: locals.session,

@@ -33,7 +33,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 	const { data: targetProfile } = await supabase
 		.from('profile')
-		.select('id, email, full_name, status')
+		.select('id, email, first_name, last_name, status')
 		.eq('id', profile_id)
 		.single();
 
@@ -96,8 +96,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		await sendMail({
 			to: targetProfile.email,
 			subject: 'Activation de votre compte',
-			text: `Bonjour ${targetProfile.full_name},\n\nActivez votre compte en cliquant sur le lien suivant :\n${activationUrl}\n\nCe lien est valable ${validityLabel}.`,
-			html: `<p>Bonjour ${targetProfile.full_name},</p>
+			text: `Bonjour ${targetProfile.first_name} ${targetProfile.last_name},\n\nActivez votre compte en cliquant sur le lien suivant :\n${activationUrl}\n\nCe lien est valable ${validityLabel}.`,
+			html: `<p>Bonjour ${targetProfile.first_name} ${targetProfile.last_name},</p>
 <p>Activez votre compte en cliquant sur le lien suivant :<br>
 <a href="${activationUrl}">${activationUrl}</a></p>
 <p>Ce lien est valable ${validityLabel}.</p>`

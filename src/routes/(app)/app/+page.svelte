@@ -9,7 +9,7 @@
 </svelte:head>
 
 <div class="home">
-	<h1>Bienvenue{data.profile?.full_name ? `, ${data.profile.full_name}` : ''}</h1>
+	<h1>Bienvenue{data.profile ? `, ${data.profile.first_name} ${data.profile.last_name}` : ''}</h1>
 	<p class="subtitle">Espace ASL — plateforme de gestion du lotissement</p>
 
 	<div class="shortcuts">
