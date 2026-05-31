@@ -12,6 +12,15 @@ const schema = z.object({
 	email: z.email()
 });
 
+function escapeHtml(s: string): string {
+	return s
+		.replace(/&/g, '&amp;')
+		.replace(/</g, '&lt;')
+		.replace(/>/g, '&gt;')
+		.replace(/"/g, '&quot;')
+		.replace(/'/g, '&#39;');
+}
+
 export const actions: Actions = {
 	default: async ({ request }) => {
 		const parsed = schema.safeParse(Object.fromEntries(await request.formData()));
@@ -38,7 +47,7 @@ export const actions: Actions = {
 
 		if (logins.length > 0) {
 			const listText = logins.map((l) => `  • ${l}`).join('\n');
-			const listHtml = logins.map((l) => `<li><strong>${l}</strong></li>`).join('');
+			const listHtml = logins.map((l) => `<li><strong>${escapeHtml(l)}</strong></li>`).join('');
 
 			try {
 				await sendMail({
@@ -52,7 +61,7 @@ export const actions: Actions = {
 						`<p>Bonjour,</p>` +
 						`<p>Voici les identifiants associés à votre adresse :</p>` +
 						`<ul>${listHtml}</ul>` +
-						`<p>Connectez-vous sur : <a href="${PUBLIC_APP_URL}/login">${PUBLIC_APP_URL}/login</a></p>`
+						`<p>Connectez-vous sur : <a href="${escapeHtml(PUBLIC_APP_URL)}/login">${escapeHtml(PUBLIC_APP_URL)}/login</a></p>`
 				});
 			} catch (e) {
 				console.error('[identifiant-oublie] sendMail error:', e);
