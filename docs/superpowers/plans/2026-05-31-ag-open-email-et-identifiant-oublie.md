@@ -12,23 +12,24 @@
 
 ## File map
 
-| Action | Path |
-|--------|------|
-| Create | `supabase/migrations/0008_assembly_notification.sql` |
-| Create | `supabase/functions/notify-assembly-open/index.ts` |
-| Modify | `src/routes/(app)/assemblees-generales/[id]/+page.server.ts` |
-| Modify | `src/routes/(app)/assemblees-generales/[id]/+page.svelte` |
+| Action | Path                                                                       |
+| ------ | -------------------------------------------------------------------------- |
+| Create | `supabase/migrations/0008_assembly_notification.sql`                       |
+| Create | `supabase/functions/notify-assembly-open/index.ts`                         |
+| Modify | `src/routes/(app)/assemblees-generales/[id]/+page.server.ts`               |
+| Modify | `src/routes/(app)/assemblees-generales/[id]/+page.svelte`                  |
 | Create | `src/routes/(app)/assemblees-generales/[id]/notifications/+page.server.ts` |
-| Create | `src/routes/(app)/assemblees-generales/[id]/notifications/+page.svelte` |
-| Create | `src/routes/(auth)/login/identifiant-oublie/+page.server.ts` |
-| Create | `src/routes/(auth)/login/identifiant-oublie/+page.svelte` |
-| Modify | `src/routes/(auth)/login/+page.svelte` |
+| Create | `src/routes/(app)/assemblees-generales/[id]/notifications/+page.svelte`    |
+| Create | `src/routes/(auth)/login/identifiant-oublie/+page.server.ts`               |
+| Create | `src/routes/(auth)/login/identifiant-oublie/+page.svelte`                  |
+| Modify | `src/routes/(auth)/login/+page.svelte`                                     |
 
 ---
 
 ## Task 1: SQL migration — table `assembly_notification`
 
 **Files:**
+
 - Create: `supabase/migrations/0008_assembly_notification.sql`
 
 - [ ] **Step 1: Write the migration file**
@@ -80,6 +81,7 @@ git commit -m "feat: add assembly_notification table for open-AG email tracking"
 ## Task 2: Edge Function `notify-assembly-open`
 
 **Files:**
+
 - Create: `supabase/functions/notify-assembly-open/index.ts`
 
 - [ ] **Step 1: Write the edge function**
@@ -132,7 +134,10 @@ async function sendEmail(opts: {
 		});
 		return;
 	}
-	console.warn('[notify-assembly-open] Aucun provider email configuré — email non envoyé à', opts.to);
+	console.warn(
+		'[notify-assembly-open] Aucun provider email configuré — email non envoyé à',
+		opts.to
+	);
 }
 
 Deno.serve(async (req: Request) => {
@@ -209,7 +214,9 @@ Deno.serve(async (req: Request) => {
 			minute: '2-digit'
 		});
 		const typeLabel =
-			ag.type === 'ordinaire' ? 'Assemblée Générale Ordinaire' : 'Assemblée Générale Extraordinaire';
+			ag.type === 'ordinaire'
+				? 'Assemblée Générale Ordinaire'
+				: 'Assemblée Générale Extraordinaire';
 		const agUrl = `${appUrl}/assemblees-generales/${ag.id}`;
 
 		let sent = 0;
@@ -291,6 +298,7 @@ git commit -m "feat: add notify-assembly-open edge function"
 ## Task 3: Fire-and-forget invoke in the `open` action
 
 **Files:**
+
 - Modify: `src/routes/(app)/assemblees-generales/[id]/+page.server.ts` — action `open` (lines 74–105)
 
 - [ ] **Step 1: Add the fire-and-forget call after `writeAuditLog` in the `open` action**
@@ -358,6 +366,7 @@ git commit -m "feat: fire-and-forget notify-assembly-open on AG open"
 ## Task 4: "Voir les notifications" link on the AG page
 
 **Files:**
+
 - Modify: `src/routes/(app)/assemblees-generales/[id]/+page.svelte`
 
 - [ ] **Step 1: Add the link inside the `{#if ag.status === 'open'}` block**
@@ -366,12 +375,12 @@ In `src/routes/(app)/assemblees-generales/[id]/+page.svelte`, find the `{#if ag.
 
 ```svelte
 {#if ag.status === 'open'}
-    <a href="/assemblees-generales/{ag.id}/notifications" class="btn-action">
-        Notifications d'ouverture →
-    </a>
-    <a href="/assemblees-generales/{ag.id}/emargement" class="btn-action">Émargement →</a>
-    <a href="/assemblees-generales/{ag.id}/quorum" class="btn-action">Quorum →</a>
-    <!-- ... rest unchanged ... -->
+	<a href="/assemblees-generales/{ag.id}/notifications" class="btn-action">
+		Notifications d'ouverture →
+	</a>
+	<a href="/assemblees-generales/{ag.id}/emargement" class="btn-action">Émargement →</a>
+	<a href="/assemblees-generales/{ag.id}/quorum" class="btn-action">Quorum →</a>
+	<!-- ... rest unchanged ... -->
 {/if}
 ```
 
@@ -395,6 +404,7 @@ git commit -m "feat: add notifications link on open AG page"
 ## Task 5: Notifications page — server load
 
 **Files:**
+
 - Create: `src/routes/(app)/assemblees-generales/[id]/notifications/+page.server.ts`
 
 - [ ] **Step 1: Write the load function**
@@ -408,39 +418,39 @@ import type { PageServerLoad } from './$types';
 const STATUS_ORDER: Record<string, number> = { pending: 0, failed: 1, sent: 2 };
 
 export const load: PageServerLoad = async ({ params, locals }) => {
-    if (!locals.profile || !['admin', 'editor'].includes(locals.profile.role)) {
-        throw redirect(303, '/');
-    }
+	if (!locals.profile || !['admin', 'editor'].includes(locals.profile.role)) {
+		throw redirect(303, '/');
+	}
 
-    const supabase = createServiceClient();
+	const supabase = createServiceClient();
 
-    const { data: ag } = await supabase
-        .from('assembly')
-        .select('id, title, status')
-        .eq('id', params.id)
-        .single();
+	const { data: ag } = await supabase
+		.from('assembly')
+		.select('id, title, status')
+		.eq('id', params.id)
+		.single();
 
-    if (!ag) throw error(404, 'Assemblée introuvable');
+	if (!ag) throw error(404, 'Assemblée introuvable');
 
-    const { data: rows } = await supabase
-        .from('assembly_notification')
-        .select('id, email, full_name, status, error_msg, sent_at')
-        .eq('assembly_id', params.id);
+	const { data: rows } = await supabase
+		.from('assembly_notification')
+		.select('id, email, full_name, status, error_msg, sent_at')
+		.eq('assembly_id', params.id);
 
-    const notifications = [...(rows ?? [])].sort((a, b) => {
-        const sa = STATUS_ORDER[a.status] ?? 99;
-        const sb = STATUS_ORDER[b.status] ?? 99;
-        if (sa !== sb) return sa - sb;
-        return a.full_name.localeCompare(b.full_name, 'fr');
-    });
+	const notifications = [...(rows ?? [])].sort((a, b) => {
+		const sa = STATUS_ORDER[a.status] ?? 99;
+		const sb = STATUS_ORDER[b.status] ?? 99;
+		if (sa !== sb) return sa - sb;
+		return a.full_name.localeCompare(b.full_name, 'fr');
+	});
 
-    const summary = {
-        sent: notifications.filter((n) => n.status === 'sent').length,
-        failed: notifications.filter((n) => n.status === 'failed').length,
-        pending: notifications.filter((n) => n.status === 'pending').length
-    };
+	const summary = {
+		sent: notifications.filter((n) => n.status === 'sent').length,
+		failed: notifications.filter((n) => n.status === 'failed').length,
+		pending: notifications.filter((n) => n.status === 'pending').length
+	};
 
-    return { session: locals.session, profile: locals.profile, ag, notifications, summary };
+	return { session: locals.session, profile: locals.profile, ag, notifications, summary };
 };
 ```
 
@@ -464,6 +474,7 @@ git commit -m "feat: add notifications page load for AG open email report"
 ## Task 6: Notifications page — Svelte component
 
 **Files:**
+
 - Create: `src/routes/(app)/assemblees-generales/[id]/notifications/+page.svelte`
 
 - [ ] **Step 1: Write the page**
@@ -471,139 +482,186 @@ git commit -m "feat: add notifications page load for AG open email report"
 ```svelte
 <!-- src/routes/(app)/assemblees-generales/[id]/notifications/+page.svelte -->
 <script lang="ts">
-    import type { PageData } from './$types';
-    let { data }: { data: PageData } = $props();
-    const { ag, notifications, summary } = $derived(data);
+	import type { PageData } from './$types';
+	let { data }: { data: PageData } = $props();
+	const { ag, notifications, summary } = $derived(data);
 
-    const statusLabel: Record<string, string> = {
-        pending: 'En attente',
-        sent: 'Envoyé',
-        failed: 'Échec'
-    };
+	const statusLabel: Record<string, string> = {
+		pending: 'En attente',
+		sent: 'Envoyé',
+		failed: 'Échec'
+	};
 
-    function formatDate(iso: string | null): string {
-        if (!iso) return '—';
-        return new Date(iso).toLocaleString('fr-FR', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-    }
+	function formatDate(iso: string | null): string {
+		if (!iso) return '—';
+		return new Date(iso).toLocaleString('fr-FR', {
+			day: '2-digit',
+			month: '2-digit',
+			year: 'numeric',
+			hour: '2-digit',
+			minute: '2-digit'
+		});
+	}
 </script>
 
 <svelte:head><title>Notifications — {ag.title} — Koloti</title></svelte:head>
 
 <div class="page-header">
-    <a href="/assemblees-generales/{ag.id}" class="back-link">← {ag.title}</a>
-    <div class="header-row">
-        <h1>Notifications d'ouverture</h1>
-    </div>
+	<a href="/assemblees-generales/{ag.id}" class="back-link">← {ag.title}</a>
+	<div class="header-row">
+		<h1>Notifications d'ouverture</h1>
+	</div>
 </div>
 
 <div class="summary-bar">
-    <span class="chip chip-success">{summary.sent} envoyé{summary.sent !== 1 ? 's' : ''}</span>
-    <span class="chip chip-error">{summary.failed} échec{summary.failed !== 1 ? 's' : ''}</span>
-    <span class="chip chip-warning">{summary.pending} en attente</span>
-    <form method="GET" class="refresh-form">
-        <button type="submit" class="btn-sm">Rafraîchir</button>
-    </form>
+	<span class="chip chip-success">{summary.sent} envoyé{summary.sent !== 1 ? 's' : ''}</span>
+	<span class="chip chip-error">{summary.failed} échec{summary.failed !== 1 ? 's' : ''}</span>
+	<span class="chip chip-warning">{summary.pending} en attente</span>
+	<form method="GET" class="refresh-form">
+		<button type="submit" class="btn-sm">Rafraîchir</button>
+	</form>
 </div>
 
 {#if notifications.length === 0}
-    <div class="card mt">
-        <p class="text-muted">Aucune notification enregistrée pour cette AG.</p>
-    </div>
+	<div class="card mt">
+		<p class="text-muted">Aucune notification enregistrée pour cette AG.</p>
+	</div>
 {:else}
-    <div class="card mt">
-        <table class="notif-table">
-            <thead>
-                <tr>
-                    <th>Membre</th>
-                    <th>Email</th>
-                    <th>Statut</th>
-                    <th>Envoyé le</th>
-                </tr>
-            </thead>
-            <tbody>
-                {#each notifications as n (n.id)}
-                    <tr>
-                        <td>{n.full_name}</td>
-                        <td class="email-cell">{n.email}</td>
-                        <td>
-                            <span class="badge-notif badge-notif-{n.status}">
-                                {statusLabel[n.status] ?? n.status}
-                            </span>
-                            {#if n.status === 'failed' && n.error_msg}
-                                <span class="error-hint" title={n.error_msg}>ⓘ</span>
-                            {/if}
-                        </td>
-                        <td>{formatDate(n.sent_at)}</td>
-                    </tr>
-                {/each}
-            </tbody>
-        </table>
-    </div>
+	<div class="card mt">
+		<table class="notif-table">
+			<thead>
+				<tr>
+					<th>Membre</th>
+					<th>Email</th>
+					<th>Statut</th>
+					<th>Envoyé le</th>
+				</tr>
+			</thead>
+			<tbody>
+				{#each notifications as n (n.id)}
+					<tr>
+						<td>{n.full_name}</td>
+						<td class="email-cell">{n.email}</td>
+						<td>
+							<span class="badge-notif badge-notif-{n.status}">
+								{statusLabel[n.status] ?? n.status}
+							</span>
+							{#if n.status === 'failed' && n.error_msg}
+								<span class="error-hint" title={n.error_msg}>ⓘ</span>
+							{/if}
+						</td>
+						<td>{formatDate(n.sent_at)}</td>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
+	</div>
 {/if}
 
 <style>
-    .page-header { margin-bottom: 1.5rem; }
-    .back-link {
-        display: inline-block;
-        margin-bottom: 0.5rem;
-        font-size: 0.875rem;
-        text-decoration: none;
-        color: var(--color-text-muted, #6b7280);
-    }
-    .header-row { display: flex; align-items: center; gap: 0.75rem; }
-    h1 { margin: 0; font-size: 1.5rem; }
+	.page-header {
+		margin-bottom: 1.5rem;
+	}
+	.back-link {
+		display: inline-block;
+		margin-bottom: 0.5rem;
+		font-size: 0.875rem;
+		text-decoration: none;
+		color: var(--color-text-muted, #6b7280);
+	}
+	.header-row {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+	}
+	h1 {
+		margin: 0;
+		font-size: 1.5rem;
+	}
 
-    .summary-bar {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        flex-wrap: wrap;
-        margin-bottom: 1rem;
-    }
-    .chip {
-        display: inline-block;
-        padding: 0.2rem 0.6rem;
-        border-radius: 9999px;
-        font-size: 0.8rem;
-        font-weight: 600;
-    }
-    .chip-success { background: #d1fae5; color: #065f46; }
-    .chip-error   { background: #fee2e2; color: #991b1b; }
-    .chip-warning { background: #fef9c3; color: #92400e; }
+	.summary-bar {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		flex-wrap: wrap;
+		margin-bottom: 1rem;
+	}
+	.chip {
+		display: inline-block;
+		padding: 0.2rem 0.6rem;
+		border-radius: 9999px;
+		font-size: 0.8rem;
+		font-weight: 600;
+	}
+	.chip-success {
+		background: #d1fae5;
+		color: #065f46;
+	}
+	.chip-error {
+		background: #fee2e2;
+		color: #991b1b;
+	}
+	.chip-warning {
+		background: #fef9c3;
+		color: #92400e;
+	}
 
-    .refresh-form { margin-left: auto; }
+	.refresh-form {
+		margin-left: auto;
+	}
 
-    .notif-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
-    .notif-table th {
-        text-align: left;
-        padding: 0.5rem 0.75rem;
-        border-bottom: 1px solid var(--color-border, #e5e7eb);
-        font-weight: 600;
-        color: var(--color-text-muted, #6b7280);
-    }
-    .notif-table td { padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--color-border-light, #f3f4f6); }
-    .email-cell { color: var(--color-text-muted, #6b7280); font-size: 0.8rem; }
+	.notif-table {
+		width: 100%;
+		border-collapse: collapse;
+		font-size: 0.875rem;
+	}
+	.notif-table th {
+		text-align: left;
+		padding: 0.5rem 0.75rem;
+		border-bottom: 1px solid var(--color-border, #e5e7eb);
+		font-weight: 600;
+		color: var(--color-text-muted, #6b7280);
+	}
+	.notif-table td {
+		padding: 0.5rem 0.75rem;
+		border-bottom: 1px solid var(--color-border-light, #f3f4f6);
+	}
+	.email-cell {
+		color: var(--color-text-muted, #6b7280);
+		font-size: 0.8rem;
+	}
 
-    .badge-notif {
-        display: inline-block;
-        padding: 0.15rem 0.5rem;
-        border-radius: 0.25rem;
-        font-size: 0.75rem;
-        font-weight: 600;
-    }
-    .badge-notif-sent    { background: #d1fae5; color: #065f46; }
-    .badge-notif-failed  { background: #fee2e2; color: #991b1b; }
-    .badge-notif-pending { background: #fef9c3; color: #92400e; }
+	.badge-notif {
+		display: inline-block;
+		padding: 0.15rem 0.5rem;
+		border-radius: 0.25rem;
+		font-size: 0.75rem;
+		font-weight: 600;
+	}
+	.badge-notif-sent {
+		background: #d1fae5;
+		color: #065f46;
+	}
+	.badge-notif-failed {
+		background: #fee2e2;
+		color: #991b1b;
+	}
+	.badge-notif-pending {
+		background: #fef9c3;
+		color: #92400e;
+	}
 
-    .error-hint { cursor: help; color: #991b1b; margin-left: 0.25rem; }
-    .text-muted { color: var(--color-text-muted, #6b7280); }
-    .mt { margin-top: 1rem; }
+	.error-hint {
+		cursor: help;
+		color: #991b1b;
+		margin-left: 0.25rem;
+	}
+	.text-muted {
+		color: var(--color-text-muted, #6b7280);
+	}
+	.mt {
+		margin-top: 1rem;
+	}
 </style>
 ```
 
@@ -627,6 +685,7 @@ git commit -m "feat: add notifications detail page for AG open email report"
 ## Task 7: Identifiant oublié — server action
 
 **Files:**
+
 - Create: `src/routes/(auth)/login/identifiant-oublie/+page.server.ts`
 
 - [ ] **Step 1: Write the server file**
@@ -640,62 +699,62 @@ import { PUBLIC_APP_URL } from '$env/static/public';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
-    return { session: locals.session, profile: locals.profile };
+	return { session: locals.session, profile: locals.profile };
 };
 
 const schema = z.object({
-    email: z.email()
+	email: z.email()
 });
 
 export const actions: Actions = {
-    default: async ({ request }) => {
-        const parsed = schema.safeParse(Object.fromEntries(await request.formData()));
-        // Always return success — no account enumeration, not even for invalid email format
-        if (!parsed.success) return { success: true };
+	default: async ({ request }) => {
+		const parsed = schema.safeParse(Object.fromEntries(await request.formData()));
+		// Always return success — no account enumeration, not even for invalid email format
+		if (!parsed.success) return { success: true };
 
-        const { email } = parsed.data;
-        const serviceClient = createServiceClient();
+		const { email } = parsed.data;
+		const serviceClient = createServiceClient();
 
-        // email is not unique — a single address can map to multiple profiles (family lots)
-        const { data: profiles } = await serviceClient
-            .from('profile')
-            .select('first_name, last_name, credential(login)')
-            .eq('email', email)
-            .eq('status', 'active');
+		// email is not unique — a single address can map to multiple profiles (family lots)
+		const { data: profiles } = await serviceClient
+			.from('profile')
+			.select('first_name, last_name, credential(login)')
+			.eq('email', email)
+			.eq('status', 'active');
 
-        const logins: string[] = [];
-        for (const p of profiles ?? []) {
-            const creds = Array.isArray(p.credential) ? p.credential : [];
-            for (const c of creds) {
-                if (c.login) logins.push(c.login);
-            }
-        }
+		const logins: string[] = [];
+		for (const p of profiles ?? []) {
+			const creds = Array.isArray(p.credential) ? p.credential : [];
+			for (const c of creds) {
+				if (c.login) logins.push(c.login);
+			}
+		}
 
-        if (logins.length > 0) {
-            const listText = logins.map((l) => `  • ${l}`).join('\n');
-            const listHtml = logins.map((l) => `<li><strong>${l}</strong></li>`).join('');
+		if (logins.length > 0) {
+			const listText = logins.map((l) => `  • ${l}`).join('\n');
+			const listHtml = logins.map((l) => `<li><strong>${l}</strong></li>`).join('');
 
-            try {
-                await sendMail({
-                    to: email,
-                    subject: 'Vos identifiants Koloti',
-                    text:
-                        `Bonjour,\n\n` +
-                        `Voici les identifiants associés à votre adresse :\n\n${listText}\n\n` +
-                        `Connectez-vous sur : ${PUBLIC_APP_URL}/login`,
-                    html:
-                        `<p>Bonjour,</p>` +
-                        `<p>Voici les identifiants associés à votre adresse :</p>` +
-                        `<ul>${listHtml}</ul>` +
-                        `<p>Connectez-vous sur : <a href="${PUBLIC_APP_URL}/login">${PUBLIC_APP_URL}/login</a></p>`
-                });
-            } catch (e) {
-                console.error('[identifiant-oublie] sendMail error:', e);
-            }
-        }
+			try {
+				await sendMail({
+					to: email,
+					subject: 'Vos identifiants Koloti',
+					text:
+						`Bonjour,\n\n` +
+						`Voici les identifiants associés à votre adresse :\n\n${listText}\n\n` +
+						`Connectez-vous sur : ${PUBLIC_APP_URL}/login`,
+					html:
+						`<p>Bonjour,</p>` +
+						`<p>Voici les identifiants associés à votre adresse :</p>` +
+						`<ul>${listHtml}</ul>` +
+						`<p>Connectez-vous sur : <a href="${PUBLIC_APP_URL}/login">${PUBLIC_APP_URL}/login</a></p>`
+				});
+			} catch (e) {
+				console.error('[identifiant-oublie] sendMail error:', e);
+			}
+		}
 
-        return { success: true };
-    }
+		return { success: true };
+	}
 };
 ```
 
@@ -727,6 +786,7 @@ git commit -m "feat: add forgot-username server action"
 ## Task 8: Identifiant oublié — Svelte page
 
 **Files:**
+
 - Create: `src/routes/(auth)/login/identifiant-oublie/+page.svelte`
 
 - [ ] **Step 1: Write the page**
@@ -734,68 +794,66 @@ git commit -m "feat: add forgot-username server action"
 ```svelte
 <!-- src/routes/(auth)/login/identifiant-oublie/+page.svelte -->
 <script lang="ts">
-    import type { ActionData } from './$types';
-    let { form }: { form: ActionData } = $props();
-    let loading = $state(false);
+	import type { ActionData } from './$types';
+	let { form }: { form: ActionData } = $props();
+	let loading = $state(false);
 </script>
 
 <svelte:head>
-    <title>Identifiant oublié — Koloti</title>
+	<title>Identifiant oublié — Koloti</title>
 </svelte:head>
 
 <div class="min-h-dvh flex items-center justify-center p-4 bg-surface-100-900">
-    <div
-        class="card preset-filled-surface-50-950 rounded-2xl p-8 w-full max-w-md shadow-xl border border-surface-200-800"
-    >
-        <div class="text-center mb-6">
-            <div class="text-4xl mb-2" aria-hidden="true">🏡</div>
-            <h1 class="h2 font-bold text-surface-900-100">Koloti</h1>
-            <p class="text-surface-500 text-sm mt-1">Récupération d'identifiant</p>
-        </div>
+	<div
+		class="card preset-filled-surface-50-950 rounded-2xl p-8 w-full max-w-md shadow-xl border border-surface-200-800"
+	>
+		<div class="text-center mb-6">
+			<div class="text-4xl mb-2" aria-hidden="true">🏡</div>
+			<h1 class="h2 font-bold text-surface-900-100">Koloti</h1>
+			<p class="text-surface-500 text-sm mt-1">Récupération d'identifiant</p>
+		</div>
 
-        {#if form?.success}
-            <div class="card preset-tonal-success rounded-xl p-3.5 text-sm mb-4" role="status">
-                Si cette adresse est connue de notre système, un email vous a été envoyé.
-            </div>
-            <a
-                href="/login"
-                class="btn preset-tonal w-full rounded-lg py-2.5 text-sm font-semibold text-center block mt-4"
-            >
-                Retour à la connexion
-            </a>
-        {:else}
-            <p class="text-sm text-surface-500 mb-6">
-                Saisissez votre adresse email pour recevoir la liste de vos identifiants associés.
-            </p>
-            <form method="POST" onsubmit={() => (loading = true)} class="space-y-4">
-                <label class="label block">
-                    <span class="text-sm font-medium text-surface-700-300 block mb-1.5">
-                        Adresse email
-                    </span>
-                    <input
-                        name="email"
-                        type="email"
-                        autocomplete="email"
-                        required
-                        placeholder="votre@email.com"
-                        class="input w-full rounded-lg border border-surface-300-700 bg-surface-100-900 px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition"
-                    />
-                </label>
-                <button
-                    type="submit"
-                    class="btn preset-filled-primary-500 w-full rounded-lg py-2.5 text-sm font-semibold mt-2 transition-all duration-150 hover:opacity-90 disabled:opacity-50"
-                    disabled={loading}
-                >
-                    {loading ? 'Envoi…' : 'Recevoir mes identifiants'}
-                </button>
-            </form>
-            <div class="mt-6 text-center">
-                <a href="/login" class="text-xs text-surface-500 hover:text-surface-700-300">
-                    ← Retour à la connexion
-                </a>
-            </div>
-        {/if}
-    </div>
+		{#if form?.success}
+			<div class="card preset-tonal-success rounded-xl p-3.5 text-sm mb-4" role="status">
+				Si cette adresse est connue de notre système, un email vous a été envoyé.
+			</div>
+			<a
+				href="/login"
+				class="btn preset-tonal w-full rounded-lg py-2.5 text-sm font-semibold text-center block mt-4"
+			>
+				Retour à la connexion
+			</a>
+		{:else}
+			<p class="text-sm text-surface-500 mb-6">
+				Saisissez votre adresse email pour recevoir la liste de vos identifiants associés.
+			</p>
+			<form method="POST" onsubmit={() => (loading = true)} class="space-y-4">
+				<label class="label block">
+					<span class="text-sm font-medium text-surface-700-300 block mb-1.5"> Adresse email </span>
+					<input
+						name="email"
+						type="email"
+						autocomplete="email"
+						required
+						placeholder="votre@email.com"
+						class="input w-full rounded-lg border border-surface-300-700 bg-surface-100-900 px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition"
+					/>
+				</label>
+				<button
+					type="submit"
+					class="btn preset-filled-primary-500 w-full rounded-lg py-2.5 text-sm font-semibold mt-2 transition-all duration-150 hover:opacity-90 disabled:opacity-50"
+					disabled={loading}
+				>
+					{loading ? 'Envoi…' : 'Recevoir mes identifiants'}
+				</button>
+			</form>
+			<div class="mt-6 text-center">
+				<a href="/login" class="text-xs text-surface-500 hover:text-surface-700-300">
+					← Retour à la connexion
+				</a>
+			</div>
+		{/if}
+	</div>
 </div>
 ```
 
@@ -819,6 +877,7 @@ git commit -m "feat: add forgot-username Svelte page"
 ## Task 9: Login page — "Identifiant oublié ?" link
 
 **Files:**
+
 - Modify: `src/routes/(auth)/login/+page.svelte`
 
 - [ ] **Step 1: Add the link under the submit button in the `password` form block**
@@ -827,9 +886,9 @@ In `src/routes/(auth)/login/+page.svelte`, find the password form block (around 
 
 ```svelte
 <div class="mt-3 text-center">
-    <a href="/login/identifiant-oublie" class="text-xs text-surface-500 hover:text-surface-700-300">
-        Identifiant oublié ?
-    </a>
+	<a href="/login/identifiant-oublie" class="text-xs text-surface-500 hover:text-surface-700-300">
+		Identifiant oublié ?
+	</a>
 </div>
 ```
 
@@ -839,9 +898,9 @@ In the magiclink form block (around line 114–147), after the submit `<button>`
 
 ```svelte
 <div class="mt-3 text-center">
-    <a href="/login/identifiant-oublie" class="text-xs text-surface-500 hover:text-surface-700-300">
-        Identifiant oublié ?
-    </a>
+	<a href="/login/identifiant-oublie" class="text-xs text-surface-500 hover:text-surface-700-300">
+		Identifiant oublié ?
+	</a>
 </div>
 ```
 

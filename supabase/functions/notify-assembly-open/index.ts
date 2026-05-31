@@ -76,7 +76,8 @@ Deno.serve(async (req: Request) => {
 		if (!supabaseUrl || !serviceRoleKey) {
 			return new Response(
 				JSON.stringify({
-					error: 'Missing required environment variables: SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY'
+					error:
+						'Missing required environment variables: SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY'
 				}),
 				{
 					status: 500,

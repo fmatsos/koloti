@@ -8,6 +8,7 @@
 Le cycle de vie d'une AG est `draft → convened → open → closed → archived`. Les transitions `open` (convened → open) et les étapes antérieures sont implémentées. La transition `close` (open → closed) manque.
 
 La clôture est la première étape d'un flux plus large :
+
 1. **Clôturer** — passer statut à `closed` + horodater `closed_at` ← ce spec
 2. Rédaction du PV/CR en PDF (futur)
 3. Envoi email aux membres une fois le PV disponible (futur)
@@ -50,8 +51,7 @@ Pattern identique à l'action `open` existante, mais garde `admin` seul (pas `ed
 ### Imports à ajouter
 
 ```svelte
-import { Dialog, Portal } from '@skeletonlabs/skeleton-svelte';
-import { enhance } from '$app/forms';
+import {(Dialog, Portal)} from '@skeletonlabs/skeleton-svelte'; import {enhance} from '$app/forms';
 ```
 
 ### Structure du modal
@@ -60,31 +60,31 @@ Dans le bloc `{#if ag.status === 'open'}` de la section Actions, remplacer le bl
 
 ```svelte
 {#if ag.status === 'open'}
-  <a href="/assemblees-generales/{ag.id}/emargement" class="btn-action">Émargement →</a>
-  <a href="/assemblees-generales/{ag.id}/quorum" class="btn-action">Quorum →</a>
+	<a href="/assemblees-generales/{ag.id}/emargement" class="btn-action">Émargement →</a>
+	<a href="/assemblees-generales/{ag.id}/quorum" class="btn-action">Quorum →</a>
 
-  {#if data.profile?.role === 'admin'}
-    <Dialog closeOnInteractOutside={false}>
-      <Dialog.Trigger class="btn-action-danger w-full">Clôturer l'AG</Dialog.Trigger>
-      <Portal>
-        <Dialog.Backdrop class="fixed inset-0 z-50 bg-surface-50-950/50" />
-        <Dialog.Positioner class="fixed inset-0 z-50 flex justify-center items-center p-4">
-          <Dialog.Content class="card bg-surface-100-900 w-full max-w-md p-6 space-y-4 shadow-xl">
-            <Dialog.Title class="text-lg font-bold">Clôturer l'assemblée générale</Dialog.Title>
-            <Dialog.Description>
-              Cette action est irréversible. L'AG passera au statut "Clôturée".
-            </Dialog.Description>
-            <footer class="flex justify-end gap-2">
-              <Dialog.CloseTrigger class="btn preset-tonal">Annuler</Dialog.CloseTrigger>
-              <form method="POST" action="?/close" use:enhance>
-                <button type="submit" class="btn preset-filled-error-500">Clôturer</button>
-              </form>
-            </footer>
-          </Dialog.Content>
-        </Dialog.Positioner>
-      </Portal>
-    </Dialog>
-  {/if}
+	{#if data.profile?.role === 'admin'}
+		<Dialog closeOnInteractOutside={false}>
+			<Dialog.Trigger class="btn-action-danger w-full">Clôturer l'AG</Dialog.Trigger>
+			<Portal>
+				<Dialog.Backdrop class="fixed inset-0 z-50 bg-surface-50-950/50" />
+				<Dialog.Positioner class="fixed inset-0 z-50 flex justify-center items-center p-4">
+					<Dialog.Content class="card bg-surface-100-900 w-full max-w-md p-6 space-y-4 shadow-xl">
+						<Dialog.Title class="text-lg font-bold">Clôturer l'assemblée générale</Dialog.Title>
+						<Dialog.Description>
+							Cette action est irréversible. L'AG passera au statut "Clôturée".
+						</Dialog.Description>
+						<footer class="flex justify-end gap-2">
+							<Dialog.CloseTrigger class="btn preset-tonal">Annuler</Dialog.CloseTrigger>
+							<form method="POST" action="?/close" use:enhance>
+								<button type="submit" class="btn preset-filled-error-500">Clôturer</button>
+							</form>
+						</footer>
+					</Dialog.Content>
+				</Dialog.Positioner>
+			</Portal>
+		</Dialog>
+	{/if}
 {/if}
 ```
 
@@ -94,15 +94,15 @@ Dans le bloc `{#if ag.status === 'open'}` de la section Actions, remplacer le bl
 
 ```css
 .btn-action-danger {
-  display: block;
-  padding: 0.5rem 0.875rem;
-  background: #dc2626;
-  color: white;
-  border: none;
-  border-radius: 0.25rem;
-  font-size: 0.875rem;
-  cursor: pointer;
-  text-align: center;
+	display: block;
+	padding: 0.5rem 0.875rem;
+	background: #dc2626;
+	color: white;
+	border: none;
+	border-radius: 0.25rem;
+	font-size: 0.875rem;
+	cursor: pointer;
+	text-align: center;
 }
 ```
 
@@ -113,7 +113,7 @@ Dans le bloc `{#if ag.status === 'open'}` de la section Actions, remplacer le bl
 
 ## Fichiers modifiés
 
-| Fichier | Changement |
-|---|---|
-| `src/routes/(app)/assemblees-generales/[id]/+page.server.ts` | Ajouter action `close` |
-| `src/routes/(app)/assemblees-generales/[id]/+page.svelte` | Bouton + modal + styles |
+| Fichier                                                      | Changement              |
+| ------------------------------------------------------------ | ----------------------- |
+| `src/routes/(app)/assemblees-generales/[id]/+page.server.ts` | Ajouter action `close`  |
+| `src/routes/(app)/assemblees-generales/[id]/+page.svelte`    | Bouton + modal + styles |

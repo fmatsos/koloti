@@ -35,6 +35,7 @@ create table assembly_notification (
 Fichier : `supabase/functions/notify-assembly-open/index.ts`
 
 **Flux d'exécution :**
+
 1. Reçoit `{ assembly_id }` en POST (invoquée par l'action `open`)
 2. Fetch l'AG : `title`, `type`, `scheduled_at` via service role
 3. Fetch tous les profils actifs : `id`, `email`, `first_name`, `last_name`
@@ -63,9 +64,11 @@ Fichier : `src/routes/(app)/assemblees-generales/[id]/+page.server.ts`
 Après le succès de l'update DB et l'audit log, invocation fire-and-forget :
 
 ```typescript
-supabase.functions.invoke('notify-assembly-open', {
-  body: { assembly_id: params.id }
-}).catch((e) => console.error('notify-assembly-open invoke failed:', e));
+supabase.functions
+	.invoke('notify-assembly-open', {
+		body: { assembly_id: params.id }
+	})
+	.catch((e) => console.error('notify-assembly-open invoke failed:', e));
 ```
 
 L'action retourne `{ success: true }` sans attendre la fin de l'Edge Function.
@@ -75,15 +78,18 @@ L'action retourne `{ success: true }` sans attendre la fin de l'Edge Function.
 Route : `/assemblees-generales/[id]/notifications`
 
 Fichiers :
+
 - `src/routes/(app)/assemblees-generales/[id]/notifications/+page.server.ts`
 - `src/routes/(app)/assemblees-generales/[id]/notifications/+page.svelte`
 
 **Load function :**
+
 - Accès réservé aux `admin` et `editor` (redirect `/` sinon)
 - Charge les `assembly_notification` de l'AG triées par `status` (pending → failed → sent) puis `full_name`
 - Charge aussi le titre de l'AG pour l'en-tête
 
 **Affichage :**
+
 - En-tête : titre de l'AG + résumé `X envoyés / Y échecs / Z en attente`
 - Tableau par membre : nom complet, email, badge de statut (Skeleton UI preset success/error/warning), date d'envoi formatée
 - Bouton "Rafraîchir" (rechargement de page) pour suivre la progression si l'Edge Function tourne encore
@@ -107,10 +113,10 @@ Un lien "Voir les notifications d'ouverture" est affiché conditionnellement sur
 2. Requête via service role (RLS bloquerait anon) :
    ```typescript
    const { data: profiles } = await serviceClient
-     .from('profile')
-     .select('first_name, last_name, credential(login)')
-     .eq('email', email)
-     .eq('status', 'active');
+   	.from('profile')
+   	.select('first_name, last_name, credential(login)')
+   	.eq('email', email)
+   	.eq('status', 'active');
    ```
 3. Si des profils actifs sont trouvés avec des logins → `sendMail` (try/catch silencieux, échec ignoré)
 4. Toujours retourner `{ success: true }` — aucune énumération d'adresses email
@@ -131,6 +137,7 @@ Connectez-vous sur : https://[PUBLIC_APP_URL]/login
 ```
 
 **Page svelte :**
+
 - Même style que `/login` : card centré, Skeleton UI, fond `surface-100-900`
 - État initial : champ email + bouton "Recevoir mes identifiants"
 - État succès : message "Si cette adresse est connue de notre système, un email vous a été envoyé." (pas de formulaire)
@@ -147,11 +154,13 @@ Ajouter un lien discret `Identifiant oublié ?` sous chaque formulaire (mode `pa
 ## Vérification
 
 ### Feature 1
+
 1. Ouvrir une AG en statut `convened` via l'UI → l'action retourne immédiatement
 2. Naviguer vers `/assemblees-generales/[id]/notifications` → voir les lignes `pending` puis `sent`/`failed` après quelques secondes (rafraîchir)
 3. Vérifier dans Mailpit que chaque membre actif a reçu l'email avec le bon titre et lien
 
 ### Feature 2
+
 1. Aller sur `/login/identifiant-oublie`, saisir un email connu → vérifier dans Mailpit que l'email liste le(s) bon(s) login(s)
 2. Saisir un email inconnu → aucun email envoyé, UI affiche quand même le message de succès
 3. Vérifier que le lien "Identifiant oublié ?" apparaît bien sur la page de login (modes password et magiclink)
@@ -161,6 +170,7 @@ Ajouter un lien discret `Identifiant oublié ?` sous chaque formulaire (mode `pa
 ## Fichiers à créer / modifier
 
 ### Nouveaux fichiers
+
 - `supabase/functions/notify-assembly-open/index.ts`
 - `src/routes/(app)/assemblees-generales/[id]/notifications/+page.server.ts`
 - `src/routes/(app)/assemblees-generales/[id]/notifications/+page.svelte`
@@ -168,11 +178,13 @@ Ajouter un lien discret `Identifiant oublié ?` sous chaque formulaire (mode `pa
 - `src/routes/(auth)/login/identifiant-oublie/+page.server.ts`
 
 ### Fichiers modifiés
+
 - `src/routes/(app)/assemblees-generales/[id]/+page.server.ts` — action `open` : ajout invocation EF fire-and-forget
 - `src/routes/(app)/assemblees-generales/[id]/+page.svelte` — lien "Voir les notifications" conditionnel
 - `src/routes/(auth)/login/+page.svelte` — lien "Identifiant oublié ?"
 
 ### Migration SQL
+
 - Création de la table `assembly_notification` avec ses contraintes
 - Index : `create index on assembly_notification(assembly_id)` pour les requêtes de la page de compte rendu
 - Index : `create index on assembly_notification(assembly_id, status)` pour les agrégats (comptage par statut)
