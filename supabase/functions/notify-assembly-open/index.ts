@@ -126,7 +126,8 @@ Deno.serve(async (req: Request) => {
 						assembly_id: assemblyId,
 						profile_id: p.id,
 						email: p.email,
-						full_name: `${p.first_name} ${p.last_name}`,
+						first_name: p.first_name,
+						last_name: p.last_name,
 						status: 'pending'
 					}))
 				)
