@@ -1,5 +1,7 @@
 <script lang="ts">
 	import type { PageData, ActionData } from './$types';
+	import { Dialog, Portal } from '@skeletonlabs/skeleton-svelte';
+	import { enhance } from '$app/forms';
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 	const ag = $derived(data.ag);
 	const agendaItems = $derived(Array.isArray(ag.agenda_item) ? ag.agenda_item : []);
@@ -130,6 +132,29 @@
 				{#if ag.status === 'open'}
 					<a href="/assemblees-generales/{ag.id}/emargement" class="btn-action">Émargement →</a>
 					<a href="/assemblees-generales/{ag.id}/quorum" class="btn-action">Quorum →</a>
+
+					{#if data.profile?.role === 'admin'}
+						<Dialog closeOnInteractOutside={false}>
+							<Dialog.Trigger class="btn-action-danger w-full">Clôturer l'AG</Dialog.Trigger>
+							<Portal>
+								<Dialog.Backdrop class="fixed inset-0 z-50 bg-surface-50-950/50" />
+								<Dialog.Positioner class="fixed inset-0 z-50 flex justify-center items-center p-4">
+									<Dialog.Content class="card bg-surface-100-900 w-full max-w-md p-6 space-y-4 shadow-xl">
+										<Dialog.Title class="text-lg font-bold">Clôturer l'assemblée générale</Dialog.Title>
+										<Dialog.Description>
+											Cette action est irréversible. L'AG passera au statut "Clôturée".
+										</Dialog.Description>
+										<footer class="flex justify-end gap-2">
+											<Dialog.CloseTrigger class="btn preset-tonal">Annuler</Dialog.CloseTrigger>
+											<form method="POST" action="?/close" use:enhance>
+												<button type="submit" class="btn preset-filled-error-500">Clôturer</button>
+											</form>
+										</footer>
+									</Dialog.Content>
+								</Dialog.Positioner>
+							</Portal>
+						</Dialog>
+					{/if}
 				{/if}
 			</div>
 		</div>
@@ -330,5 +355,16 @@
 		border-radius: var(--radius, 0.375rem);
 		margin-bottom: 1rem;
 		font-size: 0.875rem;
+	}
+	.btn-action-danger {
+		display: block;
+		padding: 0.5rem 0.875rem;
+		background: #dc2626;
+		color: white;
+		border: none;
+		border-radius: 0.25rem;
+		font-size: 0.875rem;
+		cursor: pointer;
+		text-align: center;
 	}
 </style>
