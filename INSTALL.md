@@ -365,15 +365,7 @@ Migrations live in `supabase/migrations/` and are applied in order.
 
 | File | Description |
 |---|---|
-| `0001_schema.sql` | Full data model — all tables, enums, indexes |
-| `0002_rls_base.sql` | RLS deny-by-default + baseline policies |
-| `0003_rls_lot1.sql` | RLS for `info_post`, `document`, `ownership` |
-| `0004_rls_lot2.sql` | RLS for `assembly`, `agenda_item`, `attendance` |
-| `0005_property_address_fields.sql` | Property address fields |
-| `0006_bootstrap_admin_credentials.sql` | First admin auto-bootstrap logic |
-| `0007_split_full_name.sql` | First/last name split |
-| `0008_assembly_notification.sql` | Assembly notification model |
-| `0009_assembly_notification_split_full_name.sql` | Notification + name split |
+| `0001_schema.sql` | Complete schema — enums, all tables, indexes, RLS helpers, and all RLS policies |
 
 ### Migration workflow
 
