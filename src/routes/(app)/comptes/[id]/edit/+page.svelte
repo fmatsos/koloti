@@ -27,6 +27,7 @@
 		{:else if form.action === 'login'}Login mis à jour.{compte.status === 'active'
 				? " L'utilisateur a été notifié par email."
 				: ''}
+		{:else if form.action === 'name'}Nom mis à jour.
 		{/if}
 	</div>
 {/if}
@@ -37,6 +38,36 @@
 
 <div class="detail-grid">
 	<div class="actions-col">
+		<!-- Modifier le nom -->
+		<div class="card">
+			<h3>Modifier le nom</h3>
+			<form method="POST" action="?/updateName">
+				<div class="field">
+					<label for="first_name">Prénom</label>
+					<input
+						id="first_name"
+						name="first_name"
+						type="text"
+						value={compte.first_name}
+						maxlength="100"
+						required
+					/>
+				</div>
+				<div class="field">
+					<label for="last_name">Nom</label>
+					<input
+						id="last_name"
+						name="last_name"
+						type="text"
+						value={compte.last_name}
+						maxlength="100"
+						required
+					/>
+				</div>
+				<button type="submit" class="btn-sm">Enregistrer</button>
+			</form>
+		</div>
+
 		<!-- Modifier le login -->
 		<div class="card">
 			<h3>Modifier le login</h3>

@@ -31,6 +31,11 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	};
 };
 
+const updateNameSchema = z.object({
+	first_name: z.string().trim().min(1, 'Le prénom est requis.').max(100),
+	last_name: z.string().trim().min(1, 'Le nom est requis.').max(100)
+});
+
 const updateEmailSchema = z.object({
 	email: z.string().email().max(200).toLowerCase().trim()
 });
@@ -48,6 +53,31 @@ const updateRoleSchema = z.object({
 });
 
 export const actions: Actions = {
+	updateName: async ({ request, locals, params }) => {
+		if (!locals.profile || locals.profile.role !== 'admin')
+			return fail(403, { error: 'Non autorisé.' });
+
+		const formData = Object.fromEntries(await request.formData());
+		const parsed = updateNameSchema.safeParse(formData);
+		if (!parsed.success)
+			return fail(400, { error: parsed.error.issues[0]?.message ?? 'Données invalides.' });
+
+		const { first_name, last_name } = parsed.data;
+		const supabase = createServiceClient();
+
+		await supabase.from('profile').update({ first_name, last_name }).eq('id', params.id);
+
+		await writeAuditLog({
+			actorId: locals.profile.id,
+			action: 'account.update_name',
+			entity: 'profile',
+			entityId: params.id,
+			payload: { first_name, last_name }
+		});
+
+		return { success: true, action: 'name' };
+	},
+
 	updateEmail: async ({ request, locals, params }) => {
 		if (!locals.profile || locals.profile.role !== 'admin')
 			return fail(403, { error: 'Non autorisé.' });
