@@ -1,0 +1,15 @@
+services:
+  app:
+    environment:
+      APP_ENV: dev
+      APP_DEBUG: 1
+      SERVER_NAME: ${SERVER_NAME:-localhost}
+    volumes:
+      - ./:/app
+      - documents_data:/app/var/storage/documents
+    ports:
+      - "${HTTP_PORT:-8080}:80"
+
+  database:
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"

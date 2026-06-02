@@ -1,0 +1,18 @@
+framework:
+    messenger:
+        default_bus: command.bus
+        failure_transport: failed
+        buses:
+            command.bus:
+                middleware:
+                    - validation
+                    - doctrine_transaction
+            query.bus:
+                middleware:
+                    - validation
+        transports:
+            async:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+            failed:
+                dsn: 'doctrine://default?queue_name=failed'
+        routing: {}

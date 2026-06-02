@@ -1,0 +1,41 @@
+services:
+  app:
+    build:
+      context: .
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      APP_ENV: ${APP_ENV:-prod}
+      APP_DEBUG: ${APP_DEBUG:-0}
+      APP_SECRET: ${APP_SECRET:-change-me}
+      DATABASE_URL: "postgresql://${POSTGRES_USER:-koloti}:${POSTGRES_PASSWORD:-koloti}@database:5432/${POSTGRES_DB:-koloti}?serverVersion=17&charset=utf8"
+      DOCUMENT_STORAGE_PATH: /app/var/storage/documents
+      MAILER_DSN: ${MAILER_DSN:-null://null}
+      MESSENGER_TRANSPORT_DSN: "doctrine://default?auto_setup=0"
+      SERVER_NAME: ${SERVER_NAME:-localhost}
+    ports:
+      - "${HTTP_PORT:-8080}:80"
+    volumes:
+      - documents_data:/app/var/storage/documents
+    restart: unless-stopped
+
+  database:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-koloti}
+      POSTGRES_USER: ${POSTGRES_USER:-koloti}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-koloti}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    volumes:
+      - database_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  database_data:
+  documents_data:
