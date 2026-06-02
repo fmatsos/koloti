@@ -336,24 +336,21 @@ create index idx_assembly_notification_status     on public.assembly_notificatio
 
 create or replace function public.get_my_role()
 returns public.user_role
-language sql stable security definer
-set search_path = public
+language sql stable security invoker
 as $$
   select role from public.profile where id = auth.uid()
 $$;
 
 create or replace function public.get_my_status()
 returns public.account_status
-language sql stable security definer
-set search_path = public
+language sql stable security invoker
 as $$
   select status from public.profile where id = auth.uid()
 $$;
 
 create or replace function public.is_admin()
 returns boolean
-language sql stable security definer
-set search_path = public
+language sql stable security invoker
 as $$
   select exists(
     select 1 from public.profile
@@ -363,8 +360,7 @@ $$;
 
 create or replace function public.is_admin_or_editor()
 returns boolean
-language sql stable security definer
-set search_path = public
+language sql stable security invoker
 as $$
   select exists(
     select 1 from public.profile
@@ -376,8 +372,7 @@ $$;
 
 create or replace function public.is_active_member()
 returns boolean
-language sql stable security definer
-set search_path = public
+language sql stable security invoker
 as $$
   select exists(
     select 1 from public.profile
