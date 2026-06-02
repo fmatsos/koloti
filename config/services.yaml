@@ -1,0 +1,26 @@
+parameters:
+    document_storage_path: '%env(resolve:DOCUMENT_STORAGE_PATH)%'
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/Kernel.php'
+
+    App\Shared\Infrastructure\Bus\MessengerCommandBus:
+        arguments:
+            $commandBus: '@command.bus'
+
+    App\Shared\Infrastructure\Bus\MessengerQueryBus:
+        arguments:
+            $queryBus: '@query.bus'
+
+    App\Shared\Application\Bus\CommandBus:
+        alias: App\Shared\Infrastructure\Bus\MessengerCommandBus
+
+    App\Shared\Application\Bus\QueryBus:
+        alias: App\Shared\Infrastructure\Bus\MessengerQueryBus

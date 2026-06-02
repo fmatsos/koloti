@@ -1,0 +1,19 @@
+{
+    auto_https off
+}
+
+{$SERVER_NAME:localhost} {
+    root * /app/public
+    encode zstd br gzip
+
+    # Symfony front controller: public/index.php
+    try_files {path} /index.php
+
+    php_server {
+    }
+
+    file_server
+}
+
+# Worker mode is intentionally disabled for Phase 1.
+# Later activation requires a gated statelessness audit and functional test pass.
