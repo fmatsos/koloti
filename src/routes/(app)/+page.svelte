@@ -79,6 +79,51 @@
 		</div>
 	</div>
 
+	<!-- Recent announcements -->
+	<section aria-labelledby="info-heading" class="space-y-4">
+		<h2
+			id="info-heading"
+			class="h5 font-semibold text-surface-700-300 mb-4 uppercase tracking-wider text-xs"
+		>
+			Dernières informations
+		</h2>
+		{#if data.recentPosts.length > 0}
+			<div class="card preset-filled-surface-50-950 rounded-xl border border-surface-200-800 p-5 shadow-sm">
+				<ul class="space-y-3">
+					{#each data.recentPosts as post (post.id)}
+						<li>
+							<a
+								href="/informations/{post.id}/view"
+								class="text-primary-500 hover:text-primary-600 font-medium transition-colors"
+							>
+								{post.title}
+							</a>
+							<p class="text-xs text-surface-500 mt-1">
+								{post.published_at
+									? new Date(post.published_at).toLocaleDateString('fr-FR', {
+										year: 'numeric',
+										month: 'long',
+										day: 'numeric'
+									})
+									: 'Date inconnue'}
+							</p>
+						</li>
+					{/each}
+				</ul>
+				<a
+					href="/informations"
+					class="text-xs text-primary-500 hover:text-primary-600 font-medium mt-4 inline-block transition-colors"
+				>
+					Voir toutes les informations →
+				</a>
+			</div>
+		{:else}
+			<div class="card preset-filled-surface-50-950 rounded-xl border border-surface-200-800 p-5 shadow-sm text-center text-surface-500">
+				<p class="text-sm">Aucune information publiée.</p>
+			</div>
+		{/if}
+	</section>
+
 	<!-- Main shortcuts -->
 	<section aria-labelledby="nav-heading">
 		<h2
